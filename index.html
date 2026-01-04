@@ -159,7 +159,7 @@
 
     <script>
         // --- BASE DE DATOS ESTATICA ---
-        const foodData = [
+        /*const foodData = [
             { id: 1, name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
             { id: 2, name: "Frutos Secos y Semillas", p: 20.0, c: 16.0, f: 48.0, kcal: 575, unit: "g" },
             { id: 3, name: "Grasas Vegetales (Aguacate)", p: 1.5, c: 4.0, f: 17.0, kcal: 175, unit: "g" },
@@ -178,8 +178,30 @@
             { id: 16, name: "Verduras y Hortalizas", p: 1.5, c: 6.0, f: 0.5, kcal: 35, unit: "g" },
             { id: 17, name: "Legumbres", p: 6.0, c: 12.0, f: 0.8, kcal: 79, unit: "g" },
             { id: 18, name: "Lácteo semidesnatado(leche, kefir)", p: 4.0, c: 5.1, f: 0.8, kcal: 44, unit: "g" }
+        ];*/
+        const foodData = [
+		    { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
+            { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
+			{ id: 3,  name: "Grasas Vegetales (Aguacate y aceituna)", p: 1.5, c: 4.0, f: 17.0, kcal: 175, unit: "g" },
+            { id: 4,  name: "Frutos Secos y Semillas", p: 20.0, c: 16.0, f: 48.0, kcal: 575, unit: "g" },
+            { id: 5,  name: "Carnes Magras (Pollo/Pavo)", p: 21.0, c: 0.5, f: 3.5, kcal: 117, unit: "g" },
+			{ id: 6,  name: "Carnes Rojas / Procesadas", p: 20.0, c: 0.5, f: 5.5, kcal: 130, unit: "g" },
+            { id: 7,  name: "Lácteos Quesos Curados", p: 20.5, c: 0.5, f: 26.5, kcal: 325, unit: "g" },
+			{ id: 8,  name: "Lácteos semidesnatados(leche, kefir)", p: 4.0, c: 5.1, f: 1.8, kcal: 53, unit: "g" },
+			{ id: 9,  name: "Lácteos Frescos (Yogur)", p: 6.5, c: 4.0, f: 3.0, kcal: 69, unit: "g" },
+            { id: 10, name: "Pescado Blanco y Mariscos", p: 19.5, c: 0.5, f: 2.0, kcal: 100, unit: "g" },
+            { id: 11, name: "Pescado Azul / Conservas", p: 19.5, c: 0.5, f: 11.5, kcal: 180, unit: "g" },
+            { id: 12, name: "Huevo (Unidad ~60g)", p: 6.5, c: 1.0, f: 7.5, kcal: 98, unit: "u" },   
+            { id: 13, name: "Harinas y Cereales (Crudo)", p: 12.5, c: 63.0, f: 5.5, kcal: 350, unit: "g" },
+            { id: 14, name: "Panes", p: 9.5, c: 47.5, f: 2.5, kcal: 250, unit: "g" },
+            { id: 15, name: "Hidratos Cocidos (Pasta/Arroz)", p: 4.0, c: 25.0, f: 0.5, kcal: 120, unit: "g" },
+            { id: 16, name: "Frutas Frescas(inc.tomate)", p: 0.5, c: 12.0, f: 0.5, kcal: 55, unit: "g" },
+            { id: 17, name: "Verduras y Hortalizas", p: 1.5, c: 6.0, f: 0.5, kcal: 35, unit: "g" },
+            { id: 18, name: "Legumbres", p: 6.0, c: 12.0, f: 0.8, kcal: 79, unit: "g" },
+			{ id: 19, name: "Macro proteina", p: 100.0, c: 0.0, f: 0.0, kcal: 400, unit: "g" },
+			{ id: 20, name: "Macro carbohidrato", p: 0.0, c: 100.0, f: 0.0, kcal: 400, unit: "g" },
+			{ id: 21, name: "Macro grasa", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" }
         ];
-
         // --- ESTADO DE LA APLICACIÓN ---
         let globalLog = []; // Almacena TODOS los registros
         let chartInstance = null;
