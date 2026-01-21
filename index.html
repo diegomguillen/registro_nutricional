@@ -478,7 +478,7 @@
                     labels: ['Prot', 'Carbs', 'Grasas'],
                     datasets: [{
                         data: hasData ? [sumP*4, sumC*4, sumF*9] : [1,1,1],
-                        backgroundColor: hasData ? ['#ef4444', '#eab308', '#f97316'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
+                        backgroundColor: hasData ? ['#39f792', '#eab308', '#ef4444'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
                         borderWidth: 0, hoverOffset: 4
                     }]
                 },
@@ -490,7 +490,7 @@
 
             document.getElementById('detailModal').classList.remove('hidden');
         }
-
+        
         function closeModal() {
             document.getElementById('detailModal').classList.add('hidden');
         }
