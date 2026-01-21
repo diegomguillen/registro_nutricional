@@ -1,203 +1,274 @@
 <!DOCTYPE html>
 <html lang="es">
-   
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Nutricional Pro (Dinámico)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Registro Nutricional App</title>
+    <meta name="theme-color" content="#ffffff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.json">
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
-        tfoot { font-weight: bold; background-color: #e5e7eb; }
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background-color: #f8fafc; /* Fondo muy claro como la foto */
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Ocultar scrollbar pero permitir scroll */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
         .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
-        .loader { border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
+        .loader { border: 2px solid #f3f3f3; border-top: 2px solid #3b82f6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#2563eb">
-<link rel="apple-touch-icon" href="icon.png">     
-</head>
-<body class="text-gray-800 relative">
-
-    <div class="max-w-6xl mx-auto p-4 md:p-8 pb-24">
         
-        <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
-            <div>
-                <h1 class="text-3xl font-bold text-gray-900">Registro Nutricional</h1>
-                <p class="text-gray-600 text-sm">Cálculo dinámico + API Online</p>
+        /* Estilo para las tarjetas tipo botón */
+        .action-card {
+            transition: transform 0.1s, background-color 0.2s;
+        }
+        .action-card:active {
+            transform: scale(0.98);
+            background-color: #f9fafb;
+        }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-5 pb-24">
+        
+        <div id="view-home" class="space-y-6 animate-fade-in">
+            <header class="flex items-center gap-3 mb-2">
+				<img src="icon.png" class="w-12 h-12 rounded-xl shadow-sm bg-white p-1" alt="Logo App">
+    
+			<div>
+				<h1 class="text-2xl font-bold text-slate-900 leading-tight">Diario nutricional</h1>
+				<p class="text-slate-500 text-sm">Añade tus comidas de hoy</p>
+			</div>
+			</header>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Fecha</label>
+                        <input type="date" id="entryDate" class="w-full rounded-xl border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-indigo-200 p-3 text-sm font-medium">
+                    </div>
+
+                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..." class="w-full bg-white rounded-lg border-blue-200 text-sm p-2 focus:border-blue-500 focus:outline-none" onkeypress="handleEnter(event)">
+                            <button onclick="searchOnline()" class="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-700">
+                                <svg id="searchIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                                <div id="searchLoader" class="loader hidden"></div>
+                            </button>
+                        </div>
+                        <div id="searchResults" class="hidden mt-2 max-h-40 overflow-y-auto bg-white border border-blue-100 rounded-lg shadow-sm text-xs z-10 relative"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alimento</label>
+                        <select id="foodSelect" class="w-full rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5" id="amountLabel">Cantidad (g)</label>
+                        <input type="number" id="amountInput" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="100" value="100">
+                    </div>
+
+                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                         <div id="previewData" class="text-sm"></div>
+                    </div>
+
+                    <button onclick="addItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-indigo-200 active:transform active:scale-95 transition-all text-sm">
+                        Añadir Registro
+                    </button>
+                </div>
             </div>
-            
-            <div class="flex flex-wrap gap-3 items-center">
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
+                <h3 class="text-sm font-semibold text-slate-700 mb-4 text-center">Distribución calórica</h3>
+                <div class="h-48 relative w-full flex justify-center">
+                    <canvas id="macroChart"></canvas>
+                </div>
+                <div class="grid grid-cols-4 gap-2 mt-4 text-center">
+                    <div class="bg-green-50 rounded-lg p-2"><div class="text-[10px] text-red-600 font-bold">PROT</div><div id="homeProt" class="text-xs font-bold text-slate-700">0g</div></div>
+                    <div class="bg-yellow-50 rounded-lg p-2"><div class="text-[10px] text-yellow-600 font-bold">CARB</div><div id="homeCarbs" class="text-xs font-bold text-slate-700">0g</div></div>
+                    <div class="bg-red-50 rounded-lg p-2"><div class="text-[10px] text-orange-600 font-bold">GRAS</div><div id="homeFats" class="text-xs font-bold text-slate-700">0g</div></div>
+                    <div class="bg-green-50 rounded-lg p-2"><div class="text-[10px] text-green-600 font-bold">KCAL</div><div id="homeKcal" class="text-xs font-bold text-slate-700">0</div></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-history" class="space-y-6 hidden animate-fade-in">
+            <header>
+                <h1 class="text-2xl font-bold text-slate-900">Historial</h1>
+                <p class="text-slate-500 text-sm">Consulta y filtra tus registros</p>
+            </header>
+
+            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+                <div class="flex gap-2 text-sm">
+                    <div class="flex-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Desde</label>
+                        <input type="date" id="filterStart" onchange="updateDayLabels(); applyFilter()" class="w-full rounded-lg border-slate-200 text-xs p-2">
+                        <div id="labelStart" class="text-[10px] text-indigo-500 mt-1 font-medium h-3"></div>
+                    </div>
+                    <div class="flex-1">
+                        <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Hasta</label>
+                        <input type="date" id="filterEnd" onchange="updateDayLabels(); applyFilter()" class="w-full rounded-lg border-slate-200 text-xs p-2">
+                        <div id="labelEnd" class="text-[10px] text-indigo-500 mt-1 font-medium h-3 text-right"></div>
+                    </div>
+                </div>
+                <div class="flex justify-between gap-2 pt-2 border-t border-slate-50">
+                    <button onclick="shiftDate(-1)" class="bg-slate-100 text-slate-600 px-3 py-2 rounded-lg text-xs font-bold flex-1">-1 Día</button>
+                    <button onclick="setTodayFilter()" class="bg-indigo-50 text-indigo-600 px-3 py-2 rounded-lg text-xs font-bold flex-1">Hoy</button>
+                    <button onclick="shiftDate(1)" class="bg-slate-100 text-slate-600 px-3 py-2 rounded-lg text-xs font-bold flex-1">+1 Día</button>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-slate-100">
+                        <thead class="bg-slate-50 text-slate-500">
+                            <tr>
+                                <th class="px-4 py-3 w-8"><input type="checkbox" onclick="toggleAll(this)" class="custom-checkbox rounded text-indigo-600"></th>
+                                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Alimento</th>
+                                <th class="px-4 py-3 text-right text-xs font-bold uppercase">Kcal</th>
+                                <th class="px-4 py-3"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="foodTableBody" class="divide-y divide-slate-50 text-sm"></tbody>
+                    </table>
+                </div>
+                <div class="bg-slate-50 p-3 border-t border-slate-100 flex justify-between items-center text-sm">
+                    <span class="font-bold text-slate-500 uppercase text-xs">Total Vista:</span>
+                    <span class="font-bold text-slate-900 text-base" id="footKcal">0 <span class="text-xs font-normal text-slate-500">kcal</span></span>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-backup" class="space-y-6 hidden animate-fade-in">
+            <header>
+                <h1 class="text-2xl font-bold text-slate-900">Datos</h1>
+                <p class="text-slate-500 text-sm">Gestiona copias de seguridad</p>
+            </header>
+
+            <div class="space-y-4">
+                
+                <div onclick="exportData()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-800">Exportar copia</h3>
+                        <p class="text-xs text-slate-500">Guardar o compartir backup JSON</p>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </div>
+
+                <div onclick="document.getElementById('importFile').click()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-800">Importar copia</h3>
+                        <p class="text-xs text-slate-500">Restaurar datos desde archivo</p>
+                    </div>
+                    <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </div>
                 <input type="file" id="importFile" accept=".json" class="hidden" onchange="handleImport(this)">
-                <button onclick="exportData()" class="flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded text-xs font-bold hover:bg-blue-200 transition-colors">Exportar</button>
-                <button onclick="document.getElementById('importFile').click()" class="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1.5 rounded text-xs font-bold hover:bg-green-200 transition-colors">Importar</button>
-                <div class="h-4 w-px bg-gray-300 mx-1"></div>
-                <button onclick="resetApp()" class="text-xs text-red-500 hover:text-red-700 underline">Borrar Todo</button>
-            </div>
-        </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            
-            <div class="lg:col-span-4 xl:col-span-3 space-y-6">
-                <div class="bg-white rounded-xl shadow-md p-5 border-t-4 border-blue-600">
-                    <h2 class="text-lg font-semibold mb-4 text-gray-800">Nueva Entrada</h2>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha</label>
-                            <input type="date" id="entryDate" class="w-full rounded border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 p-2 border text-sm">
-                        </div>
-
-                        <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                            <label class="block text-xs font-bold text-blue-600 uppercase mb-1">Buscar en Web</label>
-                            <div class="flex gap-2">
-                                <input type="text" id="apiSearchInput" placeholder="Ej: Galletas Oreo" class="w-full rounded border-gray-300 text-sm p-1.5 border focus:border-blue-500" onkeypress="handleEnter(event)">
-                                <button onclick="searchOnline()" class="bg-blue-600 text-white px-3 rounded hover:bg-blue-700 flex items-center justify-center min-w-[40px]">
-                                    <svg id="searchIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                    <div id="searchLoader" class="loader hidden"></div>
-                                </button>
-                            </div>
-                            <div id="searchResults" class="hidden mt-2 max-h-40 overflow-y-auto bg-white border border-gray-200 rounded shadow-sm text-xs"></div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alimento</label>
-                            <select id="foodSelect" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 p-2 border bg-white text-sm"></select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="amountLabel">Cantidad (g)</label>
-                            <input type="number" id="amountInput" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 p-2 border text-sm" placeholder="Ej: 100" value="100">
-                        </div>
-                        <button onclick="addItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-sm text-sm">Guardar Registro</button>
+                <div onclick="resetApp()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 flex-shrink-0">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                     </div>
-                    
-                    <div class="mt-6 pt-4 border-t border-gray-100 bg-gray-50 rounded p-2">
-                        <h3 class="text-xs font-bold text-gray-500 uppercase mb-1">Cálculo para la cantidad actual:</h3>
-                        <div id="previewData" class="text-sm text-gray-700"></div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-red-600">Borrar todo</h3>
+                        <p class="text-xs text-red-300">Eliminar historial localmente</p>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-md p-4">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-2 text-center">Resumen (Vista Actual)</h3>
-                    <div class="h-48 relative w-full flex justify-center">
-                        <canvas id="macroChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            <div class="lg:col-span-8 xl:col-span-9 space-y-6">
-                <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs text-gray-500 font-bold uppercase mb-1">Desde</label>
-                            <input type="date" id="filterStart" onchange="updateDayLabels()" class="w-full rounded border-gray-300 text-sm p-2 border shadow-sm">
-                            <div id="labelStart" class="text-xs text-blue-600 mt-1 font-medium h-4"></div>
-                        </div>
-                        <div>
-                            <label class="block text-xs text-gray-500 font-bold uppercase mb-1">Hasta</label>
-                            <input type="date" id="filterEnd" onchange="updateDayLabels()" class="w-full rounded border-gray-300 text-sm p-2 border shadow-sm">
-                            <div id="labelEnd" class="text-xs text-blue-600 mt-1 font-medium h-4 text-right"></div>
-                        </div>
-                    </div>
-                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-3">
-                        <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-start">
-                            <button onclick="shiftDate(-1)" class="bg-gray-100 text-gray-700 px-3 py-2 rounded text-xs font-bold hover:bg-gray-200 border flex items-center gap-1">-1 Día</button>
-                            <button onclick="shiftDate(1)" class="bg-gray-100 text-gray-700 px-3 py-2 rounded text-xs font-bold hover:bg-gray-200 border flex items-center gap-1">+1 Día</button>
-                            <button onclick="shiftDate(-7)" class="bg-indigo-50 text-indigo-700 px-3 py-2 rounded text-xs font-bold hover:bg-indigo-100 border border-indigo-200">-7 Días</button>
-                        </div>
-                        <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-end">
-                            <button onclick="setTodayFilter()" class="bg-green-50 text-green-700 px-4 py-2 rounded text-xs font-bold hover:bg-green-100 border border-green-200">HOY</button>
-                            <button onclick="applyFilter()" class="bg-gray-900 text-white px-6 py-2 rounded text-xs font-bold hover:bg-gray-800 shadow-md transform active:scale-95">FILTRAR</button>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <div class="bg-white p-3 rounded-lg shadow border-l-4 border-red-500">
-                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Proteínas</div>
-                        <div class="text-xl font-bold text-gray-800"><span id="summaryProtein">0</span><span class="text-xs font-normal text-gray-500 ml-1">g</span></div>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow border-l-4 border-yellow-400">
-                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Carbohidratos</div>
-                        <div class="text-xl font-bold text-gray-800"><span id="summaryCarbs">0</span><span class="text-xs font-normal text-gray-500 ml-1">g</span></div>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow border-l-4 border-orange-400">
-                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Grasas</div>
-                        <div class="text-xl font-bold text-gray-800"><span id="summaryFats">0</span><span class="text-xs font-normal text-gray-500 ml-1">g</span></div>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow border-l-4 border-green-600">
-                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Energía</div>
-                        <div class="text-xl font-bold text-gray-800"><span id="summaryKcal">0</span><span class="text-xs font-normal text-gray-500 ml-1">kcal</span></div>
-                    </div>
-                </div>
-
-                <div class="bg-white rounded-xl shadow-md overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50 text-gray-500">
-                                <tr>
-                                    <th class="px-4 py-3 w-10 text-center"><input type="checkbox" onclick="toggleAll(this)" class="custom-checkbox rounded text-blue-600"></th>
-                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Fecha</th>
-                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Alimento</th>
-                                    <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Cant.</th>
-                                    <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Prot.</th>
-                                    <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Carbs.</th>
-                                    <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Grasas</th>
-                                    <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Kcal</th>
-                                    <th class="px-4 py-3"></th>
-                                </tr>
-                            </thead>
-                            <tbody id="foodTableBody" class="bg-white divide-y divide-gray-200 text-sm"></tbody>
-                            <tfoot id="tableFooter" class="bg-gray-100 text-sm border-t-2 border-gray-300">
-                                <tr>
-                                    <td></td>
-                                    <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Total Vista:</td>
-                                    <td class="px-4 py-3 text-right font-bold text-gray-900" id="footProtein">0.0</td>
-                                    <td class="px-4 py-3 text-right font-bold text-gray-900" id="footCarbs">0.0</td>
-                                    <td class="px-4 py-3 text-right font-bold text-gray-900" id="footFats">0.0</td>
-                                    <td class="px-4 py-3 text-right font-bold text-gray-900" id="footKcal">0</td>
-                                    <td></td>
-                                </tr>
-                            </tfoot>
-                        </table>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <div id="analyzeFab" class="fixed bottom-6 right-6 hidden z-40">
-            <button onclick="analyzeSelection()" class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full shadow-2xl flex items-center gap-2 transform hover:scale-105 transition-all">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
-                <span id="fabText">Analizar (0)</span>
-            </button>
-        </div>
+    </main>
 
-        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
-            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
-                <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-gray-800">Análisis de Selección</h3>
-                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
-                </div>
-                <div class="p-6">
-                    <div class="grid grid-cols-3 gap-2 mb-6 text-center">
-                        <div class="p-2 bg-red-50 rounded-lg border border-red-100"><div class="text-xs text-red-600 font-bold uppercase">Prot</div><div class="text-lg font-bold text-gray-800"><span id="modalP">0</span>g</div></div>
-                        <div class="p-2 bg-yellow-50 rounded-lg border border-yellow-100"><div class="text-xs text-yellow-600 font-bold uppercase">Carbs</div><div class="text-lg font-bold text-gray-800"><span id="modalC">0</span>g</div></div>
-                        <div class="p-2 bg-orange-50 rounded-lg border border-orange-100"><div class="text-xs text-orange-600 font-bold uppercase">Grasas</div><div class="text-lg font-bold text-gray-800"><span id="modalF">0</span>g</div></div>
-                    </div>
-                    <div class="text-center mb-6"><span class="text-3xl font-black text-gray-900" id="modalKcal">0</span><span class="text-sm text-gray-500 font-medium uppercase ml-1">kcal totales</span></div>
-                    <div class="h-48 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
-                    <div class="border-t pt-4"><h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Elementos incluidos:</h4><ul id="modalList" class="text-sm text-gray-600 space-y-1 max-h-32 overflow-y-auto"></ul></div>
-                </div>
-                <div class="bg-gray-50 px-6 py-3 text-right"><button onclick="closeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700">Cerrar</button></div>
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 h-16 flex justify-around items-center z-40 pb-safe">
+        <button onclick="switchView('home')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-indigo-600" id="btn-home">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-[10px] font-bold">Registro</span>
+        </button>
+        
+        <button onclick="switchView('history')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-history">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
+            <span class="text-[10px] font-bold">Historial</span>
+        </button>
+        
+        <button onclick="switchView('backup')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-backup">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+            <span class="text-[10px] font-bold">Datos</span>
+        </button>
+    </nav>
+
+    <div id="analyzeFab" class="fixed bottom-20 right-5 hidden z-50 animate-bounce-in">
+        <button onclick="analyzeSelection()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-full shadow-lg shadow-indigo-300 flex items-center gap-2 transition-transform active:scale-95">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+            <span id="fabText">Analizar</span>
+        </button>
+    </div>
+
+    <div id="detailModal" class="fixed inset-0 bg-black/60 hidden z-[60] flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-slide-up sm:animate-fade-in">
+            <div class="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="text-lg font-bold text-slate-800">Análisis</h3>
+                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 bg-white rounded-full p-1 border"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
+            <div class="p-5">
+                <div class="grid grid-cols-3 gap-2 mb-6 text-center">
+                    <div class="p-2 bg-green-50 rounded-xl border border-red-100"><div class="text-[10px] text-red-600 font-bold uppercase">Prot</div><div class="text-lg font-bold text-slate-800"><span id="modalP">0</span>g</div></div>
+                    <div class="p-2 bg-yellow-50 rounded-xl border border-yellow-100"><div class="text-[10px] text-yellow-600 font-bold uppercase">Carbs</div><div class="text-lg font-bold text-slate-800"><span id="modalC">0</span>g</div></div>
+                    <div class="p-2 bg-red-50 rounded-xl border border-orange-100"><div class="text-[10px] text-orange-600 font-bold uppercase">Grasas</div><div class="text-lg font-bold text-slate-800"><span id="modalF">0</span>g</div></div>
+                </div>
+                <div class="text-center mb-6"><span class="text-3xl font-black text-slate-900" id="modalKcal">0</span><span class="text-sm text-slate-500 font-medium ml-1">kcal</span></div>
+                <div class="h-40 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
+                <div class="border-t border-slate-100 pt-4"><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Elementos</h4><ul id="modalList" class="text-sm text-slate-600 space-y-2 max-h-32 overflow-y-auto"></ul></div>
+            </div>
+            <div class="p-4 bg-slate-50"><button onclick="closeModal()" class="w-full bg-slate-200 text-slate-700 font-bold py-3 rounded-xl">Cerrar</button></div>
         </div>
     </div>
 
     <script>
-        // --- DATA INICIAL ---
+        // --- GESTIÓN DE VISTAS (TAB NAVIGATION) ---
+        function switchView(viewName) {
+            // Ocultar todas las vistas
+            ['home', 'history', 'backup'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+            // Mostrar la seleccionada
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            
+            // Actualizar botones Nav
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-600');
+                btn.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById(`btn-${viewName}`);
+            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('text-indigo-600');
+
+            // Scroll al top
+            document.getElementById('mainContainer').scrollTop = 0;
+            
+            // Refrescar datos si es necesario
+            if(viewName === 'history' || viewName === 'home') applyFilter();
+        }
+
+        // --- SERVICE WORKER REGISTRATION ---
+        if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
+
+        // --- DATA INICIAL Y LÓGICA (MISMAS FUNCIONES, SOLO UI ACTUALIZADA) ---
         let foodData = [
             { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
             { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
@@ -238,60 +309,60 @@
         let modalChartInstance = null;
         let selectedIds = new Set();
 
-        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             populateSelect();
             initDateInputs();
-            // EVENTOS DE CAMBIO
             document.getElementById('foodSelect').addEventListener('change', updatePreview);
-            // ESCUCHAR EN TIEMPO REAL LA ENTRADA DE CANTIDAD
             document.getElementById('amountInput').addEventListener('input', updatePreview); 
-            
             setTodayFilter(); 
             updatePreview();
             updateDayLabels();
+            
+            // Animación inicial
+            switchView('home');
         });
 
-        // --- ACTUALIZACIÓN DINÁMICA ---
         function updatePreview() {
             const select = document.getElementById('foodSelect');
-            const amountInput = document.getElementById('amountInput'); // Capturamos input
+            const amountInput = document.getElementById('amountInput'); 
             const foodId = parseInt(select.value);
             const food = foodData.find(f => f.id === foodId);
             
             if (food) {
-                // Etiqueta unidad
                 document.getElementById('amountLabel').textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
-                
-                // LÓGICA DE CÁLCULO PROPORCIONAL
-                const amount = parseFloat(amountInput.value) || 0; // Si está vacío cuenta como 0
+                const amount = parseFloat(amountInput.value) || 0; 
                 const factor = food.unit === 'g' ? amount / 100 : amount;
-
-                // Calculamos valores
                 const p = (food.p * factor).toFixed(1);
                 const c = (food.c * factor).toFixed(1);
                 const f = (food.f * factor).toFixed(1);
                 const k = Math.round(food.kcal * factor);
 
-                // Mostramos HTML actualizado
                 document.getElementById('previewData').innerHTML = `
-                    <div class="flex flex-wrap gap-x-3 gap-y-1 font-mono text-blue-900 font-bold">
-                        <span>P: ${p}</span> 
-                        <span>HC: ${c}</span> 
-                        <span>G: ${f}</span> 
-                        <span class="text-red-600">Kcal: ${k}</span>
-                    </div>
-                    <div class="text-[10px] text-gray-400 mt-1 italic">
-                        (Valores calculados para ${amount}${food.unit}. Base: ${food.kcal}kcal/100${food.unit})
+                    <div class="flex justify-between items-center text-slate-700">
+                        <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
+                            <span class="text-[10px] font-bold text-green-500 uppercase">Prot</span>
+                            <span class="font-mono font-bold">${p}</span>
+                        </div>
+                        <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
+                            <span class="text-[10px] font-bold text-yellow-500 uppercase">Carb</span>
+                            <span class="font-mono font-bold">${c}</span>
+                        </div>
+                        <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
+                            <span class="text-[10px] font-bold text-red-500 uppercase">Gras</span>
+                            <span class="font-mono font-bold">${f}</span>
+                        </div>
+                        <div class="flex flex-col text-center w-1/4">
+                            <span class="text-[10px] font-bold text-green-600 uppercase">Kcal</span>
+                            <span class="font-bold text-green-700">${k}</span>
+                        </div>
                     </div>
                 `;
             }
         }
 
-        // --- BÚSQUEDA API (SIN CAMBIOS) ---
+        // BÚSQUEDA API
         function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
-
         async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
             if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
@@ -308,7 +379,7 @@
                 const data = await response.json();
 
                 if(data.products && data.products.length > 0) {
-                    let html = '<ul class="divide-y divide-gray-100">';
+                    let html = '<ul class="divide-y divide-blue-50">';
                     let found = false;
                     data.products.forEach(prod => {
                         if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
@@ -318,10 +389,10 @@
                             const f = prod.nutriments['fat_100g'] || 0;
                             const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
                             const safeName = (prod.product_name || "Sin nombre").replace(/'/g, "");
-                            html += `<li class="p-2 hover:bg-blue-50 cursor-pointer flex justify-between items-center group" onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})"><span class="font-medium text-gray-700 truncate w-2/3">${prod.product_name}</span><span class="text-gray-400 text-[10px] group-hover:text-blue-600">${Math.round(k)} kcal/100g</span></li>`;
+                            html += `<li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})"><span class="font-medium text-slate-700 truncate w-3/4">${prod.product_name}</span><span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-md">${Math.round(k)}</span></li>`;
                         }
                     });
-                    if(!found) html += '<li class="p-2 text-gray-500 italic">Sin info nutricional válida.</li>';
+                    if(!found) html += '<li class="p-3 text-slate-400 italic text-xs">Sin info válida.</li>';
                     html += '</ul>';
                     resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
                 } else { alert("Sin resultados."); }
@@ -332,14 +403,13 @@
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
             populateSelect();
-            const select = document.getElementById('foodSelect');
-            select.value = newId;
-            updatePreview(); // Actualizará con 100g por defecto
+            document.getElementById('foodSelect').value = newId;
+            updatePreview();
             document.getElementById('searchResults').classList.add('hidden');
             document.getElementById('apiSearchInput').value = '';
         }
 
-        // --- CORE & UI ---
+        // UTILS
         function initDateInputs() { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; }
         function setTodayFilter() { const t = new Date().toISOString().split('T')[0]; document.getElementById('filterStart').value = t; document.getElementById('filterEnd').value = t; updateDayLabels(); applyFilter(); }
         function shiftDate(d) {
@@ -356,7 +426,6 @@
             document.getElementById('labelStart').textContent = l(document.getElementById('filterStart').value);
             document.getElementById('labelEnd').textContent = l(document.getElementById('filterEnd').value);
         }
-
         function populateSelect() {
             const sel = document.getElementById('foodSelect');
             const val = sel.value; sel.innerHTML = '';
@@ -366,6 +435,7 @@
             if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
         }
 
+        // CRUD
         function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
@@ -390,13 +460,29 @@
                 f: parseFloat((food.f * factor).toFixed(1)),
                 kcal: Math.round(food.kcal * factor)
             });
-            saveData(); applyFilter();
+            saveData(); 
+            applyFilter();
+            alert("Guardado!");
         }
 
         function deleteItem(id) { if(confirm('¿Borrar?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
         function resetApp() { if(confirm('¿BORRAR TODO?')) { localStorage.removeItem('macroCalculatorData'); globalLog = []; selectedIds.clear(); applyFilter(); } }
 
-        // --- MODAL ---
+        // EXPORT/IMPORT
+        async function exportData() {
+            if(!globalLog.length) return alert("Sin datos.");
+            const f = new File([JSON.stringify(globalLog,null,2)], `backup_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
+            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup Nutri'}); return; } catch(e){} }
+            const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalLog,null,2)], {type:"application/json"})); a.download=f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+        function handleImport(input) {
+            const f = input.files[0]; if(!f) return;
+            const r = new FileReader(); r.onload = e => { try { const d = JSON.parse(e.target.result); if(Array.isArray(d) && confirm(`¿Importar ${d.length} registros?`)) { globalLog = d; saveData(); applyFilter(); alert("Hecho."); } } catch(err){ alert("Error archivo."); } input.value=''; }; r.readAsText(f);
+        }
+        function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
+        function loadData() { const s = localStorage.getItem('macroCalculatorData'); if(s) globalLog = JSON.parse(s); }
+
+        // MODAL & SELECCION
         function toggleSelection(id) { selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id); updateFab(); }
         function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseInt(c.dataset.id); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
         function updateFab() {
@@ -411,7 +497,7 @@
             const list = document.getElementById('modalList'); list.innerHTML='';
             items.forEach(i => {
                 p+=i.p; c+=i.c; f+=i.f; k+=i.kcal;
-                list.innerHTML += `<li class="flex justify-between border-b pb-1 last:border-0 border-gray-100"><span>${i.foodName}</span><span class="text-xs text-gray-500 font-mono">${i.amount}${i.unit}</span></li>`;
+                list.innerHTML += `<li class="flex justify-between border-b border-slate-50 pb-2 last:border-0"><span>${i.foodName}</span><span class="text-xs text-slate-400 font-mono bg-slate-50 px-1 rounded">${i.amount}${i.unit}</span></li>`;
             });
             document.getElementById('modalP').textContent=p.toFixed(1);
             document.getElementById('modalC').textContent=c.toFixed(1);
@@ -425,19 +511,7 @@
         }
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
-        // --- DATA ---
-        async function exportData() {
-            if(!globalLog.length) return alert("Sin datos.");
-            const f = new File([JSON.stringify(globalLog,null,2)], `backup_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
-            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup Nutri'}); return; } catch(e){} }
-            const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalLog,null,2)], {type:"application/json"})); a.download=f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        }
-        function handleImport(input) {
-            const f = input.files[0]; if(!f) return;
-            const r = new FileReader(); r.onload = e => { try { const d = JSON.parse(e.target.result); if(Array.isArray(d) && confirm(`¿Importar ${d.length} registros?`)) { globalLog = d; saveData(); applyFilter(); alert("Hecho."); } } catch(err){ alert("Error archivo."); } input.value=''; }; r.readAsText(f);
-        }
-        function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
-        function loadData() { const s = localStorage.getItem('macroCalculatorData'); if(s) globalLog = JSON.parse(s); }
+        // RENDER & CALC
         function applyFilter() {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = globalLog.sort((a,b)=>b.id-a.id);
@@ -446,31 +520,40 @@
         }
         function renderTable(items) {
             const tb = document.getElementById('foodTableBody'); tb.innerHTML='';
-            if(!items.length) { tb.innerHTML='<tr><td colspan="9" class="p-8 text-center text-gray-400">Vacío</td></tr>'; return; }
+            if(!items.length) { tb.innerHTML='<tr><td colspan="4" class="p-8 text-center text-slate-400 italic text-sm">Sin registros</td></tr>'; return; }
             items.forEach(i => {
                 const ck = selectedIds.has(i.id)?'checked':'';
-                tb.innerHTML += `<tr class="hover:bg-gray-50 group transition-colors"><td class="p-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-blue-600" onclick="toggleSelection(${i.id})" ${ck}></td><td class="p-3 whitespace-nowrap text-gray-600">${i.date}</td><td class="p-3 font-medium text-gray-900">${i.foodName}</td><td class="p-3 text-gray-500">${i.amount}${i.unit}</td><td class="p-3 text-right text-gray-700">${i.p}</td><td class="p-3 text-right text-gray-700">${i.c}</td><td class="p-3 text-right text-gray-700">${i.f}</td><td class="p-3 text-right font-bold text-gray-900">${i.kcal}</td><td class="p-3 text-center"><button onclick="deleteItem(${i.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100">&times;</button></td></tr>`;
+                // Tabla simplificada para móvil
+                tb.innerHTML += `
+                <tr class="hover:bg-slate-50 group transition-colors">
+                    <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-indigo-600" onclick="toggleSelection(${i.id})" ${ck}></td>
+                    <td class="px-4 py-3">
+                        <div class="font-bold text-slate-800">${i.foodName}</div>
+                        <div class="text-xs text-slate-400">${i.date} &bull; ${i.amount}${i.unit}</div>
+                    </td>
+                    <td class="px-4 py-3 text-right font-bold text-slate-700">${i.kcal}</td>
+                    <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-red-300 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
+                </tr>`;
             });
         }
         function calcTotals(items) {
             let p=0, c=0, f=0, k=0; items.forEach(i => { p+=i.p; c+=i.c; f+=i.f; k+=i.kcal; });
-            ['summary','foot'].forEach(x => { document.getElementById(x+'Protein').textContent=p.toFixed(1); document.getElementById(x+'Carbs').textContent=c.toFixed(1); document.getElementById(x+'Fats').textContent=f.toFixed(1); document.getElementById(x+'Kcal').textContent=k; });
+            
+            // Actualizar mini-labels en HOME
+            if(document.getElementById('homeProt')) {
+                document.getElementById('homeProt').textContent = p.toFixed(0)+'g';
+                document.getElementById('homeCarbs').textContent = c.toFixed(0)+'g';
+                document.getElementById('homeFats').textContent = f.toFixed(0)+'g';
+                document.getElementById('homeKcal').textContent = k;
+            }
+            // Actualizar footer en HISTORY
+            if(document.getElementById('footKcal')) {
+                document.getElementById('footKcal').innerHTML = `${k} <span class="text-xs font-normal text-slate-500">kcal</span>`;
+            }
+
             const ctx = document.getElementById('macroChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
-            const h = (p+c+f)>0; chartInstance = new Chart(ctx, { type:'doughnut', data:{ labels:['Prot','Carbs','Grasas'], datasets:[{data:h?[p*4,c*4,f*9]:[1,1,1], backgroundColor:h?['#39f792','#eab308','#ef4444']:['#eee','#eee','#eee'], borderWidth:0}] }, options:{responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{position:'right',labels:{boxWidth:12}}}} });
+            const h = (p+c+f)>0; chartInstance = new Chart(ctx, { type:'doughnut', data:{ labels:['Prot','Carbs','Grasas'], datasets:[{data:h?[p*4,c*4,f*9]:[1,1,1], backgroundColor:h?['#39f792','#eab308','#ef4444']:['#f1f5f9','#f1f5f9','#f1f5f9'], borderWidth:0}] }, options:{responsive:true, maintainAspectRatio:false, cutout:'75%', plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}}}}} });
         }
     </script>
-    <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then(registration => {
-                    console.log('PWA ServiceWorker registrado con éxito: ', registration.scope);
-                })
-                .catch(err => {
-                    console.log('Fallo al registrar el ServiceWorker: ', err);
-                });
-        });
-    }
-</script>
 </body>
 </html>
