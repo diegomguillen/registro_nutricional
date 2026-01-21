@@ -413,8 +413,11 @@
             
             const hasData = (p + c + f) > 0;
             const data = hasData ? [kP, kC, kF] : [1, 1, 1];
-            const bgColors = hasData 
-                ? ['#ef4444', '#eab308', '#f97316'] 
+            //const bgColors = hasData 
+                //? ['#ef4444', '#eab308', '#f97316'] //P,C,G
+               //: ['#e5e7eb', '#e5e7eb', '#e5e7eb'];
+			const bgColors = hasData 
+                ? ['#39f792', '#eab308', '#ef4444'] 
                 : ['#e5e7eb', '#e5e7eb', '#e5e7eb'];
 
             if (chartInstance) {
