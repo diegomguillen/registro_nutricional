@@ -3,20 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Nutricional con Histórico</title>
+    <title>Calculadora Nutricional Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
-        /* Ajustes para impresión y visualización de tabla */
         tfoot { font-weight: bold; background-color: #e5e7eb; }
+        
+        /* Animación para el modal */
+        .modal-enter { opacity: 0; transform: scale(0.95); }
+        .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
+        
+        /* Checkbox personalizado */
+        .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
     </style>
 </head>
-<body class="text-gray-800">
+<body class="text-gray-800 relative">
 
-    <div class="max-w-6xl mx-auto p-4 md:p-8">
-        
-        <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
+    <div class="max-w-6xl mx-auto p-4 md:p-8 pb-24"> <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Registro Nutricional</h1>
                 <p class="text-gray-600 text-sm">Base de datos persistente en navegador</p>
@@ -27,77 +31,56 @@
                 
                 <button onclick="exportData()" class="flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded text-xs font-bold hover:bg-blue-200 transition-colors">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                    Exportar Backup
+                    Exportar
                 </button>
                 
                 <button onclick="document.getElementById('importFile').click()" class="flex items-center gap-1 bg-green-100 text-green-700 px-3 py-1.5 rounded text-xs font-bold hover:bg-green-200 transition-colors">
                     <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
-                    Importar Backup
+                    Importar
                 </button>
 
                 <div class="h-4 w-px bg-gray-300 mx-1"></div>
 
-                <button onclick="resetApp()" class="text-xs text-red-500 hover:text-red-700 underline">
-                    Borrar Todo
-                </button>
+                <button onclick="resetApp()" class="text-xs text-red-500 hover:text-red-700 underline">Borrar Todo</button>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
             
-            <!-- Columna Izquierda: Entrada de Datos (3 cols) -->
             <div class="lg:col-span-4 xl:col-span-3 space-y-6">
-                
-                <!-- Formulario de Entrada -->
                 <div class="bg-white rounded-xl shadow-md p-5 border-t-4 border-blue-600">
                     <h2 class="text-lg font-semibold mb-4 text-gray-800">Nueva Entrada</h2>
-                    
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha de Registro</label>
-                            <input type="date" id="entryDate" class="w-full rounded border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 focus:ring-blue-200 p-2 border text-sm">
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Fecha</label>
+                            <input type="date" id="entryDate" class="w-full rounded border-gray-300 bg-gray-50 shadow-sm focus:border-blue-500 p-2 border text-sm">
                         </div>
-
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alimento</label>
-                            <select id="foodSelect" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 p-2 border bg-white text-sm">
-                                <!-- Options populated by JS -->
-                            </select>
+                            <select id="foodSelect" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 p-2 border bg-white text-sm"></select>
                         </div>
-
                         <div>
                             <label class="block text-xs font-bold text-gray-500 uppercase mb-1" id="amountLabel">Cantidad (g)</label>
-                            <input type="number" id="amountInput" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-200 p-2 border text-sm" placeholder="Ej: 100" value="100">
+                            <input type="number" id="amountInput" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 p-2 border text-sm" placeholder="Ej: 100" value="100">
                         </div>
-
-                        <button onclick="addItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-sm text-sm">
-                            Guardar Registro
-                        </button>
+                        <button onclick="addItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-sm text-sm">Guardar Registro</button>
                     </div>
-                    
-                    <!-- Preview Rápido -->
                     <div class="mt-6 pt-4 border-t border-gray-100">
                         <h3 class="text-xs font-bold text-gray-500 uppercase mb-2">Valores Base (por 100g/u)</h3>
-                        <!-- <div id="previewData" class="text-xs text-gray-600 space-y-1 bg-gray-50 p-2 rounded"> -->
-                        <div id="previewData" class="text-lg md:text-sm text-gray-600 ...">
-                            <!-- JS llena esto -->
-                        </div>
+                        <div id="previewData" class="text-sm text-gray-600"></div>
                     </div>
                 </div>
 
-                <!-- Gráfico Resumen (Móvil a Escritorio) -->
                 <div class="bg-white rounded-xl shadow-md p-4">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-2 text-center">Distribución Calórica (Vista Actual)</h3>
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2 text-center">Resumen Diario (Filtrado)</h3>
                     <div class="h-48 relative w-full flex justify-center">
                         <canvas id="macroChart"></canvas>
                     </div>
                 </div>
             </div>
 
-            <!-- Columna Derecha: Filtros y Tabla (9 cols) -->
             <div class="lg:col-span-8 xl:col-span-9 space-y-6">
                 
-                <!-- Barra de Filtros y Totales Superiores -->
                 <div class="bg-white p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
                     <div class="w-full md:w-auto flex flex-col sm:flex-row gap-3 items-end">
                         <div>
@@ -116,7 +99,6 @@
                     </div>
                 </div>
 
-                <!-- Tarjetas de Totales (Resumen) -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                     <div class="bg-white p-3 rounded-lg shadow border-l-4 border-red-500">
                         <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Proteínas</div>
@@ -131,17 +113,17 @@
                         <div class="text-xl font-bold text-gray-800"><span id="summaryFats">0</span><span class="text-xs font-normal text-gray-500 ml-1">g</span></div>
                     </div>
                     <div class="bg-white p-3 rounded-lg shadow border-l-4 border-green-600">
-                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Energía Total</div>
+                        <div class="text-[10px] text-gray-500 uppercase font-bold tracking-wide">Energía</div>
                         <div class="text-xl font-bold text-gray-800"><span id="summaryKcal">0</span><span class="text-xs font-normal text-gray-500 ml-1">kcal</span></div>
                     </div>
                 </div>
 
-                <!-- Tabla de Datos -->
                 <div class="bg-white rounded-xl shadow-md overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50 text-gray-500">
                                 <tr>
+                                    <th class="px-4 py-3 w-10 text-center"><input type="checkbox" onclick="toggleAll(this)" class="custom-checkbox rounded text-blue-600"></th>
                                     <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Fecha</th>
                                     <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Alimento</th>
                                     <th class="px-4 py-3 text-left text-xs font-bold uppercase tracking-wider">Cant.</th>
@@ -149,15 +131,15 @@
                                     <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Carbs.</th>
                                     <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Grasas</th>
                                     <th class="px-4 py-3 text-right text-xs font-bold uppercase tracking-wider">Kcal</th>
-                                    <th class="px-4 py-3 text-center text-xs font-bold uppercase tracking-wider"></th>
+                                    <th class="px-4 py-3"></th>
                                 </tr>
                             </thead>
                             <tbody id="foodTableBody" class="bg-white divide-y divide-gray-200 text-sm">
-                                <!-- Filas dinámicas -->
-                            </tbody>
+                                </tbody>
                             <tfoot id="tableFooter" class="bg-gray-100 text-sm border-t-2 border-gray-300">
                                 <tr>
-                                    <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Sumatorio Total:</td>
+                                    <td></td>
+                                    <td colspan="3" class="px-4 py-3 text-right font-bold text-gray-600 uppercase">Total Vista:</td>
                                     <td class="px-4 py-3 text-right font-bold text-gray-900" id="footProtein">0.0</td>
                                     <td class="px-4 py-3 text-right font-bold text-gray-900" id="footCarbs">0.0</td>
                                     <td class="px-4 py-3 text-right font-bold text-gray-900" id="footFats">0.0</td>
@@ -168,94 +150,124 @@
                         </table>
                     </div>
                 </div>
-
             </div>
         </div>
+
+        <div id="analyzeFab" class="fixed bottom-6 right-6 hidden z-40">
+            <button onclick="analyzeSelection()" class="bg-gray-900 hover:bg-gray-800 text-white font-bold py-3 px-6 rounded-full shadow-2xl flex items-center gap-2 transform hover:scale-105 transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path></svg>
+                <span id="fabText">Analizar (0)</span>
+            </button>
+        </div>
+
+        <div id="detailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4 backdrop-blur-sm transition-opacity">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all scale-100">
+                
+                <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-gray-800">Análisis de Selección</h3>
+                    <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <div class="p-6">
+                    <div class="grid grid-cols-3 gap-2 mb-6 text-center">
+                        <div class="p-2 bg-red-50 rounded-lg border border-red-100">
+                            <div class="text-xs text-red-600 font-bold uppercase">Prot</div>
+                            <div class="text-lg font-bold text-gray-800"><span id="modalP">0</span>g</div>
+                        </div>
+                        <div class="p-2 bg-yellow-50 rounded-lg border border-yellow-100">
+                            <div class="text-xs text-yellow-600 font-bold uppercase">Carbs</div>
+                            <div class="text-lg font-bold text-gray-800"><span id="modalC">0</span>g</div>
+                        </div>
+                        <div class="p-2 bg-orange-50 rounded-lg border border-orange-100">
+                            <div class="text-xs text-orange-600 font-bold uppercase">Grasas</div>
+                            <div class="text-lg font-bold text-gray-800"><span id="modalF">0</span>g</div>
+                        </div>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <span class="text-3xl font-black text-gray-900" id="modalKcal">0</span>
+                        <span class="text-sm text-gray-500 font-medium uppercase ml-1">kcal totales</span>
+                    </div>
+
+                    <div class="h-48 relative w-full flex justify-center mb-4">
+                        <canvas id="modalChart"></canvas>
+                    </div>
+
+                    <div class="border-t pt-4">
+                        <h4 class="text-xs font-bold text-gray-500 uppercase mb-2">Elementos incluidos:</h4>
+                        <ul id="modalList" class="text-sm text-gray-600 space-y-1 max-h-32 overflow-y-auto">
+                            </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 px-6 py-3 text-right">
+                    <button onclick="closeModal()" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-700">Cerrar</button>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // --- BASE DE DATOS ESTATICA ---
-        /*const foodData = [
-            { id: 1, name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
-            { id: 2, name: "Frutos Secos y Semillas", p: 20.0, c: 16.0, f: 48.0, kcal: 575, unit: "g" },
-            { id: 3, name: "Grasas Vegetales (Aguacate)", p: 1.5, c: 4.0, f: 17.0, kcal: 175, unit: "g" },
-            { id: 4, name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
-            { id: 5, name: "Carnes Magras (Pollo/Pavo)", p: 21.0, c: 0.5, f: 3.5, kcal: 117, unit: "g" },
-            { id: 6, name: "Lácteos: Quesos Curados", p: 20.5, c: 0.5, f: 26.5, kcal: 325, unit: "g" },
-            { id: 7, name: "Carnes Rojas / Procesadas", p: 20.0, c: 0.5, f: 5.5, kcal: 130, unit: "g" },
-            { id: 8, name: "Pescado Blanco y Mariscos", p: 19.5, c: 0.5, f: 2.0, kcal: 100, unit: "g" },
-            { id: 9, name: "Pescado Azul / Conservas", p: 19.5, c: 0.5, f: 11.5, kcal: 180, unit: "g" },
-            { id: 10, name: "Huevo (Unidad ~60g)", p: 6.5, c: 1.0, f: 7.5, kcal: 98, unit: "u" },
-            { id: 11, name: "Lácteos: Frescos (Yogur)", p: 6.5, c: 4.0, f: 3.0, kcal: 85, unit: "g" },
-            { id: 12, name: "Harinas y Cereales (Crudo)", p: 12.5, c: 63.0, f: 5.5, kcal: 350, unit: "g" },
-            { id: 13, name: "Panes", p: 9.5, c: 47.5, f: 2.5, kcal: 250, unit: "g" },
-            { id: 14, name: "Hidratos Cocidos (Pasta/Arroz)", p: 4.0, c: 25.0, f: 0.5, kcal: 120, unit: "g" },
-            { id: 15, name: "Frutas Frescas(inc.tomate)", p: 0.5, c: 12.0, f: 0.5, kcal: 55, unit: "g" },
-            { id: 16, name: "Verduras y Hortalizas", p: 1.5, c: 6.0, f: 0.5, kcal: 35, unit: "g" },
-            { id: 17, name: "Legumbres", p: 6.0, c: 12.0, f: 0.8, kcal: 79, unit: "g" },
-            { id: 18, name: "Lácteo semidesnatado(leche, kefir)", p: 4.0, c: 5.1, f: 0.8, kcal: 44, unit: "g" }
-        ];*/
+        // --- DATA & CONFIG ---
         const foodData = [
-		    { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
+            { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
             { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
-			{ id: 3,  name: "Grasas Vegetales (Aguacate y aceituna)", p: 1.5, c: 4.0, f: 17.0, kcal: 175, unit: "g" },
+            { id: 3,  name: "Grasas Vegetales (Aguacate)", p: 1.5, c: 4.0, f: 17.0, kcal: 175, unit: "g" },
             { id: 4,  name: "Frutos Secos y Semillas", p: 20.0, c: 16.0, f: 48.0, kcal: 575, unit: "g" },
             { id: 5,  name: "Carnes Magras (Pollo/Pavo)", p: 21.0, c: 0.5, f: 3.5, kcal: 117, unit: "g" },
-			{ id: 6,  name: "Carnes Rojas / Procesadas", p: 20.0, c: 0.5, f: 5.5, kcal: 130, unit: "g" },
+            { id: 6,  name: "Carnes Rojas / Procesadas", p: 20.0, c: 0.5, f: 5.5, kcal: 130, unit: "g" },
             { id: 7,  name: "Lácteos Quesos Curados", p: 20.5, c: 0.5, f: 26.5, kcal: 325, unit: "g" },
-			{ id: 8,  name: "Lácteos semidesnatados(leche, kefir)", p: 4.0, c: 5.1, f: 1.8, kcal: 53, unit: "g" },
-			{ id: 9,  name: "Lácteos Frescos (Yogur)", p: 6.5, c: 4.0, f: 3.0, kcal: 69, unit: "g" },
+            { id: 8,  name: "Lácteos semidesnatados", p: 4.0, c: 5.1, f: 1.8, kcal: 53, unit: "g" },
+            { id: 9,  name: "Lácteos Frescos (Yogur)", p: 6.5, c: 4.0, f: 3.0, kcal: 69, unit: "g" },
             { id: 10, name: "Pescado Blanco y Mariscos", p: 19.5, c: 0.5, f: 2.0, kcal: 100, unit: "g" },
             { id: 11, name: "Pescado Azul / Conservas", p: 19.5, c: 0.5, f: 11.5, kcal: 180, unit: "g" },
             { id: 12, name: "Huevo (Unidad ~60g)", p: 6.5, c: 1.0, f: 7.5, kcal: 98, unit: "u" },   
             { id: 13, name: "Harinas y Cereales (Crudo)", p: 12.5, c: 63.0, f: 5.5, kcal: 350, unit: "g" },
             { id: 14, name: "Panes", p: 9.5, c: 47.5, f: 2.5, kcal: 250, unit: "g" },
-            { id: 15, name: "Hidratos Cocidos (Pasta/Arroz)", p: 4.0, c: 25.0, f: 0.5, kcal: 120, unit: "g" },
-            { id: 16, name: "Frutas Frescas(inc.tomate)", p: 0.5, c: 12.0, f: 0.5, kcal: 55, unit: "g" },
+            { id: 15, name: "Hidratos Cocidos (Pasta)", p: 4.0, c: 25.0, f: 0.5, kcal: 120, unit: "g" },
+            { id: 16, name: "Frutas Frescas", p: 0.5, c: 12.0, f: 0.5, kcal: 55, unit: "g" },
             { id: 17, name: "Verduras y Hortalizas", p: 1.5, c: 6.0, f: 0.5, kcal: 35, unit: "g" },
             { id: 18, name: "Legumbres", p: 6.0, c: 12.0, f: 0.8, kcal: 79, unit: "g" },
-			{ id: 19, name: "Macro proteina", p: 100.0, c: 0.0, f: 0.0, kcal: 400, unit: "g" },
-			{ id: 20, name: "Macro carbohidrato", p: 0.0, c: 100.0, f: 0.0, kcal: 400, unit: "g" },
-			{ id: 21, name: "Macro grasa", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" }
+            { id: 19, name: "Macro proteina", p: 100.0, c: 0.0, f: 0.0, kcal: 400, unit: "g" },
+            { id: 20, name: "Macro carbohidrato", p: 0.0, c: 100.0, f: 0.0, kcal: 400, unit: "g" },
+            { id: 21, name: "Macro grasa", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" }
         ];
-        // --- ESTADO DE LA APLICACIÓN ---
-        let globalLog = []; // Almacena TODOS los registros
-        let chartInstance = null;
 
-        // --- INICIALIZACIÓN ---
+        // --- STATE ---
+        let globalLog = []; 
+        let chartInstance = null;
+        let modalChartInstance = null;
+        let selectedIds = new Set(); // Para multiselección
+
+        // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             populateSelect();
             initDateInputs();
-            
-            // Listeners
             document.getElementById('foodSelect').addEventListener('change', updatePreview);
-            
-            // Establecer filtro por defecto a "HOY"
             setTodayFilter(); 
             updatePreview();
         });
 
-        // --- GESTIÓN DE FECHAS ---
+        // --- CORE LOGIC ---
         function initDateInputs() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('entryDate').value = today;
         }
-
         function setTodayFilter() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('filterStart').value = today;
             document.getElementById('filterEnd').value = today;
             applyFilter();
         }
-
         function showAll() {
             document.getElementById('filterStart').value = '';
             document.getElementById('filterEnd').value = '';
             applyFilter();
         }
-
-        // --- LÓGICA DE NEGOCIO ---
         function populateSelect() {
             const select = document.getElementById('foodSelect');
             foodData.forEach(food => {
@@ -265,34 +277,25 @@
                 select.appendChild(option);
             });
         }
-
         function updatePreview() {
             const select = document.getElementById('foodSelect');
             const foodId = parseInt(select.value);
             const food = foodData.find(f => f.id === foodId);
             const label = document.getElementById('amountLabel');
-            
             if (food) {
                 label.textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
-                document.getElementById('previewData').innerHTML = `
-                    P: ${food.p} | HC: ${food.c} | G: ${food.f} | Kcal: ${food.kcal}
-                `;
+                document.getElementById('previewData').innerHTML = `P: ${food.p} | HC: ${food.c} | G: ${food.f} | Kcal: ${food.kcal}`;
             }
         }
-
         function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
             const dateInput = document.getElementById('entryDate');
-            
             const amount = parseFloat(amountInput.value);
             const foodId = parseInt(select.value);
             const dateStr = dateInput.value;
 
-            if (!amount || amount <= 0 || !dateStr) {
-                alert("Por favor revise la cantidad y la fecha.");
-                return;
-            }
+            if (!amount || amount <= 0 || !dateStr) return alert("Revise los datos.");
 
             const food = foodData.find(f => f.id === foodId);
             const factor = food.unit === 'g' ? amount / 100 : amount;
@@ -312,149 +315,185 @@
 
             globalLog.push(newItem);
             saveData();
-            applyFilter(); // Refresca la tabla según el filtro actual
+            applyFilter(); 
         }
-
         function deleteItem(id) {
-            if(confirm('¿Eliminar este registro?')) {
+            if(confirm('¿Eliminar registro?')) {
                 globalLog = globalLog.filter(item => item.id !== id);
+                selectedIds.delete(id); // Limpiar si estaba seleccionado
                 saveData();
                 applyFilter();
             }
         }
-
         function resetApp() {
-            if(confirm('¿Está seguro de que desea borrar TODO el historial? Esta acción no se puede deshacer.')) {
+            if(confirm('¿BORRAR TODO EL HISTORIAL?')) {
                 localStorage.removeItem('macroCalculatorData');
                 globalLog = [];
+                selectedIds.clear();
                 applyFilter();
             }
         }
-		// --- GESTIÓN DE COPIAS DE SEGURIDAD (BACKUP) ---
-        
-        async function exportData() {
-            if (globalLog.length === 0) {
-                alert("No hay datos para exportar.");
-                return;
-            }
 
+        // --- SELECTION & MODAL LOGIC (NUEVO) ---
+        function toggleSelection(id) {
+            if (selectedIds.has(id)) {
+                selectedIds.delete(id);
+            } else {
+                selectedIds.add(id);
+            }
+            updateFab();
+        }
+
+        function toggleAll(source) {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = source.checked;
+                const id = parseInt(cb.dataset.id);
+                if (source.checked) selectedIds.add(id);
+                else selectedIds.delete(id);
+            });
+            updateFab();
+        }
+
+        function updateFab() {
+            const fab = document.getElementById('analyzeFab');
+            const text = document.getElementById('fabText');
+            if (selectedIds.size > 0) {
+                fab.classList.remove('hidden');
+                fab.classList.add('flex');
+                text.textContent = `Analizar (${selectedIds.size})`;
+            } else {
+                fab.classList.add('hidden');
+                fab.classList.remove('flex');
+            }
+        }
+
+        function analyzeSelection() {
+            // Filtrar los objetos seleccionados
+            const items = globalLog.filter(item => selectedIds.has(item.id));
+            if (items.length === 0) return;
+
+            // Calcular Sumas
+            let sumP = 0, sumC = 0, sumF = 0, sumKcal = 0;
+            const list = document.getElementById('modalList');
+            list.innerHTML = '';
+
+            items.forEach(item => {
+                sumP += item.p;
+                sumC += item.c;
+                sumF += item.f;
+                sumKcal += item.kcal;
+                
+                // Añadir a lista visual del modal
+                const li = document.createElement('li');
+                li.className = "flex justify-between border-b border-gray-100 pb-1 last:border-0";
+                li.innerHTML = `<span>${item.foodName}</span> <span class="font-mono text-xs text-gray-500">${item.amount}${item.unit}</span>`;
+                list.appendChild(li);
+            });
+
+            // Actualizar DOM Modal
+            document.getElementById('modalP').textContent = sumP.toFixed(1);
+            document.getElementById('modalC').textContent = sumC.toFixed(1);
+            document.getElementById('modalF').textContent = sumF.toFixed(1);
+            document.getElementById('modalKcal').textContent = sumKcal;
+
+            // Render Chart Modal
+            const ctx = document.getElementById('modalChart').getContext('2d');
+            if (modalChartInstance) modalChartInstance.destroy();
+
+            const hasData = (sumP + sumC + sumF) > 0;
+            modalChartInstance = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Prot', 'Carbs', 'Grasas'],
+                    datasets: [{
+                        data: hasData ? [sumP*4, sumC*4, sumF*9] : [1,1,1],
+                        backgroundColor: hasData ? ['#ef4444', '#eab308', '#f97316'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
+                        borderWidth: 0, hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '70%',
+                    plugins: { legend: { position: 'bottom' } }
+                }
+            });
+
+            // Mostrar Modal
+            const modal = document.getElementById('detailModal');
+            modal.classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('detailModal').classList.add('hidden');
+        }
+
+        // --- BACKUP LOGIC ---
+        async function exportData() {
+            if (globalLog.length === 0) return alert("Sin datos.");
             const dataStr = JSON.stringify(globalLog, null, 2);
             const fileName = `nutri_backup_${new Date().toISOString().split('T')[0]}.json`;
             const file = new File([dataStr], fileName, { type: "application/json" });
-
-            // Intento 1: Web Share API (Nativo Android/iOS)
+            
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try {
-                    await navigator.share({
-                        files: [file],
-                        title: 'Copia de Seguridad Nutricional',
-                        text: 'Adjunto archivo de respaldo de registro nutricional.'
-                    });
-                    return; // Si tiene éxito, terminamos aquí
-                } catch (error) {
-                    if (error.name !== 'AbortError') {
-                        console.warn('Error en Web Share, usando fallback:', error);
-                    }
-                    // Si el usuario cancela o falla, continuamos al método de descarga clásica
-                }
+                try { await navigator.share({ files: [file], title: 'Backup Nutricional' }); return; } 
+                catch (e) { console.log(e); }
             }
-
-            // Intento 2: Descarga clásica (Blob)
-            const blob = new Blob([dataStr], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
+            const url = URL.createObjectURL(new Blob([dataStr], { type: "application/json" }));
+            const a = document.createElement('a'); a.href = url; a.download = fileName;
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        function handleImport(inputElement) {
-            const file = inputElement.files[0];
+        function handleImport(input) {
+            const file = input.files[0];
             if (!file) return;
-
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
-                    
-                    // Validación básica de estructura
-                    if (!Array.isArray(importedData)) {
-                        throw new Error("Formato inválido: Se esperaba un arreglo de datos.");
+                    const data = JSON.parse(e.target.result);
+                    if (Array.isArray(data) && confirm(`Importar ${data.length} registros?`)) {
+                        globalLog = data; saveData(); applyFilter(); alert("Importado.");
                     }
-                    
-                    // Verificación opcional del primer elemento para asegurar que es nuestro formato
-                    if (importedData.length > 0 && (!importedData[0].foodId || !importedData[0].date)) {
-                         if(!confirm("El archivo parece tener un formato desconocido. ¿Importar de todos modos?")) {
-                             return;
-                         }
-                    }
-
-                    if(confirm(`Se van a importar ${importedData.length} registros. Esto SOBREESCRIBIRÁ los datos actuales. ¿Continuar?`)) {
-                        globalLog = importedData;
-                        saveData();
-                        applyFilter();
-                        alert("Backup restaurado correctamente.");
-                    }
-                } catch (err) {
-                    alert("Error al leer el archivo: " + err.message);
-                }
-                // Limpiar input para permitir importar el mismo archivo de nuevo si es necesario
-                inputElement.value = '';
+                } catch(err) { alert("Error archivo."); }
+                input.value = '';
             };
             reader.readAsText(file);
         }
 
-        // --- PERSISTENCIA ---
-        function saveData() {
-            localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog));
-        }
+        // --- PERSISTENCE & RENDER ---
+        function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
+        function loadData() { const s = localStorage.getItem('macroCalculatorData'); if(s) globalLog = JSON.parse(s); }
 
-        function loadData() {
-            const stored = localStorage.getItem('macroCalculatorData');
-            if (stored) {
-                globalLog = JSON.parse(stored);
-            }
-        }
-
-        // --- RENDERIZADO Y FILTRADO ---
         function applyFilter() {
             const startStr = document.getElementById('filterStart').value;
             const endStr = document.getElementById('filterEnd').value;
+            let filtered = globalLog.sort((a,b) => b.id - a.id);
             
-            let filteredLog = globalLog;
+            if (startStr && endStr) filtered = filtered.filter(i => i.date >= startStr && i.date <= endStr);
+            
+            // Limpiar selección al filtrar para evitar errores visuales
+            selectedIds.clear(); 
+            updateFab();
 
-            // Ordenar cronológicamente (más reciente primero para visualización, o inverso)
-            // Normalmente en logs: el último arriba.
-            filteredLog.sort((a, b) => b.id - a.id);
-
-            if (startStr && endStr) {
-                filteredLog = filteredLog.filter(item => item.date >= startStr && item.date <= endStr);
-            } else if (startStr) {
-                filteredLog = filteredLog.filter(item => item.date >= startStr);
-            } else if (endStr) {
-                filteredLog = filteredLog.filter(item => item.date <= endStr);
-            }
-
-            renderTable(filteredLog);
-            calculateTotals(filteredLog);
+            renderTable(filtered);
+            calculateTotals(filtered);
         }
 
         function renderTable(items) {
             const tbody = document.getElementById('foodTableBody');
             tbody.innerHTML = '';
-
-            if (items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-8 text-center text-gray-400 italic">No hay registros para este periodo.</td></tr>`;
-                return;
-            }
+            if (items.length === 0) { tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-gray-400">Sin registros.</td></tr>`; return; }
 
             items.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors group";
+                // Check si estaba seleccionado (aunque limpiamos al filtrar, util para repintados futuros)
+                const isChecked = selectedIds.has(item.id) ? 'checked' : '';
+                
                 tr.innerHTML = `
+                    <td class="px-4 py-3 text-center">
+                        <input type="checkbox" data-id="${item.id}" class="row-checkbox custom-checkbox rounded text-blue-600 focus:ring-blue-500" 
+                        onclick="toggleSelection(${item.id})" ${isChecked}>
+                    </td>
                     <td class="px-4 py-3 whitespace-nowrap text-gray-600">${item.date}</td>
                     <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">${item.foodName}</td>
                     <td class="px-4 py-3 whitespace-nowrap text-gray-500">${item.amount}${item.unit}</td>
@@ -463,7 +502,7 @@
                     <td class="px-4 py-3 text-right text-gray-700">${item.f}</td>
                     <td class="px-4 py-3 text-right font-bold text-gray-900">${item.kcal}</td>
                     <td class="px-4 py-3 text-center">
-                        <button onclick="deleteItem(${item.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar">
+                        <button onclick="deleteItem(${item.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </td>
@@ -474,78 +513,30 @@
 
         function calculateTotals(items) {
             let sumP = 0, sumC = 0, sumF = 0, sumKcal = 0;
+            items.forEach(i => { sumP += i.p; sumC += i.c; sumF += i.f; sumKcal += i.kcal; });
 
-            items.forEach(item => {
-                sumP += item.p;
-                sumC += item.c;
-                sumF += item.f;
-                sumKcal += item.kcal;
+            ['summary','foot'].forEach(pre => {
+                document.getElementById(pre+'Protein').textContent = sumP.toFixed(1);
+                document.getElementById(pre+'Carbs').textContent = sumC.toFixed(1);
+                document.getElementById(pre+'Fats').textContent = sumF.toFixed(1);
+                document.getElementById(pre+'Kcal').textContent = sumKcal;
             });
 
-            // Actualizar tarjetas resumen
-            document.getElementById('summaryProtein').textContent = sumP.toFixed(1);
-            document.getElementById('summaryCarbs').textContent = sumC.toFixed(1);
-            document.getElementById('summaryFats').textContent = sumF.toFixed(1);
-            document.getElementById('summaryKcal').textContent = sumKcal;
-
-            // Actualizar pie de tabla (Sumatorio)
-            document.getElementById('footProtein').textContent = sumP.toFixed(1);
-            document.getElementById('footCarbs').textContent = sumC.toFixed(1);
-            document.getElementById('footFats').textContent = sumF.toFixed(1);
-            document.getElementById('footKcal').textContent = sumKcal;
-
-            updateChart(sumP, sumC, sumF);
-        }
-
-        function updateChart(p, c, f) {
             const ctx = document.getElementById('macroChart').getContext('2d');
-            const kP = p * 4;
-            const kC = c * 4;
-            const kF = f * 9;
+            if (chartInstance) chartInstance.destroy();
+            const hasData = (sumP+sumC+sumF) > 0;
             
-            const hasData = (p + c + f) > 0;
-            const data = hasData ? [kP, kC, kF] : [1, 1, 1];
-            //const bgColors = hasData 
-                //? ['#ef4444', '#eab308', '#f97316'] //P,C,G
-               //: ['#e5e7eb', '#e5e7eb', '#e5e7eb'];
-			const bgColors = hasData 
-                ? ['#39f792', '#eab308', '#ef4444'] 
-                : ['#e5e7eb', '#e5e7eb', '#e5e7eb'];
-
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
+                    labels: ['Prot', 'Carbs', 'Grasas'],
                     datasets: [{
-                        data: data,
-                        backgroundColor: bgColors,
-                        borderWidth: 0,
-                        hoverOffset: 4
+                        data: hasData ? [sumP*4, sumC*4, sumF*9] : [1,1,1],
+                        backgroundColor: hasData ? ['#39f792', '#eab308', '#ef4444'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
+                        borderWidth: 0, hoverOffset: 4
                     }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    cutout: '65%',
-                    plugins: {
-                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } },
-                        tooltip: {
-                            enabled: hasData,
-                            callbacks: {
-                                label: function(context) {
-                                    let value = context.raw;
-                                    let total = context.chart._metasets[context.datasetIndex].total;
-                                    let percentage = Math.round((value / total) * 100) + '%';
-                                    return ` ${Math.round(value)} kcal (${percentage})`;
-                                }
-                            }
-                        }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } } }
             });
         }
     </script>
