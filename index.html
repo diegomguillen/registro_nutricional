@@ -3,27 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Nutricional Pro</title>
+    <title>Registro Nutricional Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f3f4f6; }
         tfoot { font-weight: bold; background-color: #e5e7eb; }
         
-        /* Animación para el modal */
+        /* Estilos para checkbox personalizado */
+        .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
+        
+        /* Animación suave para el modal */
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
-        
-        /* Checkbox personalizado */
-        .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
     </style>
 </head>
 <body class="text-gray-800 relative">
 
-    <div class="max-w-6xl mx-auto p-4 md:p-8 pb-24"> <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
+    <div class="max-w-6xl mx-auto p-4 md:p-8 pb-24">
+        
+        <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Registro Nutricional</h1>
-                <p class="text-gray-600 text-sm">Base de datos persistente en navegador</p>
+                <p class="text-gray-600 text-sm">Base de datos local con copias de seguridad</p>
             </div>
             
             <div class="flex flex-wrap gap-3 items-center">
@@ -65,6 +67,7 @@
                         </div>
                         <button onclick="addItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-sm text-sm">Guardar Registro</button>
                     </div>
+                    
                     <div class="mt-6 pt-4 border-t border-gray-100">
                         <h3 class="text-xs font-bold text-gray-500 uppercase mb-2">Valores Base (por 100g/u)</h3>
                         <div id="previewData" class="text-sm text-gray-600"></div>
@@ -72,7 +75,7 @@
                 </div>
 
                 <div class="bg-white rounded-xl shadow-md p-4">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-2 text-center">Resumen Diario (Filtrado)</h3>
+                    <h3 class="text-sm font-semibold text-gray-700 mb-2 text-center">Resumen (Vista Actual)</h3>
                     <div class="h-48 relative w-full flex justify-center">
                         <canvas id="macroChart"></canvas>
                     </div>
@@ -81,20 +84,43 @@
 
             <div class="lg:col-span-8 xl:col-span-9 space-y-6">
                 
-                <div class="bg-white p-4 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-end md:items-center gap-4">
-                    <div class="w-full md:w-auto flex flex-col sm:flex-row gap-3 items-end">
+                <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-xs text-gray-500 mb-1">Desde</label>
-                            <input type="date" id="filterStart" class="rounded border-gray-300 text-sm p-1.5 border shadow-sm">
+                            <label class="block text-xs text-gray-500 font-bold uppercase mb-1">Desde</label>
+                            <input type="date" id="filterStart" onchange="updateDayLabels()" class="w-full rounded border-gray-300 text-sm p-2 border shadow-sm focus:border-blue-500 focus:ring-blue-200">
+                            <div id="labelStart" class="text-xs text-blue-600 mt-1 font-medium h-4"></div>
                         </div>
+
                         <div>
-                            <label class="block text-xs text-gray-500 mb-1">Hasta</label>
-                            <input type="date" id="filterEnd" class="rounded border-gray-300 text-sm p-1.5 border shadow-sm">
+                            <label class="block text-xs text-gray-500 font-bold uppercase mb-1">Hasta</label>
+                            <input type="date" id="filterEnd" onchange="updateDayLabels()" class="w-full rounded border-gray-300 text-sm p-2 border shadow-sm focus:border-blue-500 focus:ring-blue-200">
+                            <div id="labelEnd" class="text-xs text-blue-600 mt-1 font-medium h-4 text-right"></div>
                         </div>
-                        <div class="flex gap-2">
-                            <button onclick="applyFilter()" class="bg-gray-800 text-white px-3 py-1.5 rounded text-sm hover:bg-gray-700">Filtrar</button>
-                            <button onclick="setTodayFilter()" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-300">Hoy</button>
-                            <button onclick="showAll()" class="bg-gray-200 text-gray-700 px-3 py-1.5 rounded text-sm hover:bg-gray-300">Todo</button>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t pt-3">
+                        <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-start">
+                            <button onclick="shiftDate(-1)" class="bg-gray-100 text-gray-700 px-3 py-2 rounded text-xs font-bold hover:bg-gray-200 border flex items-center gap-1 transition-colors" title="Día anterior">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                                -1 Día
+                            </button>
+                            <button onclick="shiftDate(1)" class="bg-gray-100 text-gray-700 px-3 py-2 rounded text-xs font-bold hover:bg-gray-200 border flex items-center gap-1 transition-colors" title="Día siguiente">
+                                +1 Día
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                            </button>
+                            <button onclick="shiftDate(-7)" class="bg-indigo-50 text-indigo-700 px-3 py-2 rounded text-xs font-bold hover:bg-indigo-100 border border-indigo-200 transition-colors">
+                                -7 Días
+                            </button>
+                        </div>
+
+                        <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-end">
+                            <button onclick="setTodayFilter()" class="bg-green-50 text-green-700 px-4 py-2 rounded text-xs font-bold hover:bg-green-100 border border-green-200 transition-colors">
+                                HOY
+                            </button>
+                            <button onclick="applyFilter()" class="bg-gray-900 text-white px-6 py-2 rounded text-xs font-bold hover:bg-gray-800 shadow-md transition-transform transform active:scale-95">
+                                FILTRAR
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -211,7 +237,7 @@
     </div>
 
     <script>
-        // --- DATA & CONFIG ---
+        // --- CONFIGURACIÓN Y DATOS BASE ---
         const foodData = [
             { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
             { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
@@ -236,38 +262,79 @@
             { id: 21, name: "Macro grasa", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" }
         ];
 
-        // --- STATE ---
+        // --- ESTADO GLOBAL ---
         let globalLog = []; 
         let chartInstance = null;
         let modalChartInstance = null;
-        let selectedIds = new Set(); // Para multiselección
+        let selectedIds = new Set(); // Almacena IDs seleccionados para análisis
 
-        // --- INIT ---
+        // --- INICIALIZACIÓN ---
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             populateSelect();
             initDateInputs();
+            
+            // Listeners
             document.getElementById('foodSelect').addEventListener('change', updatePreview);
+            
+            // Iniciar con filtro "Hoy"
             setTodayFilter(); 
             updatePreview();
         });
 
-        // --- CORE LOGIC ---
+        // --- LÓGICA DE FECHAS Y NAVEGACIÓN ---
         function initDateInputs() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('entryDate').value = today;
         }
+
         function setTodayFilter() {
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('filterStart').value = today;
             document.getElementById('filterEnd').value = today;
+            updateDayLabels();
             applyFilter();
         }
-        function showAll() {
-            document.getElementById('filterStart').value = '';
-            document.getElementById('filterEnd').value = '';
+
+        // Mover fechas N días
+        function shiftDate(days) {
+            const sVal = document.getElementById('filterStart').value;
+            const eVal = document.getElementById('filterEnd').value;
+            
+            if (!sVal) return; 
+
+            const addDays = (dateStr, n) => {
+                const date = new Date(dateStr);
+                date.setDate(date.getDate() + n);
+                return date.toISOString().split('T')[0];
+            };
+
+            const newStart = addDays(sVal, days);
+            const newEnd = eVal ? addDays(eVal, days) : newStart;
+
+            document.getElementById('filterStart').value = newStart;
+            document.getElementById('filterEnd').value = newEnd;
+            
+            updateDayLabels();
             applyFilter();
         }
+
+        function updateDayLabels() {
+            const days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            const sVal = document.getElementById('filterStart').value;
+            const eVal = document.getElementById('filterEnd').value;
+
+            const getLabel = (dateStr) => {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                return days[date.getDay()] + ' ' + date.getDate();
+            };
+
+            document.getElementById('labelStart').textContent = getLabel(sVal);
+            document.getElementById('labelEnd').textContent = getLabel(eVal);
+        }
+
+        // --- LÓGICA DE REGISTRO DE ALIMENTOS ---
         function populateSelect() {
             const select = document.getElementById('foodSelect');
             foodData.forEach(food => {
@@ -277,6 +344,7 @@
                 select.appendChild(option);
             });
         }
+
         function updatePreview() {
             const select = document.getElementById('foodSelect');
             const foodId = parseInt(select.value);
@@ -287,6 +355,7 @@
                 document.getElementById('previewData').innerHTML = `P: ${food.p} | HC: ${food.c} | G: ${food.f} | Kcal: ${food.kcal}`;
             }
         }
+
         function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
@@ -295,7 +364,10 @@
             const foodId = parseInt(select.value);
             const dateStr = dateInput.value;
 
-            if (!amount || amount <= 0 || !dateStr) return alert("Revise los datos.");
+            if (!amount || amount <= 0 || !dateStr) {
+                alert("Por favor revise la cantidad y la fecha.");
+                return;
+            }
 
             const food = foodData.find(f => f.id === foodId);
             const factor = food.unit === 'g' ? amount / 100 : amount;
@@ -315,18 +387,20 @@
 
             globalLog.push(newItem);
             saveData();
-            applyFilter(); 
+            applyFilter(); // Refresca tabla y totales
         }
+
         function deleteItem(id) {
-            if(confirm('¿Eliminar registro?')) {
+            if(confirm('¿Eliminar este registro?')) {
                 globalLog = globalLog.filter(item => item.id !== id);
-                selectedIds.delete(id); // Limpiar si estaba seleccionado
+                selectedIds.delete(id); // Quitar de selección si estaba
                 saveData();
                 applyFilter();
             }
         }
+
         function resetApp() {
-            if(confirm('¿BORRAR TODO EL HISTORIAL?')) {
+            if(confirm('¿Está seguro de que desea borrar TODO el historial? Esta acción no se puede deshacer.')) {
                 localStorage.removeItem('macroCalculatorData');
                 globalLog = [];
                 selectedIds.clear();
@@ -334,7 +408,7 @@
             }
         }
 
-        // --- SELECTION & MODAL LOGIC (NUEVO) ---
+        // --- GESTIÓN DE SELECCIÓN Y MODAL ---
         function toggleSelection(id) {
             if (selectedIds.has(id)) {
                 selectedIds.delete(id);
@@ -369,11 +443,9 @@
         }
 
         function analyzeSelection() {
-            // Filtrar los objetos seleccionados
             const items = globalLog.filter(item => selectedIds.has(item.id));
             if (items.length === 0) return;
 
-            // Calcular Sumas
             let sumP = 0, sumC = 0, sumF = 0, sumKcal = 0;
             const list = document.getElementById('modalList');
             list.innerHTML = '';
@@ -384,20 +456,18 @@
                 sumF += item.f;
                 sumKcal += item.kcal;
                 
-                // Añadir a lista visual del modal
                 const li = document.createElement('li');
                 li.className = "flex justify-between border-b border-gray-100 pb-1 last:border-0";
                 li.innerHTML = `<span>${item.foodName}</span> <span class="font-mono text-xs text-gray-500">${item.amount}${item.unit}</span>`;
                 list.appendChild(li);
             });
 
-            // Actualizar DOM Modal
             document.getElementById('modalP').textContent = sumP.toFixed(1);
             document.getElementById('modalC').textContent = sumC.toFixed(1);
             document.getElementById('modalF').textContent = sumF.toFixed(1);
             document.getElementById('modalKcal').textContent = sumKcal;
 
-            // Render Chart Modal
+            // Gráfico Modal
             const ctx = document.getElementById('modalChart').getContext('2d');
             if (modalChartInstance) modalChartInstance.destroy();
 
@@ -414,79 +484,109 @@
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false, cutout: '70%',
-                    plugins: { legend: { position: 'bottom' } }
+                    plugins: { legend: { position: 'bottom', labels: { boxWidth: 10, font: { size: 10 } } } }
                 }
             });
 
-            // Mostrar Modal
-            const modal = document.getElementById('detailModal');
-            modal.classList.remove('hidden');
+            document.getElementById('detailModal').classList.remove('hidden');
         }
 
         function closeModal() {
             document.getElementById('detailModal').classList.add('hidden');
         }
 
-        // --- BACKUP LOGIC ---
+        // --- IMPORTAR / EXPORTAR (BACKUP) ---
         async function exportData() {
-            if (globalLog.length === 0) return alert("Sin datos.");
+            if (globalLog.length === 0) {
+                alert("No hay datos para exportar.");
+                return;
+            }
             const dataStr = JSON.stringify(globalLog, null, 2);
             const fileName = `nutri_backup_${new Date().toISOString().split('T')[0]}.json`;
             const file = new File([dataStr], fileName, { type: "application/json" });
             
+            // Intento Web Share (Android Nativo)
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                try { await navigator.share({ files: [file], title: 'Backup Nutricional' }); return; } 
-                catch (e) { console.log(e); }
+                try {
+                    await navigator.share({
+                        files: [file],
+                        title: 'Copia de Seguridad Nutricional',
+                        text: 'Adjunto archivo de respaldo.'
+                    });
+                    return; 
+                } catch (e) { console.log(e); }
             }
-            const url = URL.createObjectURL(new Blob([dataStr], { type: "application/json" }));
-            const a = document.createElement('a'); a.href = url; a.download = fileName;
+            // Fallback descarga normal
+            const blob = new Blob([dataStr], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = fileName;
             document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
-        function handleImport(input) {
-            const file = input.files[0];
+        function handleImport(inputElement) {
+            const file = inputElement.files[0];
             if (!file) return;
+
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const data = JSON.parse(e.target.result);
-                    if (Array.isArray(data) && confirm(`Importar ${data.length} registros?`)) {
-                        globalLog = data; saveData(); applyFilter(); alert("Importado.");
+                    const importedData = JSON.parse(e.target.result);
+                    if (!Array.isArray(importedData)) throw new Error("Formato inválido.");
+                    
+                    if(confirm(`Se van a importar ${importedData.length} registros. ¿Continuar?`)) {
+                        globalLog = importedData;
+                        saveData();
+                        applyFilter();
+                        alert("Backup restaurado correctamente.");
                     }
-                } catch(err) { alert("Error archivo."); }
-                input.value = '';
+                } catch (err) {
+                    alert("Error al leer el archivo: " + err.message);
+                }
+                inputElement.value = '';
             };
             reader.readAsText(file);
         }
 
-        // --- PERSISTENCE & RENDER ---
+        // --- PERSISTENCIA Y RENDERIZADO ---
         function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
-        function loadData() { const s = localStorage.getItem('macroCalculatorData'); if(s) globalLog = JSON.parse(s); }
+        function loadData() {
+            const stored = localStorage.getItem('macroCalculatorData');
+            if (stored) globalLog = JSON.parse(stored);
+        }
 
         function applyFilter() {
             const startStr = document.getElementById('filterStart').value;
             const endStr = document.getElementById('filterEnd').value;
-            let filtered = globalLog.sort((a,b) => b.id - a.id);
             
-            if (startStr && endStr) filtered = filtered.filter(i => i.date >= startStr && i.date <= endStr);
-            
-            // Limpiar selección al filtrar para evitar errores visuales
-            selectedIds.clear(); 
+            let filteredLog = globalLog;
+            // Ordenar: ID desc (más nuevo arriba)
+            filteredLog.sort((a, b) => b.id - a.id);
+
+            if (startStr && endStr) {
+                filteredLog = filteredLog.filter(item => item.date >= startStr && item.date <= endStr);
+            }
+
+            // Limpiar selección para evitar inconsistencias
+            selectedIds.clear();
             updateFab();
 
-            renderTable(filtered);
-            calculateTotals(filtered);
+            renderTable(filteredLog);
+            calculateTotals(filteredLog);
         }
 
         function renderTable(items) {
             const tbody = document.getElementById('foodTableBody');
             tbody.innerHTML = '';
-            if (items.length === 0) { tbody.innerHTML = `<tr><td colspan="9" class="p-8 text-center text-gray-400">Sin registros.</td></tr>`; return; }
+
+            if (items.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-8 text-center text-gray-400 italic">No hay registros.</td></tr>`;
+                return;
+            }
 
             items.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-gray-50 transition-colors group";
-                // Check si estaba seleccionado (aunque limpiamos al filtrar, util para repintados futuros)
                 const isChecked = selectedIds.has(item.id) ? 'checked' : '';
                 
                 tr.innerHTML = `
@@ -502,7 +602,7 @@
                     <td class="px-4 py-3 text-right text-gray-700">${item.f}</td>
                     <td class="px-4 py-3 text-right font-bold text-gray-900">${item.kcal}</td>
                     <td class="px-4 py-3 text-center">
-                        <button onclick="deleteItem(${item.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="deleteItem(${item.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity" title="Eliminar">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                         </button>
                     </td>
@@ -513,30 +613,69 @@
 
         function calculateTotals(items) {
             let sumP = 0, sumC = 0, sumF = 0, sumKcal = 0;
-            items.forEach(i => { sumP += i.p; sumC += i.c; sumF += i.f; sumKcal += i.kcal; });
-
-            ['summary','foot'].forEach(pre => {
-                document.getElementById(pre+'Protein').textContent = sumP.toFixed(1);
-                document.getElementById(pre+'Carbs').textContent = sumC.toFixed(1);
-                document.getElementById(pre+'Fats').textContent = sumF.toFixed(1);
-                document.getElementById(pre+'Kcal').textContent = sumKcal;
+            items.forEach(item => {
+                sumP += item.p;
+                sumC += item.c;
+                sumF += item.f;
+                sumKcal += item.kcal;
             });
 
+            // Actualizar tarjetas
+            document.getElementById('summaryProtein').textContent = sumP.toFixed(1);
+            document.getElementById('summaryCarbs').textContent = sumC.toFixed(1);
+            document.getElementById('summaryFats').textContent = sumF.toFixed(1);
+            document.getElementById('summaryKcal').textContent = sumKcal;
+
+            // Actualizar pie de tabla
+            document.getElementById('footProtein').textContent = sumP.toFixed(1);
+            document.getElementById('footCarbs').textContent = sumC.toFixed(1);
+            document.getElementById('footFats').textContent = sumF.toFixed(1);
+            document.getElementById('footKcal').textContent = sumKcal;
+
+            updateChart(sumP, sumC, sumF);
+        }
+
+        function updateChart(p, c, f) {
             const ctx = document.getElementById('macroChart').getContext('2d');
+            const kP = p * 4;
+            const kC = c * 4;
+            const kF = f * 9;
+            const hasData = (p + c + f) > 0;
+            const data = hasData ? [kP, kC, kF] : [1, 1, 1];
+            const bgColors = hasData 
+                ? ['#39f792', '#eab308', '#ef4444'] 
+                : ['#e5e7eb', '#e5e7eb', '#e5e7eb'];
+
             if (chartInstance) chartInstance.destroy();
-            const hasData = (sumP+sumC+sumF) > 0;
-            
+
             chartInstance = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Prot', 'Carbs', 'Grasas'],
+                    labels: ['Proteínas', 'Carbohidratos', 'Grasas'],
                     datasets: [{
-                        data: hasData ? [sumP*4, sumC*4, sumF*9] : [1,1,1],
-                        backgroundColor: hasData ? ['#39f792', '#eab308', '#ef4444'] : ['#e5e7eb','#e5e7eb','#e5e7eb'],
-                        borderWidth: 0, hoverOffset: 4
+                        data: data,
+                        backgroundColor: bgColors,
+                        borderWidth: 0,
+                        hoverOffset: 4
                     }]
                 },
-                options: { responsive: true, maintainAspectRatio: false, cutout: '65%', plugins: { legend: { position: 'right', labels: { boxWidth: 12 } } } }
+                options: {
+                    responsive: true, maintainAspectRatio: false, cutout: '65%',
+                    plugins: {
+                        legend: { position: 'right', labels: { boxWidth: 12, font: { size: 11 } } },
+                        tooltip: {
+                            enabled: hasData,
+                            callbacks: {
+                                label: function(context) {
+                                    let value = context.raw;
+                                    let total = context.chart._metasets[context.datasetIndex].total;
+                                    let percentage = Math.round((value / total) * 100) + '%';
+                                    return ` ${Math.round(value)} kcal (${percentage})`;
+                                }
+                            }
+                        }
+                    }
+                }
             });
         }
     </script>
