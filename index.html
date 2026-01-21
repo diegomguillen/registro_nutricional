@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro Nutricional Pro + API</title>
+    <title>Registro Nutricional Pro (Dinámico)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <style>
@@ -12,8 +12,6 @@
         .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
-        
-        /* Loader simple */
         .loader { border: 2px solid #f3f3f3; border-top: 2px solid #3498db; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
@@ -25,7 +23,7 @@
         <header class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-center border-b pb-4 gap-4">
             <div>
                 <h1 class="text-3xl font-bold text-gray-900">Registro Nutricional</h1>
-                <p class="text-gray-600 text-sm">Base de datos local + Búsqueda Online</p>
+                <p class="text-gray-600 text-sm">Cálculo dinámico + API Online</p>
             </div>
             
             <div class="flex flex-wrap gap-3 items-center">
@@ -50,7 +48,7 @@
                         </div>
 
                         <div class="bg-blue-50 p-3 rounded-lg border border-blue-100">
-                            <label class="block text-xs font-bold text-blue-600 uppercase mb-1">Buscar en Web (OpenFoodFacts)</label>
+                            <label class="block text-xs font-bold text-blue-600 uppercase mb-1">Buscar en Web</label>
                             <div class="flex gap-2">
                                 <input type="text" id="apiSearchInput" placeholder="Ej: Galletas Oreo" class="w-full rounded border-gray-300 text-sm p-1.5 border focus:border-blue-500" onkeypress="handleEnter(event)">
                                 <button onclick="searchOnline()" class="bg-blue-600 text-white px-3 rounded hover:bg-blue-700 flex items-center justify-center min-w-[40px]">
@@ -62,7 +60,7 @@
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alimento (Selección)</label>
+                            <label class="block text-xs font-bold text-gray-500 uppercase mb-1">Alimento</label>
                             <select id="foodSelect" class="w-full rounded border-gray-300 shadow-sm focus:border-blue-500 p-2 border bg-white text-sm"></select>
                         </div>
                         <div>
@@ -72,9 +70,9 @@
                         <button onclick="addItem()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition-colors shadow-sm text-sm">Guardar Registro</button>
                     </div>
                     
-                    <div class="mt-6 pt-4 border-t border-gray-100">
-                        <h3 class="text-xs font-bold text-gray-500 uppercase mb-2">Valores Base (por 100g/u)</h3>
-                        <div id="previewData" class="text-sm text-gray-600"></div>
+                    <div class="mt-6 pt-4 border-t border-gray-100 bg-gray-50 rounded p-2">
+                        <h3 class="text-xs font-bold text-gray-500 uppercase mb-1">Cálculo para la cantidad actual:</h3>
+                        <div id="previewData" class="text-sm text-gray-700"></div>
                     </div>
                 </div>
 
@@ -87,7 +85,6 @@
             </div>
 
             <div class="lg:col-span-8 xl:col-span-9 space-y-6">
-                
                 <div class="bg-white p-4 rounded-xl shadow-md space-y-4">
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -238,183 +235,129 @@
         // --- INIT ---
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
-            
-            // Si hay alimentos "custom" guardados en historial, debemos asegurarnos que estén en foodData
-            // para que se rendericen bien. (Simplificación: en este modelo, si refrescas la página, 
-            // los custom se pierden del selector pero no del log. Para persistencia total de custom,
-            // habría que guardar foodData en localStorage también).
-            
             populateSelect();
             initDateInputs();
+            // EVENTOS DE CAMBIO
             document.getElementById('foodSelect').addEventListener('change', updatePreview);
+            // ESCUCHAR EN TIEMPO REAL LA ENTRADA DE CANTIDAD
+            document.getElementById('amountInput').addEventListener('input', updatePreview); 
+            
             setTodayFilter(); 
             updatePreview();
             updateDayLabels();
         });
 
-        // --- BÚSQUEDA API OPENFOODFACTS ---
-        function handleEnter(e) {
-            if(e.key === 'Enter') searchOnline();
+        // --- ACTUALIZACIÓN DINÁMICA ---
+        function updatePreview() {
+            const select = document.getElementById('foodSelect');
+            const amountInput = document.getElementById('amountInput'); // Capturamos input
+            const foodId = parseInt(select.value);
+            const food = foodData.find(f => f.id === foodId);
+            
+            if (food) {
+                // Etiqueta unidad
+                document.getElementById('amountLabel').textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
+                
+                // LÓGICA DE CÁLCULO PROPORCIONAL
+                const amount = parseFloat(amountInput.value) || 0; // Si está vacío cuenta como 0
+                const factor = food.unit === 'g' ? amount / 100 : amount;
+
+                // Calculamos valores
+                const p = (food.p * factor).toFixed(1);
+                const c = (food.c * factor).toFixed(1);
+                const f = (food.f * factor).toFixed(1);
+                const k = Math.round(food.kcal * factor);
+
+                // Mostramos HTML actualizado
+                document.getElementById('previewData').innerHTML = `
+                    <div class="flex flex-wrap gap-x-3 gap-y-1 font-mono text-blue-900 font-bold">
+                        <span>P: ${p}</span> 
+                        <span>HC: ${c}</span> 
+                        <span>G: ${f}</span> 
+                        <span class="text-red-600">Kcal: ${k}</span>
+                    </div>
+                    <div class="text-[10px] text-gray-400 mt-1 italic">
+                        (Valores calculados para ${amount}${food.unit}. Base: ${food.kcal}kcal/100${food.unit})
+                    </div>
+                `;
+            }
         }
+
+        // --- BÚSQUEDA API (SIN CAMBIOS) ---
+        function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
 
         async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
             if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
-
             const loader = document.getElementById('searchLoader');
             const icon = document.getElementById('searchIcon');
             const resultsDiv = document.getElementById('searchResults');
             
-            loader.classList.remove('hidden');
-            icon.classList.add('hidden');
-            resultsDiv.classList.add('hidden');
-            resultsDiv.innerHTML = '';
+            loader.classList.remove('hidden'); icon.classList.add('hidden');
+            resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
 
             try {
-                // Buscamos en OpenFoodFacts España, campos limitados para ahorrar datos
                 const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,nutriments,id`;
-                
                 const response = await fetch(url);
                 const data = await response.json();
 
                 if(data.products && data.products.length > 0) {
                     let html = '<ul class="divide-y divide-gray-100">';
                     let found = false;
-                    
                     data.products.forEach(prod => {
-                        // Filtramos solo los que tengan datos de macronutrientes válidos
-                        if(prod.nutriments && 
-                           (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
-                            
+                        if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
                             found = true;
                             const p = prod.nutriments['proteins_100g'] || 0;
                             const c = prod.nutriments['carbohydrates_100g'] || 0;
                             const f = prod.nutriments['fat_100g'] || 0;
                             const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
-                            
-                            // Escapamos comillas simples en el nombre
-                            const safeName = (prod.product_name || "Producto sin nombre").replace(/'/g, "");
-
-                            html += `
-                                <li class="p-2 hover:bg-blue-50 cursor-pointer flex justify-between items-center group" 
-                                    onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})">
-                                    <span class="font-medium text-gray-700 truncate w-2/3">${prod.product_name}</span>
-                                    <span class="text-gray-400 text-[10px] group-hover:text-blue-600">${Math.round(k)} kcal/100g</span>
-                                </li>
-                            `;
+                            const safeName = (prod.product_name || "Sin nombre").replace(/'/g, "");
+                            html += `<li class="p-2 hover:bg-blue-50 cursor-pointer flex justify-between items-center group" onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})"><span class="font-medium text-gray-700 truncate w-2/3">${prod.product_name}</span><span class="text-gray-400 text-[10px] group-hover:text-blue-600">${Math.round(k)} kcal/100g</span></li>`;
                         }
                     });
-                    
-                    if(!found) html += '<li class="p-2 text-gray-500 italic">Productos encontrados pero sin información nutricional.</li>';
-                    
+                    if(!found) html += '<li class="p-2 text-gray-500 italic">Sin info nutricional válida.</li>';
                     html += '</ul>';
-                    resultsDiv.innerHTML = html;
-                    resultsDiv.classList.remove('hidden');
-                } else {
-                    alert("No se encontraron resultados.");
-                }
-
-            } catch (error) {
-                console.error(error);
-                alert("Error de conexión con la base de datos.");
-            } finally {
-                loader.classList.add('hidden');
-                icon.classList.remove('hidden');
-            }
+                    resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
+                } else { alert("Sin resultados."); }
+            } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
         function selectApiItem(name, p, c, f, kcal) {
-            // 1. Crear nuevo objeto Food
-            const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000); // ID alto para evitar colisión
-            const newFood = {
-                id: newId,
-                name: `[WEB] ${name}`,
-                p: Number(p),
-                c: Number(c),
-                f: Number(f),
-                kcal: Number(kcal),
-                unit: 'g' // API suele devolver por 100g
-            };
-
-            // 2. Agregarlo a la base de datos local temporal
-            foodData.push(newFood);
-
-            // 3. Regenerar el Select
+            const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
+            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
             populateSelect();
-
-            // 4. Seleccionarlo automáticamente
             const select = document.getElementById('foodSelect');
             select.value = newId;
-            
-            // 5. Actualizar vista y limpiar búsqueda
-            updatePreview();
+            updatePreview(); // Actualizará con 100g por defecto
             document.getElementById('searchResults').classList.add('hidden');
             document.getElementById('apiSearchInput').value = '';
         }
 
         // --- CORE & UI ---
-        function initDateInputs() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('entryDate').value = today;
-        }
-        function setTodayFilter() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('filterStart').value = today;
-            document.getElementById('filterEnd').value = today;
-            updateDayLabels();
-            applyFilter();
-        }
-        function shiftDate(days) {
-            const sVal = document.getElementById('filterStart').value;
-            const eVal = document.getElementById('filterEnd').value;
-            if (!sVal) return; 
-            const addDays = (d, n) => { const date = new Date(d); date.setDate(date.getDate() + n); return date.toISOString().split('T')[0]; };
-            const nS = addDays(sVal, days);
-            const nE = eVal ? addDays(eVal, days) : nS;
-            document.getElementById('filterStart').value = nS;
-            document.getElementById('filterEnd').value = nE;
-            updateDayLabels();
-            applyFilter();
+        function initDateInputs() { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; }
+        function setTodayFilter() { const t = new Date().toISOString().split('T')[0]; document.getElementById('filterStart').value = t; document.getElementById('filterEnd').value = t; updateDayLabels(); applyFilter(); }
+        function shiftDate(d) {
+            const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
+            if(!s) return;
+            const add = (str, n) => { const dt = new Date(str); dt.setDate(dt.getDate()+n); return dt.toISOString().split('T')[0]; };
+            document.getElementById('filterStart').value = add(s,d);
+            document.getElementById('filterEnd').value = e ? add(e,d) : add(s,d);
+            updateDayLabels(); applyFilter();
         }
         function updateDayLabels() {
-            const days = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
-            const sVal = document.getElementById('filterStart').value;
-            const eVal = document.getElementById('filterEnd').value;
-            const getL = (d) => { if(!d)return''; const dt=new Date(d); return days[dt.getDay()]+' '+dt.getDate(); };
-            document.getElementById('labelStart').textContent = getL(sVal);
-            document.getElementById('labelEnd').textContent = getL(eVal);
+            const d = ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'];
+            const l = (v) => v ? d[new Date(v).getDay()]+' '+new Date(v).getDate() : '';
+            document.getElementById('labelStart').textContent = l(document.getElementById('filterStart').value);
+            document.getElementById('labelEnd').textContent = l(document.getElementById('filterEnd').value);
         }
 
         function populateSelect() {
-            const select = document.getElementById('foodSelect');
-            const currentVal = select.value; // Guardar selección actual si existe
-            select.innerHTML = ''; // Limpiar
-            
-            // Ordenar alfabéticamente para facilitar búsqueda visual
-            const sorted = [...foodData].sort((a,b) => a.name.localeCompare(b.name));
-            
-            sorted.forEach(food => {
-                const option = document.createElement('option');
-                option.value = food.id;
-                option.text = food.name;
-                select.appendChild(option);
+            const sel = document.getElementById('foodSelect');
+            const val = sel.value; sel.innerHTML = '';
+            [...foodData].sort((a,b)=>a.name.localeCompare(b.name)).forEach(f => {
+                const o = document.createElement('option'); o.value = f.id; o.text = f.name; sel.appendChild(o);
             });
-
-            if(currentVal) {
-                // Intentar restaurar selección, si no existe (raro), seleccionar primero
-                const exists = sorted.find(f => f.id == currentVal);
-                if(exists) select.value = currentVal;
-            }
-        }
-
-        function updatePreview() {
-            const select = document.getElementById('foodSelect');
-            const foodId = parseInt(select.value);
-            const food = foodData.find(f => f.id === foodId);
-            if (food) {
-                document.getElementById('amountLabel').textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
-                document.getElementById('previewData').innerHTML = `P: ${food.p} | HC: ${food.c} | G: ${food.f} | Kcal: ${food.kcal}`;
-            }
+            if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
         }
 
         function addItem() {
@@ -423,16 +366,15 @@
             const dateInput = document.getElementById('entryDate');
             const amount = parseFloat(amountInput.value);
             const foodId = parseInt(select.value);
-            const dateStr = dateInput.value;
-
-            if (!amount || amount <= 0 || !dateStr) return alert("Revise datos.");
+            
+            if (!amount || amount <= 0 || !dateInput.value) return alert("Revise datos.");
 
             const food = foodData.find(f => f.id === foodId);
             const factor = food.unit === 'g' ? amount / 100 : amount;
 
-            const newItem = {
+            globalLog.push({
                 id: Date.now(),
-                date: dateStr,
+                date: dateInput.value,
                 foodId: food.id,
                 foodName: food.name,
                 amount: amount,
@@ -441,161 +383,74 @@
                 c: parseFloat((food.c * factor).toFixed(1)),
                 f: parseFloat((food.f * factor).toFixed(1)),
                 kcal: Math.round(food.kcal * factor)
-            };
-
-            globalLog.push(newItem);
-            saveData();
-            applyFilter();
-        }
-
-        function deleteItem(id) {
-            if(confirm('¿Borrar registro?')) {
-                globalLog = globalLog.filter(i => i.id !== id);
-                selectedIds.delete(id);
-                saveData();
-                applyFilter();
-            }
-        }
-        function resetApp() {
-            if(confirm('¿BORRAR TODO?')) {
-                localStorage.removeItem('macroCalculatorData');
-                globalLog = [];
-                selectedIds.clear();
-                applyFilter();
-            }
-        }
-
-        // --- MODAL Y SELECCIÓN ---
-        function toggleSelection(id) {
-            selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id);
-            updateFab();
-        }
-        function toggleAll(src) {
-            document.querySelectorAll('.row-checkbox').forEach(cb => {
-                cb.checked = src.checked;
-                const id = parseInt(cb.dataset.id);
-                src.checked ? selectedIds.add(id) : selectedIds.delete(id);
             });
-            updateFab();
+            saveData(); applyFilter();
         }
+
+        function deleteItem(id) { if(confirm('¿Borrar?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
+        function resetApp() { if(confirm('¿BORRAR TODO?')) { localStorage.removeItem('macroCalculatorData'); globalLog = []; selectedIds.clear(); applyFilter(); } }
+
+        // --- MODAL ---
+        function toggleSelection(id) { selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id); updateFab(); }
+        function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseInt(c.dataset.id); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
         function updateFab() {
             const fab = document.getElementById('analyzeFab');
-            if (selectedIds.size > 0) {
-                fab.classList.remove('hidden'); fab.classList.add('flex');
-                document.getElementById('fabText').textContent = `Analizar (${selectedIds.size})`;
-            } else {
-                fab.classList.add('hidden'); fab.classList.remove('flex');
-            }
+            if(selectedIds.size > 0) { fab.classList.remove('hidden'); fab.classList.add('flex'); document.getElementById('fabText').textContent = `Analizar (${selectedIds.size})`; }
+            else { fab.classList.add('hidden'); fab.classList.remove('flex'); }
         }
         function analyzeSelection() {
             const items = globalLog.filter(i => selectedIds.has(i.id));
             if (!items.length) return;
-            let sP=0, sC=0, sF=0, sK=0;
+            let p=0, c=0, f=0, k=0;
             const list = document.getElementById('modalList'); list.innerHTML='';
             items.forEach(i => {
-                sP+=i.p; sC+=i.c; sF+=i.f; sK+=i.kcal;
+                p+=i.p; c+=i.c; f+=i.f; k+=i.kcal;
                 list.innerHTML += `<li class="flex justify-between border-b pb-1 last:border-0 border-gray-100"><span>${i.foodName}</span><span class="text-xs text-gray-500 font-mono">${i.amount}${i.unit}</span></li>`;
             });
-            document.getElementById('modalP').textContent=sP.toFixed(1);
-            document.getElementById('modalC').textContent=sC.toFixed(1);
-            document.getElementById('modalF').textContent=sF.toFixed(1);
-            document.getElementById('modalKcal').textContent=sK;
-            
+            document.getElementById('modalP').textContent=p.toFixed(1);
+            document.getElementById('modalC').textContent=c.toFixed(1);
+            document.getElementById('modalF').textContent=f.toFixed(1);
+            document.getElementById('modalKcal').textContent=k;
             const ctx = document.getElementById('modalChart').getContext('2d');
             if(modalChartInstance) modalChartInstance.destroy();
-            const hasD = (sP+sC+sF)>0;
-            modalChartInstance = new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Prot','Carbs','Grasas'],
-                    datasets: [{ data: hasD?[sP*4,sC*4,sF*9]:[1,1,1], backgroundColor: hasD?['#39f792','#eab308','#ef4444']:['#eee','#eee','#eee'], borderWidth:0 }]
-                },
-                options: { responsive:true, maintainAspectRatio:false, cutout:'70%', plugins:{legend:{position:'bottom'}} }
-            });
+            const hasD = (p+c+f)>0;
+            modalChartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Prot','Carbs','Grasas'], datasets: [{ data: hasD?[p*4,c*4,f*9]:[1,1,1], backgroundColor: hasD?['#39f792','#eab308','#ef4444']:['#eee','#eee','#eee'], borderWidth:0 }] }, options: { responsive:true, maintainAspectRatio:false, cutout:'70%', plugins:{legend:{position:'bottom'}} } });
             document.getElementById('detailModal').classList.remove('hidden');
         }
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
-        // --- BACKUP ---
+        // --- DATA ---
         async function exportData() {
             if(!globalLog.length) return alert("Sin datos.");
-            const dStr = JSON.stringify(globalLog, null, 2);
-            const fName = `backup_${new Date().toISOString().split('T')[0]}.json`;
-            const file = new File([dStr], fName, {type:"application/json"});
-            if(navigator.canShare && navigator.canShare({files:[file]})) {
-                try { await navigator.share({files:[file], title:'Backup Nutri'}); return; } catch(e){}
-            }
-            const url = URL.createObjectURL(new Blob([dStr], {type:"application/json"}));
-            const a = document.createElement('a'); a.href=url; a.download=fName;
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            const f = new File([JSON.stringify(globalLog,null,2)], `backup_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
+            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup Nutri'}); return; } catch(e){} }
+            const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalLog,null,2)], {type:"application/json"})); a.download=f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
         function handleImport(input) {
             const f = input.files[0]; if(!f) return;
-            const r = new FileReader();
-            r.onload = e => {
-                try {
-                    const d = JSON.parse(e.target.result);
-                    if(Array.isArray(d) && confirm(`¿Importar ${d.length} registros?`)) {
-                        globalLog = d; saveData(); applyFilter(); alert("Importado.");
-                    }
-                } catch(err) { alert("Error."); }
-                input.value='';
-            };
-            r.readAsText(f);
+            const r = new FileReader(); r.onload = e => { try { const d = JSON.parse(e.target.result); if(Array.isArray(d) && confirm(`¿Importar ${d.length} registros?`)) { globalLog = d; saveData(); applyFilter(); alert("Hecho."); } } catch(err){ alert("Error archivo."); } input.value=''; }; r.readAsText(f);
         }
-
-        // --- PERSISTENCIA Y RENDER ---
         function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
         function loadData() { const s = localStorage.getItem('macroCalculatorData'); if(s) globalLog = JSON.parse(s); }
-        
         function applyFilter() {
-            const sV = document.getElementById('filterStart').value;
-            const eV = document.getElementById('filterEnd').value;
-            let flt = globalLog.sort((a,b)=>b.id-a.id);
-            if(sV && eV) flt = flt.filter(i => i.date >= sV && i.date <= eV);
-            selectedIds.clear(); updateFab();
-            renderTable(flt); calcTotals(flt);
+            const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
+            let f = globalLog.sort((a,b)=>b.id-a.id);
+            if(s && e) f = f.filter(i => i.date >= s && i.date <= e);
+            selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f);
         }
-
         function renderTable(items) {
             const tb = document.getElementById('foodTableBody'); tb.innerHTML='';
             if(!items.length) { tb.innerHTML='<tr><td colspan="9" class="p-8 text-center text-gray-400">Vacío</td></tr>'; return; }
             items.forEach(i => {
                 const ck = selectedIds.has(i.id)?'checked':'';
-                tb.innerHTML += `
-                <tr class="hover:bg-gray-50 group transition-colors">
-                    <td class="p-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-blue-600" onclick="toggleSelection(${i.id})" ${ck}></td>
-                    <td class="p-3 whitespace-nowrap text-gray-600">${i.date}</td>
-                    <td class="p-3 font-medium text-gray-900">${i.foodName}</td>
-                    <td class="p-3 text-gray-500">${i.amount}${i.unit}</td>
-                    <td class="p-3 text-right text-gray-700">${i.p}</td>
-                    <td class="p-3 text-right text-gray-700">${i.c}</td>
-                    <td class="p-3 text-right text-gray-700">${i.f}</td>
-                    <td class="p-3 text-right font-bold text-gray-900">${i.kcal}</td>
-                    <td class="p-3 text-center"><button onclick="deleteItem(${i.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100">&times;</button></td>
-                </tr>`;
+                tb.innerHTML += `<tr class="hover:bg-gray-50 group transition-colors"><td class="p-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-blue-600" onclick="toggleSelection(${i.id})" ${ck}></td><td class="p-3 whitespace-nowrap text-gray-600">${i.date}</td><td class="p-3 font-medium text-gray-900">${i.foodName}</td><td class="p-3 text-gray-500">${i.amount}${i.unit}</td><td class="p-3 text-right text-gray-700">${i.p}</td><td class="p-3 text-right text-gray-700">${i.c}</td><td class="p-3 text-right text-gray-700">${i.f}</td><td class="p-3 text-right font-bold text-gray-900">${i.kcal}</td><td class="p-3 text-center"><button onclick="deleteItem(${i.id})" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100">&times;</button></td></tr>`;
             });
         }
         function calcTotals(items) {
-            let p=0, c=0, f=0, k=0;
-            items.forEach(i => { p+=i.p; c+=i.c; f+=i.f; k+=i.kcal; });
-            ['summary','foot'].forEach(x => {
-                document.getElementById(x+'Protein').textContent=p.toFixed(1);
-                document.getElementById(x+'Carbs').textContent=c.toFixed(1);
-                document.getElementById(x+'Fats').textContent=f.toFixed(1);
-                document.getElementById(x+'Kcal').textContent=k;
-            });
-            const ctx = document.getElementById('macroChart').getContext('2d');
-            if(chartInstance) chartInstance.destroy();
-            const hD = (p+c+f)>0;
-            chartInstance = new Chart(ctx, {
-                type:'doughnut',
-                data:{
-                    labels:['Prot','Carbs','Grasas'],
-                    datasets:[{data:hD?[p*4,c*4,f*9]:[1,1,1], backgroundColor:hD?['#39f792','#eab308','#ef4444']:['#eee','#eee','#eee'], borderWidth:0}]
-                },
-                options:{responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{position:'right',labels:{boxWidth:12}}}}
-            });
+            let p=0, c=0, f=0, k=0; items.forEach(i => { p+=i.p; c+=i.c; f+=i.f; k+=i.kcal; });
+            ['summary','foot'].forEach(x => { document.getElementById(x+'Protein').textContent=p.toFixed(1); document.getElementById(x+'Carbs').textContent=c.toFixed(1); document.getElementById(x+'Fats').textContent=f.toFixed(1); document.getElementById(x+'Kcal').textContent=k; });
+            const ctx = document.getElementById('macroChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
+            const h = (p+c+f)>0; chartInstance = new Chart(ctx, { type:'doughnut', data:{ labels:['Prot','Carbs','Grasas'], datasets:[{data:h?[p*4,c*4,f*9]:[1,1,1], backgroundColor:h?['#39f792','#eab308','#ef4444']:['#eee','#eee','#eee'], borderWidth:0}] }, options:{responsive:true, maintainAspectRatio:false, cutout:'65%', plugins:{legend:{position:'right',labels:{boxWidth:12}}}} });
         }
     </script>
 </body>
