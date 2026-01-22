@@ -363,7 +363,7 @@
 
         // BÚSQUEDA API
         function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
-        async function searchOnline() {
+        /*async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
             if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
             const loader = document.getElementById('searchLoader');
@@ -397,8 +397,61 @@
                     resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
                 } else { alert("Sin resultados."); }
             } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
-        }
+        }*/
+        async function searchOnline() {
+            const query = document.getElementById('apiSearchInput').value;
+            if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
+            const loader = document.getElementById('searchLoader');
+            const icon = document.getElementById('searchIcon');
+            const resultsDiv = document.getElementById('searchResults');
+            
+            loader.classList.remove('hidden'); icon.classList.add('hidden');
+            resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
 
+            try {
+                // 1. AÑADIMOS 'brands' A LOS CAMPOS SOLICITADOS (fields)
+                const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,brands,nutriments,id`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if(data.products && data.products.length > 0) {
+                    let html = '<ul class="divide-y divide-blue-50">';
+                    let found = false;
+                    data.products.forEach(prod => {
+                        if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
+                            found = true;
+                            const p = prod.nutriments['proteins_100g'] || 0;
+                            const c = prod.nutriments['carbohydrates_100g'] || 0;
+                            const f = prod.nutriments['fat_100g'] || 0;
+                            const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
+                            
+                            // 2. CAPTURAMOS LA MARCA (Si no tiene, dejamos string vacío)
+                            const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : ''; // Cogemos solo la primera marca si hay varias
+                            
+                            // 3. CONSTRUIMOS EL NOMBRE COMPLETO (Nombre + Marca)
+                            // Quitamos comillas simples para evitar errores de JS en el onclick
+                            const rawName = (prod.product_name || "Sin nombre") + brand;
+                            const safeName = rawName.replace(/'/g, ""); 
+
+                            // 4. MOSTRAMOS LA MARCA EN LA LISTA (en gris pequeñito)
+                            html += `
+                            <li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" 
+                                onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})">
+                                <div class="truncate w-3/4">
+                                    <div class="font-medium text-slate-700 truncate">${prod.product_name}</div>
+                                    <div class="text-xs text-slate-400 truncate">${prod.brands || ''}</div> 
+                                </div>
+                                <span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-md ml-2 flex-shrink-0">${Math.round(k)} kcal</span>
+                            </li>`;
+                        }
+                    });
+                    if(!found) html += '<li class="p-3 text-slate-400 italic text-xs">Sin info válida.</li>';
+                    html += '</ul>';
+                    resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
+                } else { alert("Sin resultados."); }
+            } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
+        }
         function selectApiItem(name, p, c, f, kcal) {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
@@ -558,5 +611,6 @@
 </body>
 
 </html>
+
 
 
