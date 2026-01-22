@@ -1,5 +1,5 @@
 {
-  "name": "Registro Nutricional",
+  "name": "NutriApp",
   "short_name": "NutriApp",
   "start_url": "./index.html",
   "display": "standalone",
@@ -8,14 +8,15 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon2.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "icon.png",
-      "sizes": "512x512",
+      "src": "icon2.png",
+      "sizes": "192x192",
       "type": "image/png"
     }
   ]
+
 }
