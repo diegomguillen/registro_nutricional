@@ -74,6 +74,7 @@ Esta aplicación es una **PWA (Progressive Web App)** estática.
 * **Requisitos:** Cualquier navegador web moderno con soporte para JavaScript y LocalStorage (Chrome, Safari, Firefox, Edge).
 * **Instalación:** Puede añadir la aplicación a la pantalla de inicio de su dispositivo móvil para utilizarla como una aplicación nativa y acceder a ella sin conexión.
 * **Tecnologías:** HTML5, Tailwind CSS, Chart.js, Html5Qrcode.
+* **Enlace a la App:** [https://diegomguillen.github.io/registro_nutricional](https://diegomguillen.github.io/registro_nutricional)
 
 ## Disclaimer (Descargo de Responsabilidad)
 
