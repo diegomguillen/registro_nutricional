@@ -1,3 +1,15 @@
+<div align="center">
+  <img src="icon3.png" alt="Logo NutriApp" width="120" />
+  <h1>NutriApp</h1>
+  <p>
+    <strong>Diario Nutricional y Calculadora de Macros</strong>
+  </p>
+  <p>
+    Aplicación Web Progresiva (PWA) para el registro, control y análisis de la ingesta diaria, centrada en la privacidad y el funcionamiento offline.
+  </p>
+</div>
+
+---
 # NutriApp - Diario Nutricional y Calculadora de Macros
 
 **NutriApp** es una Aplicación Web Progresiva (PWA) diseñada para el registro, control y análisis de la ingesta diaria de alimentos. Su arquitectura se centra en la privacidad del usuario, ejecutándose íntegramente en el navegador y almacenando los datos de manera local sin dependencia de servidores externos.
