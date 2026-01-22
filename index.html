@@ -22,6 +22,9 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
+        /* Utilidad para respetar el área segura en iPhone (Barra inferior de gestos) */
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+
         .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
@@ -32,9 +35,9 @@
         .action-card:active { transform: scale(0.98); background-color: #f9fafb; }
     </style>
 </head>
-<body class="text-slate-800 h-screen flex flex-col overflow-hidden">
+<body class="text-slate-800 h-screen h-[100dvh] flex flex-col overflow-hidden">
 
-    <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-5 pb-24">
+    <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-5 pb-32">
         
         <div id="view-home" class="space-y-6 animate-fade-in">
             <header class="flex items-center gap-3 mb-2">
