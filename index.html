@@ -43,7 +43,7 @@
             <header class="flex items-center gap-3 mb-2">
 				<img src="icon3.png" class="w-12 h-12 rounded-xl shadow-sm bg-white p-1" alt="Logo App">
                 <div>
-                    <h1 class="text-2xl font-bold text-slate-900 leading-tight">Diario nutricional</h1>
+                    <h1 class="text-2xl font-bold text-slate-900 leading-tight">NutriApp</h1>
                     <p class="text-slate-500 text-sm">Añade tus comidas de hoy</p>
                 </div>
 			</header>
@@ -56,7 +56,7 @@
                     </div>
 
                     <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear</label>
+                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear bar code</label>
                         <div class="flex gap-2">
                             <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..." class="w-full bg-white rounded-lg border-blue-200 text-sm p-2 focus:border-blue-500 focus:outline-none" onkeypress="handleEnter(event)">
                             
@@ -370,7 +370,7 @@
         
         async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
-            if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
+            if(!query || query.length < 3) return showToast("Escribe al menos 3 caracteres.");
             const loader = document.getElementById('searchLoader');
             const icon = document.getElementById('searchIcon');
             const resultsDiv = document.getElementById('searchResults');
@@ -420,7 +420,7 @@
             html5QrcodeScanner = new Html5Qrcode("reader");
             const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
             html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
-            .catch(err => { console.error(err); alert("Error cámara: " + err); stopScanner(); });
+            .catch(err => { console.error(err); showToast("Error cámara: " + err); stopScanner(); });
         }
 
         function stopScanner() {
@@ -521,7 +521,7 @@
             const amount = parseFloat(amountInput.value);
             const foodId = parseInt(select.value);
             
-            if (!amount || amount <= 0 || !dateInput.value) return alert("Revise datos.");
+            if (!amount || amount <= 0 || !dateInput.value) return showToast("Revise datos.");
 
             const food = foodData.find(f => f.id === foodId);
             const factor = food.unit === 'g' ? amount / 100 : amount;
@@ -540,7 +540,7 @@
             });
             saveData(); 
             applyFilter();
-            alert("Guardado!");
+            showToast("Guardado!");
         }*/
 			// Busca la función addItem y asegúrate de añadir saveFoods()
 		function addItem() {
@@ -550,7 +550,7 @@
     		const amount = parseFloat(amountInput.value);
     		const foodId = parseInt(select.value);
     
-    		if (!amount || amount <= 0 || !dateInput.value) return alert("Revise datos.");
+    		if (!amount || amount <= 0 || !dateInput.value) return showToast("Revise datos.");
 
     		const food = foodData.find(f => f.id === foodId);
     		const factor = food.unit === 'g' ? amount / 100 : amount;
@@ -606,7 +606,7 @@
         }
 
         async function exportData() {
-            if(!globalLog.length && foodData.length <= 29) return alert("Sin datos nuevos para exportar.");
+            if(!globalLog.length && foodData.length <= 29) return showToast("Sin datos nuevos para exportar.");
             
             // Creamos un objeto que contenga TODO
             const backupObject = {
@@ -652,7 +652,7 @@
                     else {
                         showToast("Formato de archivo no reconocido.");
                     }
-                } catch(err){ console.error(err); alert("Error al leer el archivo."); } 
+                } catch(err){ console.error(err); showToast("Error al leer el archivo."); } 
                 input.value=''; 
             }; 
             r.readAsText(f);
