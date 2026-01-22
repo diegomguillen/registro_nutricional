@@ -11,13 +11,14 @@
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
     <style>
         body { 
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
             background-color: #f8fafc;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Ocultar scrollbar pero permitir scroll */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
@@ -27,14 +28,8 @@
         .loader { border: 2px solid #f3f3f3; border-top: 2px solid #3b82f6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        /* Estilo para las tarjetas tipo botón */
-        .action-card {
-            transition: transform 0.1s, background-color 0.2s;
-        }
-        .action-card:active {
-            transform: scale(0.98);
-            background-color: #f9fafb;
-        }
+        .action-card { transition: transform 0.1s, background-color 0.2s; }
+        .action-card:active { transform: scale(0.98); background-color: #f9fafb; }
     </style>
 </head>
 <body class="text-slate-800 h-screen flex flex-col overflow-hidden">
@@ -44,11 +39,10 @@
         <div id="view-home" class="space-y-6 animate-fade-in">
             <header class="flex items-center gap-3 mb-2">
 				<img src="icon3.png" class="w-12 h-12 rounded-xl shadow-sm bg-white p-1" alt="Logo App">
-    
-			<div>
-				<h1 class="text-2xl font-bold text-slate-900 leading-tight">Diario nutricional</h1>
-				<p class="text-slate-500 text-sm">Añade tus comidas de hoy</p>
-			</div>
+                <div>
+                    <h1 class="text-2xl font-bold text-slate-900 leading-tight">Diario nutricional</h1>
+                    <p class="text-slate-500 text-sm">Añade tus comidas de hoy</p>
+                </div>
 			</header>
 
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
@@ -59,9 +53,14 @@
                     </div>
 
                     <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online</label>
+                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear</label>
                         <div class="flex gap-2">
                             <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..." class="w-full bg-white rounded-lg border-blue-200 text-sm p-2 focus:border-blue-500 focus:outline-none" onkeypress="handleEnter(event)">
+                            
+                            <button onclick="startScanner()" class="bg-blue-100 text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-200 border border-blue-200">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h.01M10 4h4v1h-4V4zm-4 7h.01M6 16h4v4H6v-4zm12-4h2v2h-2v-2zm-6-8h6v6h-6V4zm-6 0h6v6H6V4zm6 12h2v2h-2v-2z"></path></svg>
+                            </button>
+
                             <button onclick="searchOnline()" class="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-700">
                                 <svg id="searchIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 <div id="searchLoader" class="loader hidden"></div>
@@ -158,7 +157,6 @@
             </header>
 
             <div class="space-y-4">
-                
                 <div onclick="exportData()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
@@ -191,7 +189,6 @@
                         <p class="text-xs text-red-300">Eliminar historial localmente</p>
                     </div>
                 </div>
-
             </div>
         </div>
 
@@ -202,12 +199,10 @@
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
             <span class="text-[10px] font-bold">Registro</span>
         </button>
-        
         <button onclick="switchView('history')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-history">
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path></svg>
             <span class="text-[10px] font-bold">Historial</span>
         </button>
-        
         <button onclick="switchView('backup')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-backup">
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
             <span class="text-[10px] font-bold">Datos</span>
@@ -241,15 +236,23 @@
         </div>
     </div>
 
+    <div id="scannerModal" class="fixed inset-0 bg-black/90 hidden z-[70] flex flex-col justify-center items-center">
+        <div class="absolute top-5 right-5 z-20">
+             <button onclick="stopScanner()" class="text-white bg-white/20 rounded-full p-2 backdrop-blur-md">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <div class="w-full max-w-sm px-4">
+             <div id="reader" class="rounded-xl overflow-hidden bg-black shadow-2xl border-2 border-white/20 w-full"></div>
+             <p class="text-white text-center mt-4 text-sm font-medium">Apunta al código de barras</p>
+        </div>
+    </div>
+
     <script>
         // --- GESTIÓN DE VISTAS (TAB NAVIGATION) ---
         function switchView(viewName) {
-            // Ocultar todas las vistas
             ['home', 'history', 'backup'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-            // Mostrar la seleccionada
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
-            
-            // Actualizar botones Nav
             document.querySelectorAll('.nav-btn').forEach(btn => {
                 btn.classList.remove('text-indigo-600');
                 btn.classList.add('text-slate-400');
@@ -257,18 +260,12 @@
             const activeBtn = document.getElementById(`btn-${viewName}`);
             activeBtn.classList.remove('text-slate-400');
             activeBtn.classList.add('text-indigo-600');
-
-            // Scroll al top
             document.getElementById('mainContainer').scrollTop = 0;
-            
-            // Refrescar datos si es necesario
             if(viewName === 'history' || viewName === 'home') applyFilter();
         }
 
-        // --- SERVICE WORKER REGISTRATION ---
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
 
-        // --- DATA INICIAL Y LÓGICA (MISMAS FUNCIONES, SOLO UI ACTUALIZADA) ---
         let foodData = [
             { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
             { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
@@ -293,14 +290,11 @@
             { id: 21, name: "Macro grasa", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
             { id: 22, name: "Ñoquis (Gnocchi)", p: 3.5, c: 36.0, f: 0.5, kcal: 165, unit: "g" },
             { id: 23, name: "Tubérculos (Patata/Batata)", p: 2, c: 21.0, f: 0.2, kcal: 94, unit: "g" },
-            // Propuestas Micro-unidades
             { id: 24, name: "Aceituna (Unidad ~4g)", p: 0.0, c: 0.0, f: 0.5, kcal: 6, unit: "u" },
             { id: 25, name: "Nuez (Grano ~5g)", p: 0.8, c: 0.7, f: 3.0, kcal: 33, unit: "u" },
             { id: 26, name: "Tomate Cherry (Unidad ~12g)", p: 0.1, c: 0.5, f: 0.0, kcal: 3, unit: "u" },
-            // Propuestas Macro-unidades
             { id: 27, name: "Tomate Ensalada (Unidad ~150g)", p: 1.5, c: 5.5, f: 0.3, kcal: 30, unit: "u" },
             { id: 28, name: "Manzana (Media ~180g)", p: 0.5, c: 25.0, f: 0.5, kcal: 95, unit: "u" },
-            // otros
             { id: 29, name: "Jamón Serrano", p: 33.5, c: 1.0, f: 12.2, kcal: 248, unit: "g" }
         ];
 
@@ -308,6 +302,7 @@
         let chartInstance = null;
         let modalChartInstance = null;
         let selectedIds = new Set();
+        let html5QrcodeScanner = null; // Variable para el scanner
 
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
@@ -318,8 +313,6 @@
             setTodayFilter(); 
             updatePreview();
             updateDayLabels();
-            
-            // Animación inicial
             switchView('home');
         });
 
@@ -361,43 +354,9 @@
             }
         }
 
-        // BÚSQUEDA API
+        // --- BÚSQUEDA API (TEXTO) ---
         function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
-        /*async function searchOnline() {
-            const query = document.getElementById('apiSearchInput').value;
-            if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
-            const loader = document.getElementById('searchLoader');
-            const icon = document.getElementById('searchIcon');
-            const resultsDiv = document.getElementById('searchResults');
-            
-            loader.classList.remove('hidden'); icon.classList.add('hidden');
-            resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
-
-            try {
-                const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,nutriments,id`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if(data.products && data.products.length > 0) {
-                    let html = '<ul class="divide-y divide-blue-50">';
-                    let found = false;
-                    data.products.forEach(prod => {
-                        if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
-                            found = true;
-                            const p = prod.nutriments['proteins_100g'] || 0;
-                            const c = prod.nutriments['carbohydrates_100g'] || 0;
-                            const f = prod.nutriments['fat_100g'] || 0;
-                            const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
-                            const safeName = (prod.product_name || "Sin nombre").replace(/'/g, "");
-                            html += `<li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})"><span class="font-medium text-slate-700 truncate w-3/4">${prod.product_name}</span><span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-md">${Math.round(k)}</span></li>`;
-                        }
-                    });
-                    if(!found) html += '<li class="p-3 text-slate-400 italic text-xs">Sin info válida.</li>';
-                    html += '</ul>';
-                    resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
-                } else { alert("Sin resultados."); }
-            } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
-        }*/
+        
         async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
             if(!query || query.length < 3) return alert("Escribe al menos 3 caracteres.");
@@ -409,9 +368,7 @@
             resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
 
             try {
-                // 1. AÑADIMOS 'brands' A LOS CAMPOS SOLICITADOS (fields)
                 const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,brands,nutriments,id`;
-                
                 const response = await fetch(url);
                 const data = await response.json();
 
@@ -425,16 +382,9 @@
                             const c = prod.nutriments['carbohydrates_100g'] || 0;
                             const f = prod.nutriments['fat_100g'] || 0;
                             const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
-                            
-                            // 2. CAPTURAMOS LA MARCA (Si no tiene, dejamos string vacío)
-                            const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : ''; // Cogemos solo la primera marca si hay varias
-                            
-                            // 3. CONSTRUIMOS EL NOMBRE COMPLETO (Nombre + Marca)
-                            // Quitamos comillas simples para evitar errores de JS en el onclick
+                            const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : ''; 
                             const rawName = (prod.product_name || "Sin nombre") + brand;
                             const safeName = rawName.replace(/'/g, ""); 
-
-                            // 4. MOSTRAMOS LA MARCA EN LA LISTA (en gris pequeñito)
                             html += `
                             <li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" 
                                 onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})">
@@ -452,6 +402,76 @@
                 } else { alert("Sin resultados."); }
             } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
+
+        // --- LÓGICA DE ESCANER ---
+        function startScanner() {
+            document.getElementById('scannerModal').classList.remove('hidden');
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
+            
+            // Preferir cámara trasera
+            html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
+            .catch(err => {
+                console.error(err);
+                alert("Error al iniciar cámara: " + err);
+                stopScanner();
+            });
+        }
+
+        function stopScanner() {
+            if(html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    document.getElementById('scannerModal').classList.add('hidden');
+                }).catch(err => console.log(err));
+            } else {
+                 document.getElementById('scannerModal').classList.add('hidden');
+            }
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            // Detenemos escaneo al detectar algo
+            html5QrcodeScanner.stop().then(() => {
+                html5QrcodeScanner.clear();
+                document.getElementById('scannerModal').classList.add('hidden');
+                handleBarcodeApi(decodedText);
+            }).catch(err => console.log(err));
+        }
+
+        async function handleBarcodeApi(code) {
+             const loader = document.getElementById('searchLoader');
+             const icon = document.getElementById('searchIcon');
+             loader.classList.remove('hidden'); icon.classList.add('hidden');
+
+             try {
+                // Endpoint directo para códigos de barras
+                const url = `https://es.openfoodfacts.org/api/v0/product/${code}.json`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if(data.status === 1 && data.product) {
+                    const prod = data.product;
+                    const p = prod.nutriments['proteins_100g'] || 0;
+                    const c = prod.nutriments['carbohydrates_100g'] || 0;
+                    const f = prod.nutriments['fat_100g'] || 0;
+                    const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
+                    
+                    const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : '';
+                    const name = (prod.product_name || "Producto escaneado") + brand;
+                    
+                    selectApiItem(name, p, c, f, k);
+                    alert(`Encontrado: ${name}`);
+                } else {
+                    alert("Producto no encontrado en la base de datos.");
+                }
+             } catch (e) {
+                 console.error(e);
+                 alert("Error al consultar el producto.");
+             } finally {
+                 loader.classList.add('hidden'); icon.classList.remove('hidden');
+             }
+        }
+
         function selectApiItem(name, p, c, f, kcal) {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
@@ -576,7 +596,6 @@
             if(!items.length) { tb.innerHTML='<tr><td colspan="4" class="p-8 text-center text-slate-400 italic text-sm">Sin registros</td></tr>'; return; }
             items.forEach(i => {
                 const ck = selectedIds.has(i.id)?'checked':'';
-                // Tabla simplificada para móvil
                 tb.innerHTML += `
                 <tr class="hover:bg-slate-50 group transition-colors">
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-indigo-600" onclick="toggleSelection(${i.id})" ${ck}></td>
@@ -592,14 +611,12 @@
         function calcTotals(items) {
             let p=0, c=0, f=0, k=0; items.forEach(i => { p+=i.p; c+=i.c; f+=i.f; k+=i.kcal; });
             
-            // Actualizar mini-labels en HOME
             if(document.getElementById('homeProt')) {
                 document.getElementById('homeProt').textContent = p.toFixed(0)+'g';
                 document.getElementById('homeCarbs').textContent = c.toFixed(0)+'g';
                 document.getElementById('homeFats').textContent = f.toFixed(0)+'g';
                 document.getElementById('homeKcal').textContent = k;
             }
-            // Actualizar footer en HISTORY
             if(document.getElementById('footKcal')) {
                 document.getElementById('footKcal').innerHTML = `${k} <span class="text-xs font-normal text-slate-500">kcal</span>`;
             }
@@ -609,8 +626,4 @@
         }
     </script>
 </body>
-
 </html>
-
-
-
