@@ -72,21 +72,16 @@
                         <div id="searchResults" class="hidden mt-2 max-h-40 overflow-y-auto bg-white border border-blue-100 rounded-lg shadow-sm text-xs z-10 relative"></div>
                     </div>
 
-                    <!-- <div> -->
-                        <!-- <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alimento</label> -->
-                        <!-- <select id="foodSelect" class="w-full rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select> -->
-						<div>
+                    <div>
     						<label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alimento</label>
    							<div class="flex gap-2">
-        						<select id="foodSelect" class="flex-1 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
+        						<select id="foodSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
         
-        						<button onclick="deleteSelectedFood()" class="bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center" title="Borrar alimento de la lista">
+        						<button onclick="deleteSelectedFood()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center" title="Borrar alimento de la lista">
             						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
         						</button>
     						</div>
 						</div>
-						
-                    <!-- </div> -->
 
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5" id="amountLabel">Cantidad (g)</label>
@@ -773,5 +768,6 @@
 	</div>	
 </body>
 </html>
+
 
 
