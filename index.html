@@ -74,7 +74,18 @@
 
                     <div>
                         <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alimento</label>
-                        <select id="foodSelect" class="w-full rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
+                        <!-- <select id="foodSelect" class="w-full rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select> -->
+						<div>
+    						<label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alimento</label>
+   							<div class="flex gap-2">
+        						<select id="foodSelect" class="flex-1 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
+        
+        						<button onclick="deleteSelectedFood()" class="bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center" title="Borrar alimento de la lista">
+            						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        						</button>
+    						</div>
+						</div>
+						
                     </div>
 
                     <div>
@@ -404,8 +415,8 @@
                     if(!found) html += '<li class="p-3 text-slate-400 italic text-xs">Sin info válida.</li>';
                     html += '</ul>';
                     resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
-                } else { alert("Sin resultados."); }
-            } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
+                } else { showToast("Sin resultados."); }
+            } catch (error) { console.error(error); showToast("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
         // --- ESCANER ---
@@ -452,12 +463,12 @@
                     const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : '';
                     const name = (prod.product_name || "Producto escaneado") + brand;
                     selectApiItem(name, p, c, f, k);
-                    alert(`Encontrado: ${name}`);
-                } else { alert("Producto no encontrado."); }
-             } catch (e) { console.error(e); alert("Error al consultar."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
+                    showToast(`Encontrado: ${name}`);
+                } else { showToast("Producto no encontrado."); }
+             } catch (e) { console.error(e); showToast("Error al consultar."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
-        function selectApiItem(name, p, c, f, kcal) {
+        /*function selectApiItem(name, p, c, f, kcal) {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
             
@@ -469,7 +480,17 @@
             updatePreview();
             document.getElementById('searchResults').classList.add('hidden');
             document.getElementById('apiSearchInput').value = '';
-        }
+        }*/
+		function selectApiItem(name, p, c, f, kcal) {
+    		const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
+    		// Se añade a la lista en memoria, pero NO se guarda en localStorage todavía
+    		foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });      
+    		populateSelect();
+    		document.getElementById('foodSelect').value = newId;
+    		updatePreview();
+    		document.getElementById('searchResults').classList.add('hidden');
+    		document.getElementById('apiSearchInput').value = '';
+		}
 
         // --- UTILS ---
         function initDateInputs() { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; }
@@ -498,7 +519,7 @@
         }
 
         // --- CRUD ---
-        function addItem() {
+        /*function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
             const dateInput = document.getElementById('entryDate');
@@ -525,7 +546,39 @@
             saveData(); 
             applyFilter();
             alert("Guardado!");
-        }
+        }*/
+			// Busca la función addItem y asegúrate de añadir saveFoods()
+		function addItem() {
+    		const select = document.getElementById('foodSelect');
+    		const amountInput = document.getElementById('amountInput');
+    		const dateInput = document.getElementById('entryDate');
+    		const amount = parseFloat(amountInput.value);
+    		const foodId = parseInt(select.value);
+    
+    		if (!amount || amount <= 0 || !dateInput.value) return alert("Revise datos.");
+
+    		const food = foodData.find(f => f.id === foodId);
+    		const factor = food.unit === 'g' ? amount / 100 : amount;
+
+    		globalLog.push({
+        		id: Date.now(),
+       		    date: dateInput.value,
+        		foodId: food.id,
+        		foodName: food.name,
+        		amount: amount,
+        		unit: food.unit,
+       			p: parseFloat((food.p * factor).toFixed(1)),
+        		c: parseFloat((food.c * factor).toFixed(1)),
+        		f: parseFloat((food.f * factor).toFixed(1)),
+        		kcal: Math.round(food.kcal * factor)
+    		});
+
+    		saveData(); 
+    		saveFoods(); // <-- NUEVA LÍNEA: Guarda la lista de alimentos (foodData) solo al confirmar el registro
+    
+    		applyFilter();
+    		showToast("Guardado!");
+		}
 
         function deleteItem(id) { if(confirm('¿Borrar?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
         
@@ -586,7 +639,7 @@
                             globalLog = d; 
                             saveData(); 
                             applyFilter(); 
-                            alert("Historial importado.");
+                            showToast("Historial importado.");
                         }
                     } 
                     // Caso 2: Backup Nuevo (Objeto con historial y alimentos)
@@ -598,11 +651,11 @@
                             if(d.history) { globalLog = d.history; saveData(); }
                             if(d.foods) { foodData = d.foods; saveFoods(); populateSelect(); }
                             applyFilter();
-                            alert("Restauración completa.");
+                            showToast("Restauración completa.");
                         }
                     }
                     else {
-                        alert("Formato de archivo no reconocido.");
+                        showToast("Formato de archivo no reconocido.");
                     }
                 } catch(err){ console.error(err); alert("Error al leer el archivo."); } 
                 input.value=''; 
@@ -679,6 +732,45 @@
             const ctx = document.getElementById('macroChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
             const h = (p+c+f)>0; chartInstance = new Chart(ctx, { type:'doughnut', data:{ labels:['Prot','Carbs','Grasas'], datasets:[{data:h?[p*4,c*4,f*9]:[1,1,1], backgroundColor:h?['#39f792','#eab308','#ef4444']:['#f1f5f9','#f1f5f9','#f1f5f9'], borderWidth:0}] }, options:{responsive:true, maintainAspectRatio:false, cutout:'75%', plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}}}}} });
         }
+		function deleteSelectedFood() {
+    		const select = document.getElementById('foodSelect');
+    		const id = parseInt(select.value);
+    
+    		if (!id) return;
+
+    		if (confirm('¿Desea eliminar este alimento de la lista desplegable permanentemente?')) {
+        		// Filtrar el alimento fuera del array
+        		foodData = foodData.filter(f => f.id !== id);
+        
+        		// Guardar cambios y actualizar UI
+        		saveFoods(); 
+        		populateSelect();
+        		updatePreview();
+    		}
+		}
+		////
+		function showToast(message, type = 'success') {
+    		const toast = document.getElementById('toast');
+    		const msg = document.getElementById('toastMsg');
+    
+    		// Configurar mensaje
+    		msg.textContent = message;
+    
+    		// Mostrar (quitamos clases de ocultación y añadimos las de visualización)
+    		toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+    		toast.classList.add('opacity-100', 'translate-y-0');
+    
+    		// Ocultar automáticamente después de 2.5 segundos
+    		setTimeout(() => {
+        		toast.classList.remove('opacity-100', 'translate-y-0');
+        		toast.classList.add('opacity-0', 'translate-y-[-20px]');
+    		}, 2500);
+		}
     </script>
+	<div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none z-[80] flex items-center gap-2">
+    	<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+    	<span id="toastMsg" class="text-sm font-medium">Acción realizada</span>
+	</div>	
 </body>
 </html>
+
