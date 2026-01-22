@@ -22,7 +22,7 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Utilidad para respetar el área segura en iPhone (Barra inferior de gestos) */
+        /* Utilidad para respetar el área segura en iPhone */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
 
         .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
@@ -165,8 +165,8 @@
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-bold text-slate-800">Exportar copia</h3>
-                        <p class="text-xs text-slate-500">Guardar o compartir backup JSON</p>
+                        <h3 class="font-bold text-slate-800">Exportar todo</h3>
+                        <p class="text-xs text-slate-500">Backup completo (Historial + Alimentos)</p>
                     </div>
                     <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
@@ -189,7 +189,7 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="font-bold text-red-600">Borrar todo</h3>
-                        <p class="text-xs text-red-300">Eliminar historial localmente</p>
+                        <p class="text-xs text-red-300">Eliminar historial y alimentos personalizados</p>
                     </div>
                 </div>
             </div>
@@ -252,7 +252,7 @@
     </div>
 
     <script>
-        // --- GESTIÓN DE VISTAS (TAB NAVIGATION) ---
+        // --- GESTIÓN DE VISTAS ---
         function switchView(viewName) {
             ['home', 'history', 'backup'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
             document.getElementById(`view-${viewName}`).classList.remove('hidden');
@@ -269,6 +269,8 @@
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
 
+        // --- DATOS INICIALES ---
+        // Lista base hardcodeada. Si hay datos guardados, se sobreescribirá en loadData()
         let foodData = [
             { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
             { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
@@ -305,7 +307,7 @@
         let chartInstance = null;
         let modalChartInstance = null;
         let selectedIds = new Set();
-        let html5QrcodeScanner = null; // Variable para el scanner
+        let html5QrcodeScanner = null;
 
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
@@ -357,7 +359,7 @@
             }
         }
 
-        // --- BÚSQUEDA API (TEXTO) ---
+        // --- BÚSQUEDA API ---
         function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
         
         async function searchOnline() {
@@ -406,19 +408,13 @@
             } catch (error) { console.error(error); alert("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
-        // --- LÓGICA DE ESCANER ---
+        // --- ESCANER ---
         function startScanner() {
             document.getElementById('scannerModal').classList.remove('hidden');
             html5QrcodeScanner = new Html5Qrcode("reader");
             const config = { fps: 10, qrbox: { width: 250, height: 250 }, aspectRatio: 1.0 };
-            
-            // Preferir cámara trasera
             html5QrcodeScanner.start({ facingMode: "environment" }, config, onScanSuccess)
-            .catch(err => {
-                console.error(err);
-                alert("Error al iniciar cámara: " + err);
-                stopScanner();
-            });
+            .catch(err => { console.error(err); alert("Error cámara: " + err); stopScanner(); });
         }
 
         function stopScanner() {
@@ -427,13 +423,10 @@
                     html5QrcodeScanner.clear();
                     document.getElementById('scannerModal').classList.add('hidden');
                 }).catch(err => console.log(err));
-            } else {
-                 document.getElementById('scannerModal').classList.add('hidden');
-            }
+            } else { document.getElementById('scannerModal').classList.add('hidden'); }
         }
 
         function onScanSuccess(decodedText, decodedResult) {
-            // Detenemos escaneo al detectar algo
             html5QrcodeScanner.stop().then(() => {
                 html5QrcodeScanner.clear();
                 document.getElementById('scannerModal').classList.add('hidden');
@@ -445,9 +438,7 @@
              const loader = document.getElementById('searchLoader');
              const icon = document.getElementById('searchIcon');
              loader.classList.remove('hidden'); icon.classList.add('hidden');
-
              try {
-                // Endpoint directo para códigos de barras
                 const url = `https://es.openfoodfacts.org/api/v0/product/${code}.json`;
                 const response = await fetch(url);
                 const data = await response.json();
@@ -458,26 +449,21 @@
                     const c = prod.nutriments['carbohydrates_100g'] || 0;
                     const f = prod.nutriments['fat_100g'] || 0;
                     const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
-                    
                     const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : '';
                     const name = (prod.product_name || "Producto escaneado") + brand;
-                    
                     selectApiItem(name, p, c, f, k);
                     alert(`Encontrado: ${name}`);
-                } else {
-                    alert("Producto no encontrado en la base de datos.");
-                }
-             } catch (e) {
-                 console.error(e);
-                 alert("Error al consultar el producto.");
-             } finally {
-                 loader.classList.add('hidden'); icon.classList.remove('hidden');
-             }
+                } else { alert("Producto no encontrado."); }
+             } catch (e) { console.error(e); alert("Error al consultar."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
         function selectApiItem(name, p, c, f, kcal) {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
+            
+            // Persistencia: Guardamos la lista actualizada de alimentos
+            saveFoods();
+            
             populateSelect();
             document.getElementById('foodSelect').value = newId;
             updatePreview();
@@ -485,7 +471,7 @@
             document.getElementById('apiSearchInput').value = '';
         }
 
-        // UTILS
+        // --- UTILS ---
         function initDateInputs() { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; }
         function setTodayFilter() { const t = new Date().toISOString().split('T')[0]; document.getElementById('filterStart').value = t; document.getElementById('filterEnd').value = t; updateDayLabels(); applyFilter(); }
         function shiftDate(d) {
@@ -511,7 +497,7 @@
             if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
         }
 
-        // CRUD
+        // --- CRUD ---
         function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
@@ -542,23 +528,89 @@
         }
 
         function deleteItem(id) { if(confirm('¿Borrar?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
-        function resetApp() { if(confirm('¿BORRAR TODO?')) { localStorage.removeItem('macroCalculatorData'); globalLog = []; selectedIds.clear(); applyFilter(); } }
-
-        // EXPORT/IMPORT
-        async function exportData() {
-            if(!globalLog.length) return alert("Sin datos.");
-            const f = new File([JSON.stringify(globalLog,null,2)], `backup_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
-            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup Nutri'}); return; } catch(e){} }
-            const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(globalLog,null,2)], {type:"application/json"})); a.download=f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        
+        function resetApp() { 
+            if(confirm('¿BORRAR TODO (Historial y Alimentos guardados)?')) { 
+                localStorage.removeItem('macroCalculatorData'); 
+                localStorage.removeItem('macroCalculatorFoods'); // Borrar también alimentos
+                globalLog = []; 
+                selectedIds.clear(); 
+                // Recargar página para restaurar alimentos originales
+                window.location.reload();
+            } 
         }
+
+        // --- PERSISTENCIA Y BACKUP (NUEVO) ---
+        function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
+        function saveFoods() { localStorage.setItem('macroCalculatorFoods', JSON.stringify(foodData)); }
+        
+        function loadData() { 
+            // Cargar Historial
+            const s = localStorage.getItem('macroCalculatorData'); 
+            if(s) globalLog = JSON.parse(s); 
+            
+            // Cargar Alimentos Personalizados
+            const f = localStorage.getItem('macroCalculatorFoods');
+            if(f) {
+                // Sobreescribimos la lista hardcodeada con la guardada que ya incluye los nuevos
+                foodData = JSON.parse(f);
+            }
+        }
+
+        async function exportData() {
+            if(!globalLog.length && foodData.length <= 29) return alert("Sin datos nuevos para exportar.");
+            
+            // Creamos un objeto que contenga TODO
+            const backupObject = {
+                version: 2,
+                timestamp: new Date().toISOString(),
+                history: globalLog,
+                foods: foodData
+            };
+
+            const f = new File([JSON.stringify(backupObject,null,2)], `backup_completo_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
+            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup Nutri Completo'}); return; } catch(e){} }
+            const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(backupObject,null,2)], {type:"application/json"})); a.download=f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+        }
+
         function handleImport(input) {
             const f = input.files[0]; if(!f) return;
-            const r = new FileReader(); r.onload = e => { try { const d = JSON.parse(e.target.result); if(Array.isArray(d) && confirm(`¿Importar ${d.length} registros?`)) { globalLog = d; saveData(); applyFilter(); alert("Hecho."); } } catch(err){ alert("Error archivo."); } input.value=''; }; r.readAsText(f);
+            const r = new FileReader(); 
+            r.onload = e => { 
+                try { 
+                    const d = JSON.parse(e.target.result); 
+                    
+                    // Caso 1: Backup Antiguo (Array simple de historial)
+                    if(Array.isArray(d)) {
+                        if(confirm(`Detectado backup antiguo (Solo Historial).\n¿Importar ${d.length} registros?`)) {
+                            globalLog = d; 
+                            saveData(); 
+                            applyFilter(); 
+                            alert("Historial importado.");
+                        }
+                    } 
+                    // Caso 2: Backup Nuevo (Objeto con historial y alimentos)
+                    else if (d.history || d.foods) {
+                        const countH = d.history ? d.history.length : 0;
+                        const countF = d.foods ? d.foods.length : 0;
+                        
+                        if(confirm(`Backup Completo encontrado.\n- ${countH} registros de historial\n- ${countF} alimentos en catálogo\n\n¿Restaurar todo?`)) {
+                            if(d.history) { globalLog = d.history; saveData(); }
+                            if(d.foods) { foodData = d.foods; saveFoods(); populateSelect(); }
+                            applyFilter();
+                            alert("Restauración completa.");
+                        }
+                    }
+                    else {
+                        alert("Formato de archivo no reconocido.");
+                    }
+                } catch(err){ console.error(err); alert("Error al leer el archivo."); } 
+                input.value=''; 
+            }; 
+            r.readAsText(f);
         }
-        function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
-        function loadData() { const s = localStorage.getItem('macroCalculatorData'); if(s) globalLog = JSON.parse(s); }
 
-        // MODAL & SELECCION
+        // --- MODAL & SELECCION ---
         function toggleSelection(id) { selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id); updateFab(); }
         function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseInt(c.dataset.id); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
         function updateFab() {
@@ -587,7 +639,7 @@
         }
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
-        // RENDER & CALC
+        // --- RENDER & CALC ---
         function applyFilter() {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = globalLog.sort((a,b)=>b.id-a.id);
