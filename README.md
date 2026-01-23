@@ -80,7 +80,7 @@ Esta aplicación es una **PWA (Progressive Web App)** estática.
 ## Disclaimer (Descargo de Responsabilidad)
 
 **1. Propósito Informativo**
-Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de autogestión. La información proporcionada no constituye consejo médico.
+Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de autogestión. La información proporcionada no constituye consejo profesional alguno, si tienes dudas, o no te interesa no la uses.
 
 **2. Exactitud de los Datos**
 * Los valores nutricionales predeterminados son aproximaciones.
