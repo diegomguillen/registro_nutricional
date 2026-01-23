@@ -68,7 +68,7 @@ Ubicado en la pestaña "Datos", permite la persistencia total:
 * **Importar copia:** Restaura todos los datos desde un archivo previo.
 * **Borrar todo:** Factory Reset (elimina historial, alimentos y recetas del navegador).
 
-## Instalación y Requisitos Técnicos
+## 4. Instalación y Requisitos Técnicos
 
 Esta aplicación es una **PWA (Progressive Web App)** estática.
 
@@ -76,8 +76,17 @@ Esta aplicación es una **PWA (Progressive Web App)** estática.
 * **Instalación:** Puede añadir la aplicación a la pantalla de inicio de su dispositivo móvil para utilizarla como una aplicación nativa y acceder a ella sin conexión.
 * **Tecnologías:** HTML5, Tailwind CSS, Chart.js, Html5Qrcode.
 * **Enlace a la App:** [https://diegomguillen.github.io/registro_nutricional](https://diegomguillen.github.io/registro_nutricional)
+## 5. Licencia y Atribución de Datos (Open Food Facts)
 
-## Disclaimer (Descargo de Responsabilidad)
+Esta aplicación utiliza datos, productos e información nutricional procedentes de **Open Food Facts**.
+
+* **Fuente de Datos:** [Open Food Facts](https://es.openfoodfacts.org) - La base de datos de productos alimenticios libre y abierta.
+* **Licencia de la Base de Datos:** Los datos están disponibles bajo la [Open Database License (ODbL)](https://opendatacommons.org/licenses/odbl/1-0/).
+* **Licencia de Contenidos:** Cualquier contenido individual (como imágenes) está disponible bajo la [Database Contents License (DbCL)](https://opendatacommons.org/licenses/dbcl/1-0/).
+* **Colaboradores:** Agradecimiento a los miles de contribuyentes que mantienen y actualizan la base de datos de Open Food Facts diariamente.
+
+El uso de estos datos no implica el respaldo de Open Food Facts al proyecto NutriApp.
+## 6 .Disclaimer (Descargo de Responsabilidad)
 
 **1. Propósito Informativo**
 Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de autogestión. La información proporcionada no constituye consejo profesional alguno, si tiene dudas, o no le interesa, no la use.
