@@ -68,7 +68,7 @@ Ubicado en la pestaña "Datos", permite la persistencia total:
 * **Importar copia:** Restaura todos los datos desde un archivo previo.
 * **Borrar todo:** Factory Reset (elimina historial, alimentos y recetas del navegador).
 
-## 4. Instalación y Requisitos Técnicos
+### 4. Instalación y Requisitos Técnicos
 
 Esta aplicación es una **PWA (Progressive Web App)** estática.
 
@@ -76,7 +76,7 @@ Esta aplicación es una **PWA (Progressive Web App)** estática.
 * **Instalación:** Puede añadir la aplicación a la pantalla de inicio de su dispositivo móvil para utilizarla como una aplicación nativa y acceder a ella sin conexión.
 * **Tecnologías:** HTML5, Tailwind CSS, Chart.js, Html5Qrcode.
 * **Enlace a la App:** [https://diegomguillen.github.io/registro_nutricional](https://diegomguillen.github.io/registro_nutricional)
-## 5. Licencia y Atribución de Datos (Open Food Facts)
+### 5. Licencia y Atribución de Datos (Open Food Facts)
 
 Esta aplicación utiliza datos, productos e información nutricional procedentes de **Open Food Facts**.
 
@@ -86,7 +86,7 @@ Esta aplicación utiliza datos, productos e información nutricional procedentes
 * **Colaboradores:** Agradecimiento a los miles de contribuyentes que mantienen y actualizan la base de datos de Open Food Facts diariamente.
 
 El uso de estos datos no implica el respaldo de Open Food Facts al proyecto NutriApp.
-## 6 .Disclaimer (Descargo de Responsabilidad)
+### 6 .Disclaimer (Descargo de Responsabilidad)
 
 **1. Propósito Informativo**
 Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de autogestión. La información proporcionada no constituye consejo profesional alguno, si tiene dudas, o no le interesa, no la use.
