@@ -89,5 +89,6 @@ Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de a
 
 **3. Privacidad**
 NutriApp funciona del lado del cliente (*client-side*). Todos los datos (incluyendo recetas e historial) se almacenan exclusivamente en su dispositivo, solo los usa la app, nadie externo puede acceder a ellos, esta aplicación
-no almacena datos en servidores externos, es. No se envían datos servidores externos, más allá de los puramente necesarios para que el servidor que aloja la web sepa que tiene que servírsela a su navegador.
-Para borrar **todos** los rastros de Nutriapp simplemente pulse borrar todo desde la pestaña de "Gestión de datos" y elimine de la carpeta de descargas el archivo de copia de seguridad.
+no almacena datos en servidores externos, es. No se envían datos servidores externos, más allá de los puramente necesarios para que el servidor que aloja la web sepa que tiene que servírsela a su navegador, o el nombre o código de
+barras del alimento a buscar.
+Para borrar **todos** los rastros de Nutriapp simplemente pulse borrar todo desde la pestaña de "Gestión de datos" y elimine de la carpeta de descargas el archivo de copia de seguridad, y desinstalarla (si se la ha instalado).
