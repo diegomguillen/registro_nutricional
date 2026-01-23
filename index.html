@@ -12,6 +12,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+		<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
         body { 
@@ -257,6 +259,25 @@
                 </div>
             </div>
         </div>
+				<div id="view-info" class="space-y-6 hidden animate-fade-in">
+						<header>
+								<h1 class="text-2xl font-bold text-slate-900">Información y guía de uso</h1>
+								<p class="text-slate-500 text-sm">Documentación del proyecto</p>
+						</header>
+
+						<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 overflow-hidden">
+								<div id="readmeContainer" class="prose prose-slate prose-sm max-w-none prose-headings:text-slate-800 prose-a:text-indigo-600">
+										<div class="flex flex-col items-center justify-center py-10 text-slate-400">
+												<div class="loader mb-2"></div>
+												<p>Cargando documentación...</p>
+										</div>
+								</div>
+						</div>
+    
+						<div class="text-center">
+        <p class="text-[10px] text-slate-400">Versión del sistema: <span id="appVersion">v1.0</span></p>
+						</div>
+				</div>
 
     </main>
 
@@ -273,6 +294,10 @@
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
             <span class="text-[10px] font-bold">Datos</span>
         </button>
+				<button onclick="switchView('info')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-info">
+					<svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+					<span class="text-[10px] font-bold">Info</span>
+				</button>
     </nav>
 
     <div id="analyzeFab" class="fixed bottom-20 right-5 hidden z-50 animate-bounce-in">
@@ -358,19 +383,28 @@
 
     <script>
         // --- GESTIÓN DE VISTAS ---
-        function switchView(viewName) {
-            ['home', 'history', 'backup'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
-            document.getElementById(`view-${viewName}`).classList.remove('hidden');
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-indigo-600');
-                btn.classList.add('text-slate-400');
-            });
-            const activeBtn = document.getElementById(`btn-${viewName}`);
-            activeBtn.classList.remove('text-slate-400');
-            activeBtn.classList.add('text-indigo-600');
-            document.getElementById('mainContainer').scrollTop = 0;
-            if(viewName === 'history' || viewName === 'home') applyFilter();
-        }
+				function switchView(viewName) {
+    // Añadimos 'info' al array
+						['home', 'history', 'backup', 'info'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+    
+						document.getElementById(`view-${viewName}`).classList.remove('hidden');
+    
+						document.querySelectorAll('.nav-btn').forEach(btn => {
+								btn.classList.remove('text-indigo-600');
+								btn.classList.add('text-slate-400');
+						});
+    
+						const activeBtn = document.getElementById(`btn-${viewName}`);
+						activeBtn.classList.remove('text-slate-400');
+						activeBtn.classList.add('text-indigo-600');
+    
+						document.getElementById('mainContainer').scrollTop = 0;
+    
+						if(viewName === 'history' || viewName === 'home') applyFilter();
+    
+						// NUEVO: Si entramos en info, cargamos el readme
+						if(viewName === 'info') loadReadme();
+				}
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
 
@@ -841,6 +875,37 @@
                 window.location.reload();
             } 
         }
+				let readmeLoaded = false;
+
+				async function loadReadme() {
+						if(readmeLoaded) return; // Evitar cargar cada vez si ya lo tenemos
+
+						const container = document.getElementById('readmeContainer');
+						try {
+								// Petición al archivo local
+								const response = await fetch('./README.md');
+								
+								if (!response.ok) throw new Error("No se encontró el archivo README.md");
+								
+								const text = await response.text();
+								
+								// Convertir Markdown a HTML usando la librería 'marked'
+								container.innerHTML = marked.parse(text);
+								
+								// Ajuste opcional: forzar que los enlaces se abran en nueva pestaña
+								container.querySelectorAll('a').forEach(a => a.target = '_blank');
+								
+								readmeLoaded = true;
+						} catch (error) {
+								console.error(error);
+								container.innerHTML = `
+										<div class="text-center py-8">
+												<p class="text-red-500 font-bold mb-2">Error al cargar documentación</p>
+												<p class="text-xs text-slate-500">${error.message}</p>
+												<p class="text-xs text-slate-400 mt-4">Asegúrate de que el archivo README.md está en la misma carpeta que el index.html</p>
+										</div>`;
+						}
+				}
 
         // --- PERSISTENCIA ---
         function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
