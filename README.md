@@ -80,7 +80,7 @@ Esta aplicación es una **PWA (Progressive Web App)** estática.
 ## Disclaimer (Descargo de Responsabilidad)
 
 **1. Propósito Informativo**
-Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de autogestión. La información proporcionada no constituye consejo profesional alguno, si tienes dudas, o no te interesa no la uses.
+Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de autogestión. La información proporcionada no constituye consejo profesional alguno, si tiene dudas, o no le interesa, no la use.
 
 **2. Exactitud de los Datos**
 * Los valores nutricionales predeterminados son aproximaciones.
@@ -88,5 +88,6 @@ Esta aplicación ha sido desarrollada con fines exclusivamente educativos y de a
 * El contador de "Proyección de Registros" es un valor algorítmico estimado, no un dato en tiempo real de servidor, es así para garantizar la privacidad al máximo nivel.
 
 **3. Privacidad**
-NutriApp funciona del lado del cliente (*client-side*). Todos los datos (incluyendo recetas e historial) se almacenan exclusivamente en su dispositivo. No se envían datos personales a servidores externos.
+NutriApp funciona del lado del cliente (*client-side*). Todos los datos (incluyendo recetas e historial) se almacenan exclusivamente en su dispositivo, solo los usa la app, nadie externo puede acceder a ellos, esta aplicación
+no almacena datos en servidores externos, es. No se envían datos servidores externos, más allá de los puramente necesarios para que el servidor que aloja la web sepa que tiene que servírsela a su navegador.
 Para borrar **todos** los rastros de Nutriapp simplemente pulse borrar todo desde la pestaña de "Gestión de datos" y elimine de la carpeta de descargas el archivo de copia de seguridad.
