@@ -21,16 +21,12 @@
         }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        /* Utilidad para respetar el área segura en iPhone */
         .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-
         .custom-checkbox { width: 1.2rem; height: 1.2rem; cursor: pointer; }
         .modal-enter { opacity: 0; transform: scale(0.95); }
         .modal-enter-active { opacity: 1; transform: scale(1); transition: opacity 0.2s, transform 0.2s; }
         .loader { border: 2px solid #f3f3f3; border-top: 2px solid #3b82f6; border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
         .action-card { transition: transform 0.1s, background-color 0.2s; }
         .action-card:active { transform: scale(0.98); background-color: #f9fafb; }
     </style>
@@ -40,13 +36,18 @@
     <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-5 pb-32">
         
         <div id="view-home" class="space-y-6 animate-fade-in">
-            <header class="flex items-center gap-3 mb-2">
-				<img src="icon3.png" class="w-12 h-12 rounded-xl shadow-sm bg-white p-1" alt="Logo App">
-                <div>
-                    <h1 class="text-2xl font-bold text-slate-900 leading-tight">NutriApp</h1>
-                    <p class="text-slate-500 text-sm">Añade tus comidas de hoy</p>
+            <header class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-3">
+                    <img src="icon3.png" class="w-12 h-12 rounded-xl shadow-sm bg-white p-1" alt="Logo App">
+                    <div>
+                        <h1 class="text-2xl font-bold text-slate-900 leading-tight">NutriApp</h1>
+                        <p class="text-slate-500 text-sm">Añade tus comidas de hoy</p>
+                    </div>
                 </div>
-			</header>
+                <button onclick="shareWhatsapp()" class="w-10 h-10 rounded-full bg-green-100 text-green-600 flex items-center justify-center shadow-sm active:scale-95 transition-transform">
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+                </button>
+            </header>
 
             <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
                 <div class="space-y-4">
@@ -56,14 +57,12 @@
                     </div>
 
                     <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear bar code</label>
+                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear</label>
                         <div class="flex gap-2">
                             <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..." class="w-full bg-white rounded-lg border-blue-200 text-sm p-2 focus:border-blue-500 focus:outline-none" onkeypress="handleEnter(event)">
-                            
                             <button onclick="startScanner()" class="bg-blue-100 text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-200 border border-blue-200">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h.01M10 4h4v1h-4V4zm-4 7h.01M6 16h4v4H6v-4zm12-4h2v2h-2v-2zm-6-8h6v6h-6V4zm-6 0h6v6H6V4zm6 12h2v2h-2v-2z"></path></svg>
                             </button>
-
                             <button onclick="searchOnline()" class="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-700">
                                 <svg id="searchIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                                 <div id="searchLoader" class="loader hidden"></div>
@@ -72,29 +71,76 @@
                         <div id="searchResults" class="hidden mt-2 max-h-40 overflow-y-auto bg-white border border-blue-100 rounded-lg shadow-sm text-xs z-10 relative"></div>
                     </div>
 
-                    <div>
-    						<label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alimento</label>
-   							<div class="flex gap-2">
-        						<select id="foodSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
-        
-        						<button onclick="deleteSelectedFood()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center" title="Borrar alimento de la lista">
-            						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-        						</button>
-    						</div>
-						</div>
+                    <div class="border-t border-slate-100 my-4"></div>
 
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5" id="amountLabel">Cantidad (g)</label>
-                        <input type="number" id="amountInput" class="w-full rounded-xl border-slate-200 bg-slate-50 p-3 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="100" value="100">
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider">Añadir Alimento</h3>
+                        <div>
+                            <div class="flex gap-2">
+                                <select id="foodSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
+                                <button onclick="deleteSelectedFood()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1" id="amountLabel">Cantidad (g)</label>
+                            <input type="number" id="amountInput" class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="100" value="100">
+                        </div>
+
+                        <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                             <div id="previewData" class="text-sm"></div>
+                        </div>
+
+                        <div onclick="addItem()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer mt-2 group">
+                            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-indigo-700">Añadir Alimento</h3>
+                                <p class="text-xs text-slate-500">Registrar en historial</p>
+                            </div>
+                            <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
                     </div>
 
-                    <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                         <div id="previewData" class="text-sm"></div>
+                    <div class="border-t border-slate-100 my-4"></div>
+
+                    <div class="space-y-3">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider">Añadir Receta</h3>
+                        <div>
+                            <div class="flex gap-2">
+                                <select id="recipeSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200">
+                                    <option value="" disabled selected>Selecciona una receta...</option>
+                                </select>
+                                <button onclick="deleteSelectedRecipe()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cantidad (Unidades)</label>
+                            <input type="number" id="recipeAmountInput" step="0.1" class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="1.0" value="1">
+                        </div>
+
+                         <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                             <div id="previewRecipeData" class="text-sm text-center text-slate-400 italic">Selecciona una receta para previsualizar</div>
+                        </div>
+
+                        <div onclick="addRecipeLog()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer mt-2 group">
+                            <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:scale-110 transition-transform">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                            </div>
+                            <div class="flex-1">
+                                <h3 class="font-bold text-emerald-700">Añadir Receta</h3>
+                                <p class="text-xs text-slate-500">Registrar en historial</p>
+                            </div>
+                            <svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </div>
                     </div>
 
-                    <button onclick="addItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-md shadow-indigo-200 active:transform active:scale-95 transition-all text-sm">
-                        Añadir Registro
-                    </button>
                 </div>
             </div>
 
@@ -109,6 +155,17 @@
                     <div class="bg-red-50 rounded-lg p-2"><div class="text-[10px] text-orange-600 font-bold">GRAS</div><div id="homeFats" class="text-xs font-bold text-slate-700">0g</div></div>
                     <div class="bg-green-50 rounded-lg p-2"><div class="text-[10px] text-green-600 font-bold">KCAL</div><div id="homeKcal" class="text-xs font-bold text-slate-700">0</div></div>
                 </div>
+								<div class="mt-6 pt-4 border-t border-slate-50 flex flex-col items-center justify-center animate-fade-in">
+										<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Proyección de Actividad de usuarios de NutriApp</p>
+											<div class="bg-slate-50 border border-slate-100 rounded-full px-4 py-1.5 flex items-center gap-2 shadow-sm">
+												<span class="relative flex h-2 w-2">
+												<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+												<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+												</span>
+												<span class="text-xs text-slate-500 font-medium">Registros globales:</span>
+												<span id="liveCounter" class="font-mono font-bold text-slate-700 text-sm">20.000</span>
+											</div>
+								</div>
             </div>
         </div>
 
@@ -144,7 +201,7 @@
                         <thead class="bg-slate-50 text-slate-500">
                             <tr>
                                 <th class="px-4 py-3 w-8"><input type="checkbox" onclick="toggleAll(this)" class="custom-checkbox rounded text-indigo-600"></th>
-                                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Alimento</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Item</th>
                                 <th class="px-4 py-3 text-right text-xs font-bold uppercase">Kcal</th>
                                 <th class="px-4 py-3"></th>
                             </tr>
@@ -172,7 +229,7 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="font-bold text-slate-800">Exportar todo</h3>
-                        <p class="text-xs text-slate-500">Backup completo (Historial + Alimentos)</p>
+                        <p class="text-xs text-slate-500">Backup completo (Historial + Alimentos + Recetas)</p>
                     </div>
                     <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                 </div>
@@ -195,7 +252,7 @@
                     </div>
                     <div class="flex-1">
                         <h3 class="font-bold text-red-600">Borrar todo</h3>
-                        <p class="text-xs text-red-300">Eliminar historial y alimentos personalizados</p>
+                        <p class="text-xs text-red-300">Factory Reset</p>
                     </div>
                 </div>
             </div>
@@ -226,12 +283,12 @@
     </div>
 
     <div id="detailModal" class="fixed inset-0 bg-black/60 hidden z-[60] flex items-end sm:items-center justify-center backdrop-blur-sm">
-        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-slide-up sm:animate-fade-in">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-slide-up sm:animate-fade-in relative">
             <div class="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-slate-800">Análisis</h3>
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600 bg-white rounded-full p-1 border"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
             </div>
-            <div class="p-5">
+            <div class="p-5 pb-10">
                 <div class="grid grid-cols-3 gap-2 mb-6 text-center">
                     <div class="p-2 bg-green-50 rounded-xl border border-red-100"><div class="text-[10px] text-red-600 font-bold uppercase">Prot</div><div class="text-lg font-bold text-slate-800"><span id="modalP">0</span>g</div></div>
                     <div class="p-2 bg-yellow-50 rounded-xl border border-yellow-100"><div class="text-[10px] text-yellow-600 font-bold uppercase">Carbs</div><div class="text-lg font-bold text-slate-800"><span id="modalC">0</span>g</div></div>
@@ -239,9 +296,51 @@
                 </div>
                 <div class="text-center mb-6"><span class="text-3xl font-black text-slate-900" id="modalKcal">0</span><span class="text-sm text-slate-500 font-medium ml-1">kcal</span></div>
                 <div class="h-40 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
-                <div class="border-t border-slate-100 pt-4"><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Elementos</h4><ul id="modalList" class="text-sm text-slate-600 space-y-2 max-h-32 overflow-y-auto"></ul></div>
+                <div class="border-t border-slate-100 pt-4"><h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Elementos (Desglose)</h4><ul id="modalList" class="text-sm text-slate-600 space-y-2 max-h-48 overflow-y-auto"></ul></div>
             </div>
-            <div class="p-4 bg-slate-50"><button onclick="closeModal()" class="w-full bg-slate-200 text-slate-700 font-bold py-3 rounded-xl">Cerrar</button></div>
+            <div class="absolute bottom-4 right-4">
+                <button onclick="openRecipeModal()" class="bg-indigo-600 text-white w-12 h-12 rounded-full shadow-lg shadow-indigo-300 flex items-center justify-center active:scale-95 transition-transform" title="Crear receta con selección">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="recipeModal" class="fixed inset-0 bg-black/60 hidden z-[70] flex items-center justify-center backdrop-blur-sm px-4">
+        <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl animate-fade-in">
+            <h3 class="text-lg font-bold text-slate-800 mb-4">Nueva Receta</h3>
+            <div class="space-y-3 mb-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Nombre</label>
+                    <input type="text" id="recipeName" class="w-full rounded-lg border-slate-200 bg-slate-50 p-2 text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Descripción</label>
+                    <textarea id="recipeDesc" rows="2" class="w-full rounded-lg border-slate-200 bg-slate-50 p-2 text-sm"></textarea>
+                </div>
+                <p class="text-xs text-slate-400 italic">Se creará una receta sumando los valores de los elementos seleccionados.</p>
+            </div>
+
+            <div class="space-y-3">
+                 <div onclick="saveRecipe()" class="action-card bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    <div class="w-10 h-10 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-indigo-700 text-sm">Guardar Receta</h3>
+                    </div>
+                </div>
+
+                <div onclick="document.getElementById('recipeModal').classList.add('hidden')" class="action-card bg-white rounded-2xl p-3 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 flex-shrink-0">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </div>
+                    <div class="flex-1">
+                        <h3 class="font-bold text-slate-600 text-sm">Cancelar</h3>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -276,7 +375,6 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
 
         // --- DATOS INICIALES ---
-        // Lista base hardcodeada. Si hay datos guardados, se sobreescribirá en loadData()
         let foodData = [
             { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
             { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
@@ -310,21 +408,71 @@
         ];
 
         let globalLog = []; 
+        let recipeData = []; 
         let chartInstance = null;
         let modalChartInstance = null;
         let selectedIds = new Set();
         let html5QrcodeScanner = null;
+        //
+				// --- CONTADOR SIMULADO ---
+				// Fecha base: 1 Ene 2024 (Para que el contador tenga un número base sólido)
+				const COUNTER_START_DATE = 1704067200000; 
+				const BASE_COUNT = 875773; 
+				// Velocidad: 1 registro nuevo cada 3 minutos (promedio simulado)
+				const MS_PER_COUNT = 180000; 
 
+				function updateLiveCounter() {
+						// 1. Cálculo basado en tiempo (Simulación Global)
+						const now = Date.now();
+						const timeDiff = now - COUNTER_START_DATE;
+						const timeBasedCount = Math.floor(timeDiff / MS_PER_COUNT);
+
+						// 2. Cálculo basado en usuario (Interacción Local "Viva")
+						// Recuperamos si el usuario ha aportado registros extra manualmente
+						const localOffset = parseInt(localStorage.getItem('userLocalOffset') || '0');
+
+						// Total
+						const total = BASE_COUNT + timeBasedCount + localOffset;
+    
+						// Renderizar con formato de miles (20.123)
+						const el = document.getElementById('liveCounter');
+						if(el) el.textContent = total.toLocaleString('es-ES');
+				}
+
+				function incrementLocalCounter() {
+						// Esta función se llama cuando el usuario añade algo real
+						let current = parseInt(localStorage.getItem('userLocalOffset') || '0');
+						// Sumamos 1 al offset local (la simulación personal del usuario)
+						localStorage.setItem('userLocalOffset', (current + 1).toString());
+						updateLiveCounter();
+    
+						// Efecto visual (pequeño salto)
+						const el = document.getElementById('liveCounter');
+						if(el) {
+        el.parentElement.classList.add('scale-110', 'bg-emerald-50');
+        setTimeout(() => el.parentElement.classList.remove('scale-110', 'bg-emerald-50'), 200);
+						}
+				}
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             populateSelect();
+            populateRecipeSelect();
             initDateInputs();
+            
             document.getElementById('foodSelect').addEventListener('change', updatePreview);
             document.getElementById('amountInput').addEventListener('input', updatePreview); 
+            
+            document.getElementById('recipeSelect').addEventListener('change', updateRecipePreview);
+            document.getElementById('recipeAmountInput').addEventListener('input', updateRecipePreview);
+
             setTodayFilter(); 
             updatePreview();
             updateDayLabels();
             switchView('home');
+						//
+						updateLiveCounter();
+						// Actualizar cada 10 segundos para que el número cambie solo eventualmente
+						setInterval(updateLiveCounter, 10000);
         });
 
         function updatePreview() {
@@ -332,6 +480,7 @@
             const amountInput = document.getElementById('amountInput'); 
             const foodId = parseInt(select.value);
             const food = foodData.find(f => f.id === foodId);
+            const div = document.getElementById('previewData');
             
             if (food) {
                 document.getElementById('amountLabel').textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
@@ -342,27 +491,51 @@
                 const f = (food.f * factor).toFixed(1);
                 const k = Math.round(food.kcal * factor);
 
-                document.getElementById('previewData').innerHTML = `
-                    <div class="flex justify-between items-center text-slate-700">
-                        <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
-                            <span class="text-[10px] font-bold text-green-500 uppercase">Prot</span>
-                            <span class="font-mono font-bold">${p}</span>
-                        </div>
-                        <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
-                            <span class="text-[10px] font-bold text-yellow-500 uppercase">Carb</span>
-                            <span class="font-mono font-bold">${c}</span>
-                        </div>
-                        <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
-                            <span class="text-[10px] font-bold text-red-500 uppercase">Gras</span>
-                            <span class="font-mono font-bold">${f}</span>
-                        </div>
-                        <div class="flex flex-col text-center w-1/4">
-                            <span class="text-[10px] font-bold text-green-600 uppercase">Kcal</span>
-                            <span class="font-bold text-green-700">${k}</span>
-                        </div>
-                    </div>
-                `;
+                div.innerHTML = renderMacroFlex(p, c, f, k);
+            } else {
+                div.innerHTML = '';
             }
+        }
+
+        function updateRecipePreview() {
+            const select = document.getElementById('recipeSelect');
+            const amountInput = document.getElementById('recipeAmountInput');
+            const recipeId = parseInt(select.value);
+            const recipe = recipeData.find(r => r.id === recipeId);
+            const div = document.getElementById('previewRecipeData');
+
+            if(recipe) {
+                const amount = parseFloat(amountInput.value) || 0;
+                const p = (recipe.p * amount).toFixed(1);
+                const c = (recipe.c * amount).toFixed(1);
+                const f = (recipe.f * amount).toFixed(1);
+                const k = Math.round(recipe.kcal * amount);
+                div.innerHTML = renderMacroFlex(p, c, f, k);
+            } else {
+                div.innerHTML = '<span class="text-slate-400 italic">Selecciona una receta...</span>';
+            }
+        }
+
+        function renderMacroFlex(p, c, f, k) {
+            return `
+                <div class="flex justify-between items-center text-slate-700">
+                    <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
+                        <span class="text-[10px] font-bold text-green-500 uppercase">Prot</span>
+                        <span class="font-mono font-bold">${p}</span>
+                    </div>
+                    <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
+                        <span class="text-[10px] font-bold text-yellow-500 uppercase">Carb</span>
+                        <span class="font-mono font-bold">${c}</span>
+                    </div>
+                    <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
+                        <span class="text-[10px] font-bold text-red-500 uppercase">Gras</span>
+                        <span class="font-mono font-bold">${f}</span>
+                    </div>
+                    <div class="flex flex-col text-center w-1/4">
+                        <span class="text-[10px] font-bold text-green-600 uppercase">Kcal</span>
+                        <span class="font-bold text-green-700">${k}</span>
+                    </div>
+                </div>`;
         }
 
         // --- BÚSQUEDA API ---
@@ -414,7 +587,6 @@
             } catch (error) { console.error(error); showToast("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
-        // --- ESCANER ---
         function startScanner() {
             document.getElementById('scannerModal').classList.remove('hidden');
             html5QrcodeScanner = new Html5Qrcode("reader");
@@ -463,29 +635,15 @@
              } catch (e) { console.error(e); showToast("Error al consultar."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
-        /*function selectApiItem(name, p, c, f, kcal) {
+        function selectApiItem(name, p, c, f, kcal) {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
-            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
-            
-            // Persistencia: Guardamos la lista actualizada de alimentos
-            saveFoods();
-            
+            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });      
             populateSelect();
             document.getElementById('foodSelect').value = newId;
             updatePreview();
             document.getElementById('searchResults').classList.add('hidden');
             document.getElementById('apiSearchInput').value = '';
-        }*/
-		function selectApiItem(name, p, c, f, kcal) {
-    		const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
-    		// Se añade a la lista en memoria, pero NO se guarda en localStorage todavía
-    		foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });      
-    		populateSelect();
-    		document.getElementById('foodSelect').value = newId;
-    		updatePreview();
-    		document.getElementById('searchResults').classList.add('hidden');
-    		document.getElementById('apiSearchInput').value = '';
-		}
+        }
 
         // --- UTILS ---
         function initDateInputs() { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; }
@@ -504,6 +662,13 @@
             document.getElementById('labelStart').textContent = l(document.getElementById('filterStart').value);
             document.getElementById('labelEnd').textContent = l(document.getElementById('filterEnd').value);
         }
+        function shareWhatsapp() {
+            const url = encodeURIComponent(window.location.href);
+            const text = encodeURIComponent("¡Echa un vistazo a mi app de nutrición! 🥑📊\n");
+            window.location.href = `whatsapp://send?text=${text}${url}`;
+        }
+        
+        // --- POPULATE SELECTS ---
         function populateSelect() {
             const sel = document.getElementById('foodSelect');
             const val = sel.value; sel.innerHTML = '';
@@ -513,8 +678,18 @@
             if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
         }
 
-        // --- CRUD ---
-        /*function addItem() {
+        function populateRecipeSelect() {
+            const sel = document.getElementById('recipeSelect');
+            const val = sel.value; 
+            sel.innerHTML = '<option value="" disabled selected>Selecciona una receta...</option>';
+            [...recipeData].sort((a,b)=>a.name.localeCompare(b.name)).forEach(r => {
+                const o = document.createElement('option'); o.value = r.id; o.text = `📖 ${r.name}`; sel.appendChild(o);
+            });
+            if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
+        }
+
+        // --- CRUD ALIMENTOS ---
+        function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
             const dateInput = document.getElementById('entryDate');
@@ -529,6 +704,7 @@
             globalLog.push({
                 id: Date.now(),
                 date: dateInput.value,
+                type: 'food',
                 foodId: food.id,
                 foodName: food.name,
                 amount: amount,
@@ -538,86 +714,163 @@
                 f: parseFloat((food.f * factor).toFixed(1)),
                 kcal: Math.round(food.kcal * factor)
             });
+
             saveData(); 
+            saveFoods(); 
             applyFilter();
+						incrementLocalCounter();
             showToast("Guardado!");
-        }*/
-			// Busca la función addItem y asegúrate de añadir saveFoods()
-		function addItem() {
-    		const select = document.getElementById('foodSelect');
-    		const amountInput = document.getElementById('amountInput');
-    		const dateInput = document.getElementById('entryDate');
-    		const amount = parseFloat(amountInput.value);
-    		const foodId = parseInt(select.value);
-    
-    		if (!amount || amount <= 0 || !dateInput.value) return showToast("Revise datos.");
+        }
 
-    		const food = foodData.find(f => f.id === foodId);
-    		const factor = food.unit === 'g' ? amount / 100 : amount;
+        // --- CRUD RECETAS ---
+        function addRecipeLog() {
+            const select = document.getElementById('recipeSelect');
+            const amountInput = document.getElementById('recipeAmountInput');
+            const dateInput = document.getElementById('entryDate');
+            const amount = parseFloat(amountInput.value);
+            const recipeId = parseInt(select.value);
 
-    		globalLog.push({
-        		id: Date.now(),
-       		    date: dateInput.value,
-        		foodId: food.id,
-        		foodName: food.name,
-        		amount: amount,
-        		unit: food.unit,
-       			p: parseFloat((food.p * factor).toFixed(1)),
-        		c: parseFloat((food.c * factor).toFixed(1)),
-        		f: parseFloat((food.f * factor).toFixed(1)),
-        		kcal: Math.round(food.kcal * factor)
-    		});
+            if(!recipeId) return showToast("Seleccione una receta.");
+            if (!amount || amount <= 0 || !dateInput.value) return showToast("Revise cantidad.");
 
-    		saveData(); 
-    		saveFoods(); // <-- NUEVA LÍNEA: Guarda la lista de alimentos (foodData) solo al confirmar el registro
-    
-    		applyFilter();
-    		showToast("Guardado!");
-		}
+            const recipe = recipeData.find(r => r.id === recipeId);
+            
+            globalLog.push({
+                id: Date.now(),
+                date: dateInput.value,
+                type: 'recipe',
+                foodId: recipe.id,
+                foodName: recipe.name,
+                amount: amount,
+                unit: 'u',
+                p: parseFloat((recipe.p * amount).toFixed(1)),
+                c: parseFloat((recipe.c * amount).toFixed(1)),
+                f: parseFloat((recipe.f * amount).toFixed(1)),
+                kcal: Math.round(recipe.kcal * amount),
+                ingredients: recipe.ingredients
+            });
 
-        function deleteItem(id) { if(confirm('¿Borrar?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
+            saveData();
+            applyFilter();
+						incrementLocalCounter();
+            showToast("Receta registrada!");
+        }
+
+        function deleteItem(id) { if(confirm('¿Borrar registro?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
         
+        function deleteSelectedFood() {
+            const select = document.getElementById('foodSelect');
+            const id = parseInt(select.value);
+            if (!id) return;
+            if (confirm('¿Eliminar alimento de la lista permanentemente?')) {
+                foodData = foodData.filter(f => f.id !== id);
+                saveFoods(); populateSelect(); updatePreview();
+            }
+        }
+
+        function deleteSelectedRecipe() {
+            const select = document.getElementById('recipeSelect');
+            const id = parseInt(select.value);
+            if (!id) return;
+            if (confirm('¿Eliminar receta de la lista permanentemente?')) {
+                recipeData = recipeData.filter(r => r.id !== id);
+                saveRecipes(); populateRecipeSelect(); updateRecipePreview();
+            }
+        }
+
+        // --- GESTION DE RECETAS (CREACIÓN) ---
+        function openRecipeModal() {
+            document.getElementById('recipeName').value = '';
+            document.getElementById('recipeDesc').value = '';
+            document.getElementById('recipeModal').classList.remove('hidden');
+        }
+
+        function saveRecipe() {
+            const name = document.getElementById('recipeName').value.trim();
+            const desc = document.getElementById('recipeDesc').value.trim();
+            if(!name) return showToast("Nombre requerido");
+
+            const selectedItems = globalLog.filter(i => selectedIds.has(i.id));
+            if(selectedItems.length === 0) return showToast("Seleccione registros para la receta");
+
+            let totalP = 0, totalC = 0, totalF = 0, totalKcal = 0;
+            let ingredients = [];
+
+            selectedItems.forEach(item => {
+                totalP += item.p;
+                totalC += item.c;
+                totalF += item.f;
+                totalKcal += item.kcal;
+                 ingredients.push({
+                    name: item.foodName,
+                    amount: item.amount,
+                    unit: item.unit,
+                    p: item.p,
+                    c: item.c,
+                    f: item.f,
+                    kcal: item.kcal,
+                    subIngredients: item.ingredients || null
+                 });
+            });
+
+            const newRecipe = {
+                id: Date.now(),
+                name: name,
+                description: desc,
+                ingredients: ingredients,
+                p: totalP,
+                c: totalC,
+                f: totalF,
+                kcal: totalKcal,
+                unit: 'u'
+            };
+
+            recipeData.push(newRecipe);
+            saveRecipes();
+            populateRecipeSelect();
+            
+            document.getElementById('recipeModal').classList.add('hidden');
+            showToast("Receta creada!");
+        }
+
         function resetApp() { 
-            if(confirm('¿BORRAR TODO (Historial y Alimentos guardados)?')) { 
+            if(confirm('¿FACTORY RESET (Historial, Alimentos y Recetas)?')) { 
                 localStorage.removeItem('macroCalculatorData'); 
-                localStorage.removeItem('macroCalculatorFoods'); // Borrar también alimentos
-                globalLog = []; 
-                selectedIds.clear(); 
-                // Recargar página para restaurar alimentos originales
+                localStorage.removeItem('macroCalculatorFoods'); 
+                localStorage.removeItem('macroCalculatorRecipes');
                 window.location.reload();
             } 
         }
 
-        // --- PERSISTENCIA Y BACKUP (NUEVO) ---
+        // --- PERSISTENCIA ---
         function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
         function saveFoods() { localStorage.setItem('macroCalculatorFoods', JSON.stringify(foodData)); }
+        function saveRecipes() { localStorage.setItem('macroCalculatorRecipes', JSON.stringify(recipeData)); }
         
         function loadData() { 
-            // Cargar Historial
             const s = localStorage.getItem('macroCalculatorData'); 
             if(s) globalLog = JSON.parse(s); 
             
-            // Cargar Alimentos Personalizados
             const f = localStorage.getItem('macroCalculatorFoods');
-            if(f) {
-                // Sobreescribimos la lista hardcodeada con la guardada que ya incluye los nuevos
-                foodData = JSON.parse(f);
-            }
+            if(f) foodData = JSON.parse(f);
+
+            const r = localStorage.getItem('macroCalculatorRecipes');
+            if(r) recipeData = JSON.parse(r);
         }
 
         async function exportData() {
-            if(!globalLog.length && foodData.length <= 29) return showToast("Sin datos nuevos para exportar.");
+            if(!globalLog.length && foodData.length <= 29 && recipeData.length === 0) return showToast("Sin datos para exportar.");
             
-            // Creamos un objeto que contenga TODO
             const backupObject = {
-                version: 2,
+                version: 3,
                 timestamp: new Date().toISOString(),
                 history: globalLog,
-                foods: foodData
+                foods: foodData,
+                recipes: recipeData
             };
 
-            const f = new File([JSON.stringify(backupObject,null,2)], `backup_completo_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
-            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup Nutri Completo'}); return; } catch(e){} }
+            const f = new File([JSON.stringify(backupObject,null,2)], `backup_nutri_${new Date().toISOString().split('T')[0]}.json`, {type:"application/json"});
+            if(navigator.canShare && navigator.canShare({files:[f]})) { try { await navigator.share({files:[f], title:'Backup NutriApp'}); return; } catch(e){} }
             const a = document.createElement('a'); a.href=URL.createObjectURL(new Blob([JSON.stringify(backupObject,null,2)], {type:"application/json"})); a.download=f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
 
@@ -627,38 +880,24 @@
             r.onload = e => { 
                 try { 
                     const d = JSON.parse(e.target.result); 
-                    
-                    // Caso 1: Backup Antiguo (Array simple de historial)
-                    if(Array.isArray(d)) {
-                        if(confirm(`Detectado backup antiguo (Solo Historial).\n¿Importar ${d.length} registros?`)) {
-                            globalLog = d; 
-                            saveData(); 
-                            applyFilter(); 
-                            showToast("Historial importado.");
-                        }
-                    } 
-                    // Caso 2: Backup Nuevo (Objeto con historial y alimentos)
-                    else if (d.history || d.foods) {
-                        const countH = d.history ? d.history.length : 0;
-                        const countF = d.foods ? d.foods.length : 0;
-                        
-                        if(confirm(`Backup Completo encontrado.\n- ${countH} registros de historial\n- ${countF} alimentos en catálogo\n\n¿Restaurar todo?`)) {
+                    if (d.history || d.foods || d.recipes) {
+                         if(confirm(`Backup encontrado.\n- ${d.history?.length||0} registros\n- ${d.foods?.length||0} alimentos\n- ${d.recipes?.length||0} recetas\n¿Restaurar?`)) {
                             if(d.history) { globalLog = d.history; saveData(); }
                             if(d.foods) { foodData = d.foods; saveFoods(); populateSelect(); }
+                            if(d.recipes) { recipeData = d.recipes; saveRecipes(); populateRecipeSelect(); }
                             applyFilter();
                             showToast("Restauración completa.");
                         }
+                    } else if(Array.isArray(d)) {
+                         globalLog = d; saveData(); applyFilter();
                     }
-                    else {
-                        showToast("Formato de archivo no reconocido.");
-                    }
-                } catch(err){ console.error(err); showToast("Error al leer el archivo."); } 
+                } catch(err){ console.error(err); showToast("Error al leer archivo."); } 
                 input.value=''; 
             }; 
             r.readAsText(f);
         }
 
-        // --- MODAL & SELECCION ---
+        // --- MODAL ANALISIS Y TABLA ---
         function toggleSelection(id) { selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id); updateFab(); }
         function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseInt(c.dataset.id); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
         function updateFab() {
@@ -666,15 +905,31 @@
             if(selectedIds.size > 0) { fab.classList.remove('hidden'); fab.classList.add('flex'); document.getElementById('fabText').textContent = `Analizar (${selectedIds.size})`; }
             else { fab.classList.add('hidden'); fab.classList.remove('flex'); }
         }
+
         function analyzeSelection() {
             const items = globalLog.filter(i => selectedIds.has(i.id));
             if (!items.length) return;
             let p=0, c=0, f=0, k=0;
             const list = document.getElementById('modalList'); list.innerHTML='';
+            
             items.forEach(i => {
                 p+=i.p; c+=i.c; f+=i.f; k+=i.kcal;
-                list.innerHTML += `<li class="flex justify-between border-b border-slate-50 pb-2 last:border-0"><span>${i.foodName}</span><span class="text-xs text-slate-400 font-mono bg-slate-50 px-1 rounded">${i.amount}${i.unit}</span></li>`;
+                
+                if(i.ingredients && Array.isArray(i.ingredients) && i.ingredients.length > 0) {
+                     list.innerHTML += `<li class="font-bold text-indigo-600 text-xs mt-2 border-b border-indigo-100 pb-1">${i.foodName} (${i.amount} u)</li>`;
+                     i.ingredients.forEach(ing => {
+                         const itemAmount = (ing.amount * i.amount).toFixed(1).replace('.0','');
+                         list.innerHTML += `
+                            <li class="flex justify-between pl-2 text-xs text-slate-500">
+                                <span>↳ ${ing.name}</span>
+                                <span class="font-mono bg-slate-100 px-1 rounded">${itemAmount}${ing.unit}</span>
+                            </li>`;
+                     });
+                } else {
+                    list.innerHTML += `<li class="flex justify-between border-b border-slate-50 pb-2 last:border-0 pt-1"><span>${i.foodName}</span><span class="text-xs text-slate-400 font-mono bg-slate-50 px-1 rounded">${i.amount}${i.unit}</span></li>`;
+                }
             });
+
             document.getElementById('modalP').textContent=p.toFixed(1);
             document.getElementById('modalC').textContent=c.toFixed(1);
             document.getElementById('modalF').textContent=f.toFixed(1);
@@ -687,7 +942,7 @@
         }
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
-        // --- RENDER & CALC ---
+        // --- RENDER TABLA ---
         function applyFilter() {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = globalLog.sort((a,b)=>b.id-a.id);
@@ -699,11 +954,13 @@
             if(!items.length) { tb.innerHTML='<tr><td colspan="4" class="p-8 text-center text-slate-400 italic text-sm">Sin registros</td></tr>'; return; }
             items.forEach(i => {
                 const ck = selectedIds.has(i.id)?'checked':'';
+                const isRecipe = i.type === 'recipe';
+                const icon = isRecipe ? '📖 ' : '';
                 tb.innerHTML += `
                 <tr class="hover:bg-slate-50 group transition-colors">
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-indigo-600" onclick="toggleSelection(${i.id})" ${ck}></td>
                     <td class="px-4 py-3">
-                        <div class="font-bold text-slate-800">${i.foodName}</div>
+                        <div class="font-bold text-slate-800">${icon}${i.foodName}</div>
                         <div class="text-xs text-slate-400">${i.date} &bull; ${i.amount}${i.unit}</div>
                     </td>
                     <td class="px-4 py-3 text-right font-bold text-slate-700">${i.kcal}</td>
@@ -713,7 +970,6 @@
         }
         function calcTotals(items) {
             let p=0, c=0, f=0, k=0; items.forEach(i => { p+=i.p; c+=i.c; f+=i.f; k+=i.kcal; });
-            
             if(document.getElementById('homeProt')) {
                 document.getElementById('homeProt').textContent = p.toFixed(0)+'g';
                 document.getElementById('homeCarbs').textContent = c.toFixed(0)+'g';
@@ -723,44 +979,21 @@
             if(document.getElementById('footKcal')) {
                 document.getElementById('footKcal').innerHTML = `${k} <span class="text-xs font-normal text-slate-500">kcal</span>`;
             }
-
             const ctx = document.getElementById('macroChart').getContext('2d'); if(chartInstance) chartInstance.destroy();
             const h = (p+c+f)>0; chartInstance = new Chart(ctx, { type:'doughnut', data:{ labels:['Prot','Carbs','Grasas'], datasets:[{data:h?[p*4,c*4,f*9]:[1,1,1], backgroundColor:h?['#39f792','#eab308','#ef4444']:['#f1f5f9','#f1f5f9','#f1f5f9'], borderWidth:0}] }, options:{responsive:true, maintainAspectRatio:false, cutout:'75%', plugins:{legend:{position:'bottom', labels:{boxWidth:10, font:{size:10}}}}} });
         }
-		function deleteSelectedFood() {
-    		const select = document.getElementById('foodSelect');
-    		const id = parseInt(select.value);
-    
-    		if (!id) return;
 
-    		if (confirm('¿Desea eliminar este alimento de la lista desplegable permanentemente?')) {
-        		// Filtrar el alimento fuera del array
-        		foodData = foodData.filter(f => f.id !== id);
-        
-        		// Guardar cambios y actualizar UI
-        		saveFoods(); 
-        		populateSelect();
-        		updatePreview();
-    		}
-		}
-		////
-		function showToast(message, type = 'success') {
-    		const toast = document.getElementById('toast');
-    		const msg = document.getElementById('toastMsg');
-    
-    		// Configurar mensaje
-    		msg.textContent = message;
-    
-    		// Mostrar (quitamos clases de ocultación y añadimos las de visualización)
-    		toast.classList.remove('opacity-0', 'translate-y-[-20px]');
-    		toast.classList.add('opacity-100', 'translate-y-0');
-    
-    		// Ocultar automáticamente después de 2.5 segundos
-    		setTimeout(() => {
-        		toast.classList.remove('opacity-100', 'translate-y-0');
-        		toast.classList.add('opacity-0', 'translate-y-[-20px]');
-    		}, 2500);
-		}
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            msg.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-[-20px]');
+            }, 2500);
+        }
     </script>
 	<div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none z-[80] flex items-center gap-2">
     	<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
@@ -768,6 +1001,3 @@
 	</div>	
 </body>
 </html>
-
-
-
