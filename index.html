@@ -575,7 +575,7 @@
         // --- BÚSQUEDA API ---
         function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
         
-        async function searchOnline() {
+        /*async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
             if(!query || query.length < 3) return showToast("Escribe al menos 3 caracteres.");
             const loader = document.getElementById('searchLoader');
@@ -586,7 +586,8 @@
             resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
 
             try {
-                const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,brands,nutriments,id`;
+                // Pedimos nutriments y nutriscore
+                const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,brands,nutriments,id,nutriscore_grade`;
                 const response = await fetch(url);
                 const data = await response.json();
 
@@ -596,19 +597,117 @@
                     data.products.forEach(prod => {
                         if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
                             found = true;
+                            // Macros principales
                             const p = prod.nutriments['proteins_100g'] || 0;
                             const c = prod.nutriments['carbohydrates_100g'] || 0;
                             const f = prod.nutriments['fat_100g'] || 0;
                             const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
+                            
+                            // Macros secundarios (visualización)
+                            const s = prod.nutriments['sugars_100g'] || 0;
+                            const sf = prod.nutriments['saturated-fat_100g'] || 0;
+
+                            // Lógica NUTRISCORE
+                            const score = prod.nutriscore_grade ? prod.nutriscore_grade.toUpperCase() : '';
+                            let nsClass = 'bg-slate-100 text-slate-400 border-slate-200'; // Default
+                            if(score === 'A') nsClass = 'bg-[#038141] text-white border-[#038141]';
+                            else if(score === 'B') nsClass = 'bg-[#85BB2F] text-white border-[#85BB2F]';
+                            else if(score === 'C') nsClass = 'bg-[#FECB02] text-slate-800 border-[#FECB02]';
+                            else if(score === 'D') nsClass = 'bg-[#EE8100] text-white border-[#EE8100]';
+                            else if(score === 'E') nsClass = 'bg-[#E63E11] text-white border-[#E63E11]';
+
                             const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : ''; 
                             const rawName = (prod.product_name || "Sin nombre") + brand;
                             const safeName = rawName.replace(/'/g, ""); 
+                            
+                            // Badge HTML del NutriScore
+                            const nutriscoreBadge = score ? `<span class="${nsClass} px-1.5 rounded-md font-black border text-[10px]" title="Nutri-Score ${score}">${score}</span>` : '';
+
                             html += `
                             <li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" 
                                 onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})">
                                 <div class="truncate w-3/4">
                                     <div class="font-medium text-slate-700 truncate">${prod.product_name}</div>
                                     <div class="text-xs text-slate-400 truncate">${prod.brands || ''}</div> 
+                                    
+                                    <div class="text-[10px] text-slate-500 mt-1 flex gap-2 items-center">
+                                        <span class="bg-blue-50 px-1.5 py-0.5 rounded text-blue-600 font-medium">Azú: ${Math.round(s)}g</span>
+                                        <span class="bg-orange-50 px-1.5 py-0.5 rounded text-orange-600 font-medium">Sat: ${Math.round(sf)}g</span>
+										<span class="bg-pink-50 px-1.5 py-0.5 rounded text-grey-600 font-medium">Nutri-Score: ${nutriscoreBadge}</span>
+                                        
+                                    </div>
+                                </div>
+                                <span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-md ml-2 flex-shrink-0">${Math.round(k)} kcal</span>
+                            </li>`;
+                        }
+                    });
+                    if(!found) html += '<li class="p-3 text-slate-400 italic text-xs">Sin info válida.</li>';
+                    html += '</ul>';
+                    resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
+                } else { showToast("Sin resultados."); }
+            } catch (error) { console.error(error); showToast("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
+        }*/
+		async function searchOnline() {
+            const query = document.getElementById('apiSearchInput').value;
+            if(!query || query.length < 3) return showToast("Escribe al menos 3 caracteres.");
+            const loader = document.getElementById('searchLoader');
+            const icon = document.getElementById('searchIcon');
+            const resultsDiv = document.getElementById('searchResults');
+            
+            loader.classList.remove('hidden'); icon.classList.add('hidden');
+            resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
+
+            try {
+                const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,brands,nutriments,id,nutriscore_grade`;
+                const response = await fetch(url);
+                const data = await response.json();
+
+                if(data.products && data.products.length > 0) {
+                    let html = '<ul class="divide-y divide-blue-50">';
+                    let found = false;
+                    data.products.forEach(prod => {
+                        if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
+                            found = true;
+                            // Macros principales
+                            const p = prod.nutriments['proteins_100g'] || 0;
+                            const c = prod.nutriments['carbohydrates_100g'] || 0;
+                            const f = prod.nutriments['fat_100g'] || 0;
+                            const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
+                            
+                            // Infos Extra
+                            const s = prod.nutriments['sugars_100g'] || 0;
+                            const sf = prod.nutriments['saturated-fat_100g'] || 0;
+
+                            // Lógica NUTRISCORE + EMOJIS (Propuesta 2)
+                            const score = prod.nutriscore_grade ? prod.nutriscore_grade.toUpperCase() : '';
+                            let nsClass = 'bg-slate-100 text-slate-400 border-slate-200';
+                            let nsEmoji = ''; 
+
+                            if(score === 'A') { nsClass = 'bg-[#038141] text-white border-[#038141]'; nsEmoji = '😇'; }
+                            else if(score === 'B') { nsClass = 'bg-[#85BB2F] text-white border-[#85BB2F]'; nsEmoji = '😁'; }
+                            else if(score === 'C') { nsClass = 'bg-[#FECB02] text-slate-800 border-[#FECB02]'; nsEmoji = '🤔'; }
+                            else if(score === 'D') { nsClass = 'bg-[#EE8100] text-white border-[#EE8100]'; nsEmoji = '😬'; }
+                            else if(score === 'E') { nsClass = 'bg-[#E63E11] text-white border-[#E63E11]'; nsEmoji = '😈'; }
+
+                            const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : ''; 
+                            const rawName = (prod.product_name || "Sin nombre") + brand;
+                            const safeName = rawName.replace(/'/g, ""); 
+                            
+                            // Badge HTML con Letra + Emoji
+                            const nutriscoreBadge = score ? `<span class="${nsClass} px-1.5 rounded-md font-black border text-[10px]" title="Nutri-Score ${score}">${score} ${nsEmoji}</span>` : '';
+
+                            html += `
+                            <li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" 
+                                onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})">
+                                <div class="truncate w-3/4">
+                                    <div class="font-medium text-slate-700 truncate">${prod.product_name}</div>
+                                    <div class="text-xs text-slate-400 truncate">${prod.brands || ''}</div> 
+                                    
+                                    <div class="text-[10px] text-slate-500 mt-1 flex gap-2 items-center">
+                                        <span class="bg-blue-50 px-1.5 py-0.5 rounded text-blue-600 font-medium">Azú: ${Math.round(s)}g</span>
+                                        <span class="bg-orange-50 px-1.5 py-0.5 rounded text-orange-600 font-medium">Sat: ${Math.round(sf)}g</span>
+                                        <span class="bg-pink-50 px-1.5 py-0.5 rounded text-grey-600 font-medium">Nutri-Score: ${nutriscoreBadge}</span>
+                                    </div>
                                 </div>
                                 <span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-md ml-2 flex-shrink-0">${Math.round(k)} kcal</span>
                             </li>`;
@@ -698,7 +797,7 @@
         }
         function shareWhatsapp() {
             const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent("¡Echa un vistazo a mi app de nutrición! 🥑📊\n");
+            const text = encodeURIComponent("¡Echa un vistazo a esta app de nutrición! 🥑📊\n");
             window.location.href = `whatsapp://send?text=${text}${url}`;
         }
         
