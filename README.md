@@ -36,7 +36,7 @@
 
 ### 1. Panel de Registro (Inicio)
 
-Bajo el lema *"Nutre tu mejor versión"*, encontrarás las herramientas principales:
+Bajo el lema *"Tus objetivos bocado a bocado"*, encontrarás las herramientas principales:
 
 * **Búsqueda y Escáner:**
   * Barra superior para buscar productos online o activar la cámara.
