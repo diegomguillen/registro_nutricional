@@ -12,8 +12,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-		<script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-		<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
         body { 
@@ -31,6 +31,11 @@
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .action-card { transition: transform 0.1s, background-color 0.2s; }
         .action-card:active { transform: scale(0.98); background-color: #f9fafb; }
+        
+        @keyframes slideUp { from { transform: translateY(100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .animate-slide-up { animation: slideUp 0.3s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
     </style>
 </head>
 <body class="text-slate-800 h-screen h-[100dvh] flex flex-col overflow-hidden">
@@ -51,123 +56,63 @@
                 </button>
             </header>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Fecha</label>
-                        <input type="date" id="entryDate" class="w-full rounded-xl border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-indigo-200 p-3 text-sm font-medium">
-                    </div>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 relative">
+                <button onclick="openActionModal()" class="absolute top-5 right-5 bg-indigo-600 hover:bg-indigo-700 text-white w-9 h-9 rounded-full shadow-md flex items-center justify-center active:scale-90 transition-transform z-10">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </button>
 
-                    <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
-                        <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear</label>
-                        <div class="flex gap-2">
-                            <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..." class="w-full bg-white rounded-lg border-blue-200 text-sm p-2 focus:border-blue-500 focus:outline-none" onkeypress="handleEnter(event)">
-                            <button onclick="startScanner()" class="bg-blue-100 text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-200 border border-blue-200">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h.01M10 4h4v1h-4V4zm-4 7h.01M6 16h4v4H6v-4zm12-4h2v2h-2v-2zm-6-8h6v6h-6V4zm-6 0h6v6H6V4zm6 12h2v2h-2v-2z"></path></svg>
-                            </button>
-                            <button onclick="searchOnline()" class="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-700">
-                                <svg id="searchIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                                <div id="searchLoader" class="loader hidden"></div>
-                            </button>
-                        </div>
-                        <div id="searchResults" class="hidden mt-2 max-h-40 overflow-y-auto bg-white border border-blue-100 rounded-lg shadow-sm text-xs z-10 relative"></div>
-                    </div>
-
-                    <div class="border-t border-slate-100 my-4"></div>
-
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-black text-indigo-700 uppercase tracking-wider">Alimentos</h3>
-                        <div>
-                            <div class="flex gap-2">
-                                <select id="foodSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
-                                <button onclick="deleteSelectedFood()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1" id="amountLabel">Cantidad (g)</label>
-                            <input type="number" id="amountInput" class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="100" value="100">
-                        </div>
-
-                        <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                             <div id="previewData" class="text-sm"></div>
-                        </div>
-
-                        <div onclick="addItem()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer mt-2 group">
-                            <div class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-indigo-700">Añadir Alimento</h3>
-                                <p class="text-xs text-slate-500">Registrar en historial</p>
-                            </div>
-                            <svg class="w-5 h-5 text-indigo-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </div>
-                    </div>
-
-                    <div class="border-t border-slate-100 my-4"></div>
-
-                    <div class="space-y-3">
-                        <h3 class="text-xs font-black text-emerald-700 uppercase tracking-wider">Recetas</h3>
-                        <div>
-                            <div class="flex gap-2">
-                                <select id="recipeSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200">
-                                    <option value="" disabled selected>Selecciona una receta...</option>
-                                </select>
-                                <button onclick="deleteSelectedRecipe()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                </button>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cantidad (Unidades)</label>
-                            <input type="number" id="recipeAmountInput" step="0.1" class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="1.0" value="1">
-                        </div>
-
-                         <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
-                             <div id="previewRecipeData" class="text-sm text-center text-slate-400 italic">Selecciona una receta para previsualizar</div>
-                        </div>
-
-                        <div onclick="addRecipeLog()" class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer mt-2 group">
-                            <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0 group-hover:scale-110 transition-transform">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-bold text-emerald-700">Añadir Receta</h3>
-                                <p class="text-xs text-slate-500">Registrar en historial</p>
-                            </div>
-                            <svg class="w-5 h-5 text-emerald-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5">
-                <h3 class="text-sm font-semibold text-slate-700 mb-4 text-center">Distribución calórica</h3>
+                <h3 class="text-sm font-semibold text-slate-700 mb-4 text-center">Distribución calórica (Hoy)</h3>
+                
                 <div class="h-48 relative w-full flex justify-center">
                     <canvas id="macroChart"></canvas>
                 </div>
+
                 <div class="grid grid-cols-4 gap-2 mt-4 text-center">
                     <div class="bg-green-50 rounded-lg p-2"><div class="text-[10px] text-red-600 font-bold">PROT</div><div id="homeProt" class="text-xs font-bold text-slate-700">0g</div></div>
                     <div class="bg-yellow-50 rounded-lg p-2"><div class="text-[10px] text-yellow-600 font-bold">CARB</div><div id="homeCarbs" class="text-xs font-bold text-slate-700">0g</div></div>
                     <div class="bg-red-50 rounded-lg p-2"><div class="text-[10px] text-orange-600 font-bold">GRAS</div><div id="homeFats" class="text-xs font-bold text-slate-700">0g</div></div>
                     <div class="bg-green-50 rounded-lg p-2"><div class="text-[10px] text-green-600 font-bold">KCAL</div><div id="homeKcal" class="text-xs font-bold text-slate-700">0</div></div>
                 </div>
-								<div class="mt-6 pt-4 border-t border-slate-50 flex flex-col items-center justify-center animate-fade-in">
-										<p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Proyección de Actividad de usuarios de NutriApp</p>
-											<div class="bg-slate-50 border border-slate-100 rounded-full px-4 py-1.5 flex items-center gap-2 shadow-sm">
-												<span class="relative flex h-2 w-2">
-												<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-												<span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-												</span>
-												<span class="text-xs text-slate-500 font-medium">Registros globales:</span>
-												<span id="liveCounter" class="font-mono font-bold text-slate-700 text-sm">20.000</span>
-											</div>
-								</div>
+                
+                <div class="mt-6 pt-4 border-t border-slate-50 flex flex-col items-center justify-center animate-fade-in">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-2">Proyección de Actividad</p>
+                    <div class="bg-slate-50 border border-slate-100 rounded-full px-4 py-1.5 flex items-center gap-2 shadow-sm">
+                        <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                        <span class="text-xs text-slate-500 font-medium">Registros globales:</span>
+                        <span id="liveCounter" class="font-mono font-bold text-slate-700 text-sm">20.000</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col items-center">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Ayer</h4>
+                    <div class="h-20 w-full relative flex justify-center mb-2">
+                        <canvas id="chartYesterday"></canvas>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 w-full mt-2">
+                         <div class="bg-green-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-red-600 font-bold uppercase">PROT</div><div id="yesterdayProt" class="text-[10px] font-bold text-slate-700">0g</div></div>
+                         <div class="bg-yellow-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-yellow-600 font-bold uppercase">CARB</div><div id="yesterdayCarbs" class="text-[10px] font-bold text-slate-700">0g</div></div>
+                         <div class="bg-red-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-orange-600 font-bold uppercase">GRAS</div><div id="yesterdayFats" class="text-[10px] font-bold text-slate-700">0g</div></div>
+                         <div class="bg-green-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-green-600 font-bold uppercase">KCAL</div><div id="yesterdayKcal" class="text-[10px] font-bold text-slate-700">0</div></div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col items-center">
+                    <h4 class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-2">Semana Pasada</h4>
+                    <div class="h-20 w-full relative flex justify-center mb-2">
+                        <canvas id="chartLastWeek"></canvas>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 w-full mt-2">
+                         <div class="bg-green-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-red-600 font-bold uppercase">PROT</div><div id="lastWeekProt" class="text-[10px] font-bold text-slate-700">0g</div></div>
+                         <div class="bg-yellow-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-yellow-600 font-bold uppercase">CARB</div><div id="lastWeekCarbs" class="text-[10px] font-bold text-slate-700">0g</div></div>
+                         <div class="bg-red-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-orange-600 font-bold uppercase">GRAS</div><div id="lastWeekFats" class="text-[10px] font-bold text-slate-700">0g</div></div>
+                         <div class="bg-green-50 rounded-lg p-1.5 text-center"><div class="text-[8px] text-green-600 font-bold uppercase">KCAL</div><div id="lastWeekKcal" class="text-[10px] font-bold text-slate-700">0</div></div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -259,25 +204,24 @@
                 </div>
             </div>
         </div>
-				<div id="view-info" class="space-y-6 hidden animate-fade-in">
-						<header>
-								<h1 class="text-2xl font-bold text-slate-900">Información y guía de uso</h1>
-								<p class="text-slate-500 text-sm">Documentación del proyecto</p>
-						</header>
-
-						<div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 overflow-hidden">
-								<div id="readmeContainer" class="prose prose-slate prose-sm max-w-none prose-headings:text-slate-800 prose-a:text-indigo-600">
-										<div class="flex flex-col items-center justify-center py-10 text-slate-400">
-												<div class="loader mb-2"></div>
-												<p>Cargando documentación...</p>
-										</div>
-								</div>
-						</div>
-    
-						<div class="text-center">
-        <p class="text-[10px] text-slate-400">Versión del sistema: <span id="appVersion">v1.0</span></p>
-						</div>
-				</div>
+        
+        <div id="view-info" class="space-y-6 hidden animate-fade-in">
+            <header>
+                <h1 class="text-2xl font-bold text-slate-900">Información y guía de uso</h1>
+                <p class="text-slate-500 text-sm">Documentación del proyecto</p>
+            </header>
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 overflow-hidden">
+                <div id="readmeContainer" class="prose prose-slate prose-sm max-w-none prose-headings:text-slate-800 prose-a:text-indigo-600">
+                    <div class="flex flex-col items-center justify-center py-10 text-slate-400">
+                        <div class="loader mb-2"></div>
+                        <p>Cargando documentación...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <p class="text-[10px] text-slate-400">Versión del sistema: <span id="appVersion">v1.3</span></p>
+            </div>
+        </div>
 
     </main>
 
@@ -294,10 +238,10 @@
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
             <span class="text-[10px] font-bold">Datos</span>
         </button>
-				<button onclick="switchView('info')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-info">
-					<svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-					<span class="text-[10px] font-bold">Info</span>
-				</button>
+        <button onclick="switchView('info')" class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-info">
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="text-[10px] font-bold">Info</span>
+        </button>
     </nav>
 
     <div id="analyzeFab" class="fixed bottom-20 right-5 hidden z-50 animate-bounce-in">
@@ -307,7 +251,118 @@
         </button>
     </div>
 
-    <div id="detailModal" class="fixed inset-0 bg-black/60 hidden z-[60] flex items-end sm:items-center justify-center backdrop-blur-sm">
+    <div id="actionModal" class="fixed inset-0 bg-black/60 hidden z-[60] flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-slide-up sm:animate-fade-in">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-slate-800">¿Qué quieres registrar?</h3>
+                <button onclick="closeActionModal()" class="text-slate-400 hover:text-slate-600 bg-slate-50 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="openFoodModal()" class="action-card bg-indigo-50 border border-indigo-100 rounded-xl p-6 flex flex-col items-center gap-3 text-center">
+                    <div class="w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-3xl">🍎</div>
+                    <span class="font-bold text-indigo-900">Alimento</span>
+                </button>
+                <button onclick="openRecipeLogModal()" class="action-card bg-emerald-50 border border-emerald-100 rounded-xl p-6 flex flex-col items-center gap-3 text-center">
+                    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-3xl">📖</div>
+                    <span class="font-bold text-emerald-900">Receta</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="foodModal" class="fixed inset-0 bg-black/60 hidden z-[70] flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
+             <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-indigo-700">Registrar Alimento</h3>
+                <button onclick="document.getElementById('foodModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 bg-slate-50 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Fecha</label>
+                    <input type="date" id="foodDate" class="w-full rounded-xl border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-indigo-200 p-3 text-sm font-medium">
+                </div>
+
+                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                    <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..." class="w-full bg-white rounded-lg border-blue-200 text-sm p-2 focus:border-blue-500 focus:outline-none" onkeypress="handleEnter(event)">
+                        <button onclick="startScanner()" class="bg-blue-100 text-blue-600 w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-200 border border-blue-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 17h.01M10 4h4v1h-4V4zm-4 7h.01M6 16h4v4H6v-4zm12-4h2v2h-2v-2zm-6-8h6v6h-6V4zm-6 0h6v6H6V4zm6 12h2v2h-2v-2z"></path></svg>
+                        </button>
+                        <button onclick="searchOnline()" class="bg-blue-600 text-white w-10 h-10 rounded-lg flex items-center justify-center shadow-sm active:bg-blue-700">
+                            <svg id="searchIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                            <div id="searchLoader" class="loader hidden"></div>
+                        </button>
+                    </div>
+                    <div id="searchResults" class="hidden mt-2 max-h-40 overflow-y-auto bg-white border border-blue-100 rounded-lg shadow-sm text-xs z-10 relative"></div>
+                </div>
+
+                <div class="border-t border-slate-100 my-2"></div>
+
+                <div>
+                    <div class="flex gap-2 mb-2">
+                        <select id="foodSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
+                        <button onclick="deleteSelectedFood()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1" id="amountLabel">Cantidad (g)</label>
+                    <input type="number" id="amountInput" class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="100" value="100">
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                        <div id="previewData" class="text-sm"></div>
+                </div>
+
+                <button onclick="addItem()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                    Añadir al Diario
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="recipeLogModal" class="fixed inset-0 bg-black/60 hidden z-[70] flex items-end sm:items-center justify-center backdrop-blur-sm">
+        <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-slide-up sm:animate-fade-in">
+             <div class="flex justify-between items-center mb-4">
+                <h3 class="text-lg font-bold text-emerald-700">Registrar Receta</h3>
+                <button onclick="document.getElementById('recipeLogModal').classList.add('hidden')" class="text-slate-400 hover:text-slate-600 bg-slate-50 p-1 rounded-full"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg></button>
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Fecha</label>
+                    <input type="date" id="recipeDate" class="w-full rounded-xl border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-indigo-200 p-3 text-sm font-medium">
+                </div>
+
+                <div>
+                    <div class="flex gap-2 mb-2">
+                        <select id="recipeSelect" class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200">
+                            <option value="" disabled selected>Selecciona una receta...</option>
+                        </select>
+                        <button onclick="deleteSelectedRecipe()" class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                    <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cantidad (Unidades)</label>
+                    <input type="number" id="recipeAmountInput" step="0.1" class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200" placeholder="1.0" value="1">
+                </div>
+
+                <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
+                        <div id="previewRecipeData" class="text-sm text-center text-slate-400 italic">Selecciona una receta para previsualizar</div>
+                </div>
+
+                <button onclick="addRecipeLog()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-emerald-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                    Añadir Receta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="detailModal" class="fixed inset-0 bg-black/60 hidden z-[80] flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl animate-slide-up sm:animate-fade-in relative">
             <div class="bg-slate-50 px-5 py-4 border-b border-slate-100 flex justify-between items-center">
                 <h3 class="text-lg font-bold text-slate-800">Análisis</h3>
@@ -331,7 +386,7 @@
         </div>
     </div>
 
-    <div id="recipeModal" class="fixed inset-0 bg-black/60 hidden z-[70] flex items-center justify-center backdrop-blur-sm px-4">
+    <div id="recipeModal" class="fixed inset-0 bg-black/60 hidden z-[90] flex items-center justify-center backdrop-blur-sm px-4">
         <div class="bg-white w-full max-w-sm rounded-2xl p-5 shadow-2xl animate-fade-in">
             <h3 class="text-lg font-bold text-slate-800 mb-4">Nueva Receta</h3>
             <div class="space-y-3 mb-4">
@@ -369,7 +424,7 @@
         </div>
     </div>
 
-    <div id="scannerModal" class="fixed inset-0 bg-black/90 hidden z-[70] flex flex-col justify-center items-center">
+    <div id="scannerModal" class="fixed inset-0 bg-black/90 hidden z-[90] flex flex-col justify-center items-center">
         <div class="absolute top-5 right-5 z-20">
              <button onclick="stopScanner()" class="text-white bg-white/20 rounded-full p-2 backdrop-blur-md">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -383,30 +438,40 @@
 
     <script>
         // --- GESTIÓN DE VISTAS ---
-				function switchView(viewName) {
-    // Añadimos 'info' al array
-						['home', 'history', 'backup', 'info'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
+        function switchView(viewName) {
+            ['home', 'history', 'backup', 'info'].forEach(v => document.getElementById(`view-${v}`).classList.add('hidden'));
     
-						document.getElementById(`view-${viewName}`).classList.remove('hidden');
+            document.getElementById(`view-${viewName}`).classList.remove('hidden');
     
-						document.querySelectorAll('.nav-btn').forEach(btn => {
-								btn.classList.remove('text-indigo-600');
-								btn.classList.add('text-slate-400');
-						});
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('text-indigo-600');
+                btn.classList.add('text-slate-400');
+            });
     
-						const activeBtn = document.getElementById(`btn-${viewName}`);
-						activeBtn.classList.remove('text-slate-400');
-						activeBtn.classList.add('text-indigo-600');
+            const activeBtn = document.getElementById(`btn-${viewName}`);
+            activeBtn.classList.remove('text-slate-400');
+            activeBtn.classList.add('text-indigo-600');
     
-						document.getElementById('mainContainer').scrollTop = 0;
+            document.getElementById('mainContainer').scrollTop = 0;
     
-						if(viewName === 'history' || viewName === 'home') applyFilter();
-    
-						// NUEVO: Si entramos en info, cargamos el readme
-						if(viewName === 'info') loadReadme();
-				}
+            if(viewName === 'history' || viewName === 'home') applyFilter();
+            if(viewName === 'info') loadReadme();
+        }
 
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
+
+        // --- GESTIÓN DE MODALES DE REGISTRO ---
+        function openActionModal() { document.getElementById('actionModal').classList.remove('hidden'); }
+        function closeActionModal() { document.getElementById('actionModal').classList.add('hidden'); }
+        
+        function openFoodModal() {
+            closeActionModal();
+            document.getElementById('foodModal').classList.remove('hidden');
+        }
+        function openRecipeLogModal() {
+            closeActionModal();
+            document.getElementById('recipeLogModal').classList.remove('hidden');
+        }
 
         // --- DATOS INICIALES ---
         let foodData = [
@@ -444,49 +509,38 @@
         let globalLog = []; 
         let recipeData = []; 
         let chartInstance = null;
+        let chartInstanceYesterday = null;
+        let chartInstanceLastWeek = null;
         let modalChartInstance = null;
         let selectedIds = new Set();
         let html5QrcodeScanner = null;
-        //
-				// --- CONTADOR SIMULADO ---
-				// Fecha base: 1 Ene 2024 (Para que el contador tenga un número base sólido)
-				const COUNTER_START_DATE = 1704067200000; 
-				const BASE_COUNT = 875773; 
-				// Velocidad: 1 registro nuevo cada 3 minutos (promedio simulado)
-				const MS_PER_COUNT = 180000; 
+        
+        // --- CONTADOR SIMULADO ---
+        const COUNTER_START_DATE = 1704067200000; 
+        const BASE_COUNT = 875773; 
+        const MS_PER_COUNT = 180000; 
 
-				function updateLiveCounter() {
-						// 1. Cálculo basado en tiempo (Simulación Global)
-						const now = Date.now();
-						const timeDiff = now - COUNTER_START_DATE;
-						const timeBasedCount = Math.floor(timeDiff / MS_PER_COUNT);
+        function updateLiveCounter() {
+            const now = Date.now();
+            const timeDiff = now - COUNTER_START_DATE;
+            const timeBasedCount = Math.floor(timeDiff / MS_PER_COUNT);
+            const localOffset = parseInt(localStorage.getItem('userLocalOffset') || '0');
+            const total = BASE_COUNT + timeBasedCount + localOffset;
+            const el = document.getElementById('liveCounter');
+            if(el) el.textContent = total.toLocaleString('es-ES');
+        }
 
-						// 2. Cálculo basado en usuario (Interacción Local "Viva")
-						// Recuperamos si el usuario ha aportado registros extra manualmente
-						const localOffset = parseInt(localStorage.getItem('userLocalOffset') || '0');
+        function incrementLocalCounter() {
+            let current = parseInt(localStorage.getItem('userLocalOffset') || '0');
+            localStorage.setItem('userLocalOffset', (current + 1).toString());
+            updateLiveCounter();
+            const el = document.getElementById('liveCounter');
+            if(el) {
+                el.parentElement.classList.add('scale-110', 'bg-emerald-50');
+                setTimeout(() => el.parentElement.classList.remove('scale-110', 'bg-emerald-50'), 200);
+            }
+        }
 
-						// Total
-						const total = BASE_COUNT + timeBasedCount + localOffset;
-    
-						// Renderizar con formato de miles (20.123)
-						const el = document.getElementById('liveCounter');
-						if(el) el.textContent = total.toLocaleString('es-ES');
-				}
-
-				function incrementLocalCounter() {
-						// Esta función se llama cuando el usuario añade algo real
-						let current = parseInt(localStorage.getItem('userLocalOffset') || '0');
-						// Sumamos 1 al offset local (la simulación personal del usuario)
-						localStorage.setItem('userLocalOffset', (current + 1).toString());
-						updateLiveCounter();
-    
-						// Efecto visual (pequeño salto)
-						const el = document.getElementById('liveCounter');
-						if(el) {
-        el.parentElement.classList.add('scale-110', 'bg-emerald-50');
-        setTimeout(() => el.parentElement.classList.remove('scale-110', 'bg-emerald-50'), 200);
-						}
-				}
         document.addEventListener('DOMContentLoaded', () => {
             loadData();
             populateSelect();
@@ -502,11 +556,11 @@
             setTodayFilter(); 
             updatePreview();
             updateDayLabels();
+            updateComparisonCharts(); // Inicializar gráficos extra
             switchView('home');
-						//
-						updateLiveCounter();
-						// Actualizar cada 10 segundos para que el número cambie solo eventualmente
-						setInterval(updateLiveCounter, 10000);
+            
+            updateLiveCounter();
+            setInterval(updateLiveCounter, 10000);
         });
 
         function updatePreview() {
@@ -571,83 +625,75 @@
                     </div>
                 </div>`;
         }
+        
+        // --- LOGICA GRAFICOS COMPARATIVOS (ACTUALIZADA) ---
+        function updateComparisonCharts() {
+            const today = new Date();
+            
+            // Ayer
+            const yesterdayDate = new Date(today);
+            yesterdayDate.setDate(today.getDate() - 1);
+            const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+            
+            // Semana Pasada (Mismo día)
+            const lastWeekDate = new Date(today);
+            lastWeekDate.setDate(today.getDate() - 7);
+            const lastWeekStr = lastWeekDate.toISOString().split('T')[0];
+
+            // Renderizar Ayer
+            const yesterdayIds = { p: 'yesterdayProt', c: 'yesterdayCarbs', f: 'yesterdayFats', k: 'yesterdayKcal' };
+            renderMiniChart('chartYesterday', yesterdayIds, yesterdayStr, chartInstanceYesterday, (c) => chartInstanceYesterday = c);
+            
+            // Renderizar Semana Pasada
+            const lastWeekIds = { p: 'lastWeekProt', c: 'lastWeekCarbs', f: 'lastWeekFats', k: 'lastWeekKcal' };
+            renderMiniChart('chartLastWeek', lastWeekIds, lastWeekStr, chartInstanceLastWeek, (c) => chartInstanceLastWeek = c);
+        }
+
+        function renderMiniChart(canvasId, macroIds, dateStr, chartInstance, setChartInstance) {
+            const logs = globalLog.filter(l => l.date === dateStr);
+            
+            let p=0, c=0, f=0, k=0;
+            logs.forEach(i => { p+=i.p; c+=i.c; f+=i.f; k+=i.kcal; });
+
+            // Actualizar textos de los cuadraditos
+            if (macroIds) {
+                document.getElementById(macroIds.p).textContent = p.toFixed(0) + 'g';
+                document.getElementById(macroIds.c).textContent = c.toFixed(0) + 'g';
+                document.getElementById(macroIds.f).textContent = f.toFixed(0) + 'g';
+                document.getElementById(macroIds.k).textContent = k;
+            }
+
+            const ctx = document.getElementById(canvasId).getContext('2d');
+            if(chartInstance) chartInstance.destroy();
+            
+            const hasData = (p+c+f) > 0;
+            
+            const newChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['P', 'C', 'G'],
+                    datasets: [{
+                        data: hasData ? [p*4, c*4, f*9] : [1],
+                        backgroundColor: hasData ? ['#39f792','#eab308','#ef4444'] : ['#f1f5f9'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: { legend: { display: false }, tooltip: { enabled: hasData } }
+                }
+            });
+            
+            setChartInstance(newChart);
+        }
+
 
         // --- BÚSQUEDA API ---
         function handleEnter(e) { if(e.key === 'Enter') searchOnline(); }
         
-        /*async function searchOnline() {
-            const query = document.getElementById('apiSearchInput').value;
-            if(!query || query.length < 3) return showToast("Escribe al menos 3 caracteres.");
-            const loader = document.getElementById('searchLoader');
-            const icon = document.getElementById('searchIcon');
-            const resultsDiv = document.getElementById('searchResults');
-            
-            loader.classList.remove('hidden'); icon.classList.add('hidden');
-            resultsDiv.classList.add('hidden'); resultsDiv.innerHTML = '';
-
-            try {
-                // Pedimos nutriments y nutriscore
-                const url = `https://es.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&fields=product_name,brands,nutriments,id,nutriscore_grade`;
-                const response = await fetch(url);
-                const data = await response.json();
-
-                if(data.products && data.products.length > 0) {
-                    let html = '<ul class="divide-y divide-blue-50">';
-                    let found = false;
-                    data.products.forEach(prod => {
-                        if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
-                            found = true;
-                            // Macros principales
-                            const p = prod.nutriments['proteins_100g'] || 0;
-                            const c = prod.nutriments['carbohydrates_100g'] || 0;
-                            const f = prod.nutriments['fat_100g'] || 0;
-                            const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
-                            
-                            // Macros secundarios (visualización)
-                            const s = prod.nutriments['sugars_100g'] || 0;
-                            const sf = prod.nutriments['saturated-fat_100g'] || 0;
-
-                            // Lógica NUTRISCORE
-                            const score = prod.nutriscore_grade ? prod.nutriscore_grade.toUpperCase() : '';
-                            let nsClass = 'bg-slate-100 text-slate-400 border-slate-200'; // Default
-                            if(score === 'A') nsClass = 'bg-[#038141] text-white border-[#038141]';
-                            else if(score === 'B') nsClass = 'bg-[#85BB2F] text-white border-[#85BB2F]';
-                            else if(score === 'C') nsClass = 'bg-[#FECB02] text-slate-800 border-[#FECB02]';
-                            else if(score === 'D') nsClass = 'bg-[#EE8100] text-white border-[#EE8100]';
-                            else if(score === 'E') nsClass = 'bg-[#E63E11] text-white border-[#E63E11]';
-
-                            const brand = prod.brands ? ` (${prod.brands.split(',')[0]})` : ''; 
-                            const rawName = (prod.product_name || "Sin nombre") + brand;
-                            const safeName = rawName.replace(/'/g, ""); 
-                            
-                            // Badge HTML del NutriScore
-                            const nutriscoreBadge = score ? `<span class="${nsClass} px-1.5 rounded-md font-black border text-[10px]" title="Nutri-Score ${score}">${score}</span>` : '';
-
-                            html += `
-                            <li class="p-3 hover:bg-blue-50 cursor-pointer flex justify-between items-center group transition-colors" 
-                                onclick="selectApiItem('${safeName}', ${p}, ${c}, ${f}, ${k})">
-                                <div class="truncate w-3/4">
-                                    <div class="font-medium text-slate-700 truncate">${prod.product_name}</div>
-                                    <div class="text-xs text-slate-400 truncate">${prod.brands || ''}</div> 
-                                    
-                                    <div class="text-[10px] text-slate-500 mt-1 flex gap-2 items-center">
-                                        <span class="bg-blue-50 px-1.5 py-0.5 rounded text-blue-600 font-medium">Azú: ${Math.round(s)}g</span>
-                                        <span class="bg-orange-50 px-1.5 py-0.5 rounded text-orange-600 font-medium">Sat: ${Math.round(sf)}g</span>
-										<span class="bg-pink-50 px-1.5 py-0.5 rounded text-grey-600 font-medium">Nutri-Score: ${nutriscoreBadge}</span>
-                                        
-                                    </div>
-                                </div>
-                                <span class="text-blue-500 text-xs font-bold bg-blue-50 px-2 py-1 rounded-md ml-2 flex-shrink-0">${Math.round(k)} kcal</span>
-                            </li>`;
-                        }
-                    });
-                    if(!found) html += '<li class="p-3 text-slate-400 italic text-xs">Sin info válida.</li>';
-                    html += '</ul>';
-                    resultsDiv.innerHTML = html; resultsDiv.classList.remove('hidden');
-                } else { showToast("Sin resultados."); }
-            } catch (error) { console.error(error); showToast("Error de conexión."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
-        }*/
-		async function searchOnline() {
+        async function searchOnline() {
             const query = document.getElementById('apiSearchInput').value;
             if(!query || query.length < 3) return showToast("Escribe al menos 3 caracteres.");
             const loader = document.getElementById('searchLoader');
@@ -668,17 +714,14 @@
                     data.products.forEach(prod => {
                         if(prod.nutriments && (prod.nutriments['energy-kcal_100g'] !== undefined || prod.nutriments['energy-kcal'] !== undefined)) {
                             found = true;
-                            // Macros principales
                             const p = prod.nutriments['proteins_100g'] || 0;
                             const c = prod.nutriments['carbohydrates_100g'] || 0;
                             const f = prod.nutriments['fat_100g'] || 0;
                             const k = prod.nutriments['energy-kcal_100g'] || prod.nutriments['energy-kcal'] || 0;
                             
-                            // Infos Extra
                             const s = prod.nutriments['sugars_100g'] || 0;
                             const sf = prod.nutriments['saturated-fat_100g'] || 0;
 
-                            // Lógica NUTRISCORE + EMOJIS (Propuesta 2)
                             const score = prod.nutriscore_grade ? prod.nutriscore_grade.toUpperCase() : '';
                             let nsClass = 'bg-slate-100 text-slate-400 border-slate-200';
                             let nsEmoji = ''; 
@@ -693,7 +736,6 @@
                             const rawName = (prod.product_name || "Sin nombre") + brand;
                             const safeName = rawName.replace(/'/g, ""); 
                             
-                            // Badge HTML con Letra + Emoji
                             const nutriscoreBadge = score ? `<span class="${nsClass} px-1.5 rounded-md font-black border text-[10px]" title="Nutri-Score ${score}">${score} ${nsEmoji}</span>` : '';
 
                             html += `
@@ -779,7 +821,12 @@
         }
 
         // --- UTILS ---
-        function initDateInputs() { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; }
+        function initDateInputs() { 
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('foodDate').value = today; 
+            document.getElementById('recipeDate').value = today; 
+        }
+
         function setTodayFilter() { const t = new Date().toISOString().split('T')[0]; document.getElementById('filterStart').value = t; document.getElementById('filterEnd').value = t; updateDayLabels(); applyFilter(); }
         function shiftDate(d) {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
@@ -825,7 +872,7 @@
         function addItem() {
             const select = document.getElementById('foodSelect');
             const amountInput = document.getElementById('amountInput');
-            const dateInput = document.getElementById('entryDate');
+            const dateInput = document.getElementById('foodDate'); // ID Actualizado
             const amount = parseFloat(amountInput.value);
             const foodId = parseInt(select.value);
             
@@ -851,15 +898,17 @@
             saveData(); 
             saveFoods(); 
             applyFilter();
-						incrementLocalCounter();
+            updateComparisonCharts(); // ACTUALIZAR GRÁFICOS
+            incrementLocalCounter();
             showToast("Guardado!");
+            document.getElementById('foodModal').classList.add('hidden'); // Cerrar modal
         }
 
         // --- CRUD RECETAS ---
         function addRecipeLog() {
             const select = document.getElementById('recipeSelect');
             const amountInput = document.getElementById('recipeAmountInput');
-            const dateInput = document.getElementById('entryDate');
+            const dateInput = document.getElementById('recipeDate'); // ID Actualizado
             const amount = parseFloat(amountInput.value);
             const recipeId = parseInt(select.value);
 
@@ -885,11 +934,13 @@
 
             saveData();
             applyFilter();
-						incrementLocalCounter();
+            updateComparisonCharts(); // ACTUALIZAR GRÁFICOS
+            incrementLocalCounter();
             showToast("Receta registrada!");
+            document.getElementById('recipeLogModal').classList.add('hidden'); // Cerrar modal
         }
 
-        function deleteItem(id) { if(confirm('¿Borrar registro?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); } }
+        function deleteItem(id) { if(confirm('¿Borrar registro?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); updateComparisonCharts(); } }
         
         function deleteSelectedFood() {
             const select = document.getElementById('foodSelect');
@@ -974,37 +1025,28 @@
                 window.location.reload();
             } 
         }
-				let readmeLoaded = false;
+        
+        let readmeLoaded = false;
+        async function loadReadme() {
+            if(readmeLoaded) return; 
 
-				async function loadReadme() {
-						if(readmeLoaded) return; // Evitar cargar cada vez si ya lo tenemos
-
-						const container = document.getElementById('readmeContainer');
-						try {
-								// Petición al archivo local
-								const response = await fetch('./README.md');
-								
-								if (!response.ok) throw new Error("No se encontró el archivo README.md");
-								
-								const text = await response.text();
-								
-								// Convertir Markdown a HTML usando la librería 'marked'
-								container.innerHTML = marked.parse(text);
-								
-								// Ajuste opcional: forzar que los enlaces se abran en nueva pestaña
-								container.querySelectorAll('a').forEach(a => a.target = '_blank');
-								
-								readmeLoaded = true;
-						} catch (error) {
-								console.error(error);
-								container.innerHTML = `
-										<div class="text-center py-8">
-												<p class="text-red-500 font-bold mb-2">Error al cargar documentación</p>
-												<p class="text-xs text-slate-500">${error.message}</p>
-												<p class="text-xs text-slate-400 mt-4">Asegúrate de que el archivo README.md está en la misma carpeta que el index.html</p>
-										</div>`;
-						}
-				}
+            const container = document.getElementById('readmeContainer');
+            try {
+                const response = await fetch('./README.md');
+                if (!response.ok) throw new Error("No se encontró el archivo README.md");
+                const text = await response.text();
+                container.innerHTML = marked.parse(text);
+                container.querySelectorAll('a').forEach(a => a.target = '_blank');
+                readmeLoaded = true;
+            } catch (error) {
+                console.error(error);
+                container.innerHTML = `
+                    <div class="text-center py-8">
+                        <p class="text-red-500 font-bold mb-2">Error al cargar documentación</p>
+                        <p class="text-xs text-slate-500">${error.message}</p>
+                    </div>`;
+            }
+        }
 
         // --- PERSISTENCIA ---
         function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
@@ -1050,6 +1092,7 @@
                             if(d.foods) { foodData = d.foods; saveFoods(); populateSelect(); }
                             if(d.recipes) { recipeData = d.recipes; saveRecipes(); populateRecipeSelect(); }
                             applyFilter();
+                            updateComparisonCharts();
                             showToast("Restauración completa.");
                         }
                     } else if(Array.isArray(d)) {
@@ -1159,12 +1202,9 @@
             }, 2500);
         }
     </script>
-	<div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none z-[80] flex items-center gap-2">
-    	<svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-    	<span id="toastMsg" class="text-sm font-medium">Acción realizada</span>
-	</div>	
+    <div id="toast" class="fixed top-5 left-1/2 transform -translate-x-1/2 bg-slate-800 text-white px-6 py-3 rounded-full shadow-xl transition-all duration-300 opacity-0 translate-y-[-20px] pointer-events-none z-[100] flex items-center gap-2">
+        <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <span id="toastMsg" class="text-sm font-medium">Acción realizada</span>
+    </div>  
 </body>
-
 </html>
-
-
