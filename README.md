@@ -34,31 +34,66 @@
 
 ## Guía de Uso
 
+Basado en el análisis del código fuente de la aplicación (`index.html` y lógica asociada), a continuación se presenta la redacción actualizada para los puntos **1. Panel de Registro (Inicio)** y **2. Historial y Análisis** del archivo `README.md`.
+
+Esta actualización incorpora las funcionalidades no documentadas previamente, como las tarjetas comparativas de tendencias, los filtros de navegación rápida en el historial, las opciones de gestión de favoritos (borrar/compartir) y la integración de la imagen `crearReceta.gif`.
+
+---
+
 ### 1. Panel de Registro (Inicio)
 
-Bajo el lema *"Tus objetivos bocado a bocado"*, encontrarás las herramientas principales:
+Esta vista actúa como el cuadro de mando principal de la aplicación, diseñado para ofrecer una visión rápida del estado nutricional actual y facilitar la introducción de nuevos datos.
 
-* **Búsqueda y Escáner:**
-  * Barra superior para buscar productos online o activar la cámara.
-  * Los resultados se añaden temporalmente al desplegable de alimentos.
-* **Añadir Alimento:**
-  * Selecciona del desplegable de alimentos.
-  * Indica la cantidad (normalmente en gramos).
-  * Pulsa la tarjeta **"Añadir Alimento"**.
-* **Añadir Receta:**
-  * Selecciona del desplegable de recetas (marcadas con el icono 📖).
-  * Indica la cantidad en unidades (ej. 1.5 raciones).
-  * Pulsa la tarjeta **"Añadir Receta"**.
-* **Contador de Comunidad:** Indicador visual que crece con el tiempo y con tus registros, mostrando la actividad proyectada de la app.
+* **Resumen Nutricional (Dashboard):**
+* **Gráfico de Distribución:** Un gráfico de anillo central muestra la proporción de macronutrientes consumidos en el día (Proteínas, Carbohidratos, Grasas).
+* **Indicadores Numéricos:** Debajo del gráfico, se detallan los gramos totales consumidos por macronutriente y el total calórico acumulado (Kcal).
+* **Compartir App:** En la cabecera, un botón permite compartir el enlace de la aplicación directamente vía WhatsApp.
+
+
+* **Tarjetas de Tendencia (Comparativas):**
+* Justo debajo del panel principal, se encuentran dos tarjetas de resumen que muestran el progreso nutricional de **"Ayer"** y de la **"Semana Pasada"**. Esto permite comparar visualmente la ingesta actual con periodos anteriores sin necesidad de navegar al historial.
+
+
+* **Botón de Acción (+):**
+* Situado en la esquina superior de la tarjeta principal, despliega un menú modal para elegir qué tipo de entrada se desea registrar: **Alimento** o **Receta**.
+
+
+* **Modal de Registro de Alimentos:**
+* **Buscador y Escáner:** Permite buscar productos en la base de datos de *OpenFoodFacts* o utilizar la cámara del dispositivo para escanear códigos de barras. Los resultados se añaden a la lista local.
+* **Selector de Alimentos:** Un desplegable con la base de datos local de alimentos. Junto al selector, existen opciones para **compartir** el alimento seleccionado (vía WhatsApp) o **eliminarlo** permanentemente de la lista.
+* **Entrada de Datos:** Se especifica la fecha y la cantidad (gramos o unidades) antes de añadir al diario.
+
+
+* **Modal de Registro de Recetas:**
+* Permite seleccionar una receta previamente creada. Al igual que con los alimentos, incluye opciones para compartir la receta o eliminarla de la base de datos.
+* Calcula automáticamente los macros totales según las raciones indicadas.
+
+
+* **Proyección de Comunidad:** Un contador en la parte inferior simula la actividad global de registros en la plataforma.
 
 ### 2. Historial y Análisis
 
-* **Gestión de Registros:** Elimina entradas individuales o filtra por fechas.
+Sección dedicada a la revisión detallada de los registros, la edición de datos y la creación de nuevas recetas a partir de comidas existentes.
+
+* **Navegación y Filtrado:**
+* **Filtro por Fechas:** Selectores de fecha "Desde" y "Hasta" para acotar la lista de registros.
+* **Navegación Rápida:** Botones de acceso directo para moverse ágilmente entre días: **"-1 Día"**, **"Hoy"** y **"+1 Día"**.
+
+
+* **Tabla de Registros:**
+* Muestra un listado detallado con el nombre del alimento/receta, la cantidad, las calorías y la fecha.
+* Permite eliminar entradas individuales pulsando el icono de papelera.
+* **Selección Múltiple:** Mediante las casillas de verificación (checkboxes) a la izquierda de cada fila, se pueden seleccionar varios elementos simultáneamente para su procesamiento.
+
+
 * **Modo Análisis y Creación de Recetas:**
-  1. Selecciona múltiples registros usando las casillas (checkbox).
-  2. Pulsa el botón flotante **"Analizar"**.
-  3. Verás el desglose nutricional total.
-  4. Pulsa el botón **"+"** en el modal para **Guardar como Receta** (te pedirá nombre y descripción).
+  1.  **Selección:** Marque las casillas de los alimentos que componen una comida o que desea agrupar (por ejemplo, todos los ingredientes de un almuerzo).
+  2.  **Botón Analizar:** Al seleccionar uno o más elementos, aparecerá un botón flotante **"Analizar"** en la esquina inferior derecha.
+  3.  **Detalle Nutricional:** Se abrirá una ventana con la suma total de macros y calorías de la selección, junto con un gráfico de distribución específico para esos ítems.
+  4.  **Guardar como Receta:** Dentro de esta ventana de análisis, el botón con el icono de **"+"** permite convertir la selección actual en una nueva **Receta**.
+  5.  **Confirmación:** Asigne un nombre y una descripción para guardarla en su base de datos personal y reutilizarla en el futuro.
+
+  ![Demostración de Creación de Receta](crearReceta.gif)
 
 ### 3. Gestión de Datos
 
