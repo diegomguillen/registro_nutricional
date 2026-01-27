@@ -34,12 +34,6 @@
 
 ## Guía de Uso
 
-Basado en el análisis del código fuente de la aplicación (`index.html` y lógica asociada), a continuación se presenta la redacción actualizada para los puntos **1. Panel de Registro (Inicio)** y **2. Historial y Análisis** del archivo `README.md`.
-
-Esta actualización incorpora las funcionalidades no documentadas previamente, como las tarjetas comparativas de tendencias, los filtros de navegación rápida en el historial, las opciones de gestión de favoritos (borrar/compartir) y la integración de la imagen `crearReceta.gif`.
-
----
-
 ### 1. Panel de Registro (Inicio)
 
 Esta vista actúa como el cuadro de mando principal de la aplicación, diseñado para ofrecer una visión rápida del estado nutricional actual y facilitar la introducción de nuevos datos.
