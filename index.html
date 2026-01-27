@@ -550,10 +550,9 @@
                 setTimeout(() => el.parentElement.classList.remove('scale-110', 'bg-emerald-50'), 200);
             }
         }
-
+        const URL_LIMIT = 2048; // Límite seguro estándar para navegadores y clientes móviles
         document.addEventListener('DOMContentLoaded', () => {
             // --- LÓGICA DE COMPARTIR E IMPORTAR ---
-            const URL_LIMIT = 2048; // Límite seguro estándar para navegadores y clientes móviles
             // Verificar si hay datos compartidos en la URL al iniciar
             const params = new URLSearchParams(window.location.search);
             const sharedData = params.get('share');
@@ -906,7 +905,7 @@
             // JSON.stringify mantiene las claves originales (no minificado)
             return encodeURIComponent(btoa(JSON.stringify(payload)));
         }
-        
+
         function shareSelectedFood() {
             const select = document.getElementById('foodSelect');
             const id = parseInt(select.value);
@@ -917,7 +916,7 @@
             try {
                 const encodedData = encodePayload('food', food);
                 const shareLink = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
-                
+
                 // Construcción del mensaje de WhatsApp
                 const text = `Te comparto este alimento: ${food.name} 🍎\n`;
                 const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(text + shareLink)}`;
@@ -935,7 +934,7 @@
                 showToast("Error al generar el enlace");
             }
         }
-        
+
         function shareSelectedRecipe() {
             const select = document.getElementById('recipeSelect');
             const id = parseInt(select.value);
@@ -946,7 +945,7 @@
             try {
                 const encodedData = encodePayload('recipe', recipe);
                 const shareLink = `${window.location.origin}${window.location.pathname}?share=${encodedData}`;
-                
+
                 // Construcción del mensaje de WhatsApp
                 const text = `Mira esta receta: ${recipe.name} 📖\n`;
                 const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(text + shareLink)}`;
