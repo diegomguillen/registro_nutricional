@@ -275,15 +275,15 @@
     "sub": "COLOR"
   },
   {
-    "id": 28,
-    "name": "Manzana / Pera",
-    "p": 0.3,
-    "c": 12.0,
-    "f": 0.2,
-    "kcal": 52,
-    "unit": "g",
-    "fam": "FRUIT",
-    "sub": "FRESH"
+  "id": 28,
+  "name": "Plátano / Banana",
+  "p": 1.1,
+  "c": 23.0,
+  "f": 0.3,
+  "kcal": 90,
+  "unit": "g",
+  "fam": "FRUIT",
+  "sub": "FRESH"
   },
   {
     "id": 29,
@@ -372,5 +372,16 @@
     "unit": "g",
     "fam": "DAIRY",
     "sub": "MILK"
+  },
+  {
+  "id": 37,
+  "name": "Frutos Rojos / Sandía",
+  "p": 0.6,
+  "c": 7.0,
+  "f": 0.2,
+  "kcal": 32,
+  "unit": "g",
+  "fam": "FRUIT",
+  "sub": "FRESH"
   }
 ]
