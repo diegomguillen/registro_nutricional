@@ -61,7 +61,7 @@
     }
   },
   "PURE": {
-    "label": "Macros Puros (Calibración)",
+    "label": "Macros Puros",
     "icon": "🧪",
     "subs": {
       "P_PROT": { "label": "Proteína Pura", "icon": "💪" },
