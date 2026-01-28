@@ -1,0 +1,72 @@
+{
+  "PROTEIN": {
+    "label": "Carnes, Pescados y Huevos",
+    "icon": "🥩",
+    "subs": {
+      "MEAT_RED": { "label": "Carnes Rojas/Procesados", "icon": "🍖" },
+      "MEAT_WHITE": { "label": "Aves y Magras", "icon": "🍗" },
+      "FISH_WHITE": { "label": "Pescado Blanco", "icon": "🐟" },
+      "FISH_BLUE": { "label": "Pescado Azul", "icon": "🐟" },
+      "EGG": { "label": "Huevos", "icon": "🥚" }
+    }
+  },
+  "DAIRY": {
+    "label": "Lácteos y Derivados",
+    "icon": "🥛",
+    "subs": {
+      "CHEESE": { "label": "Quesos", "icon": "🧀" },
+      "YOGURT": { "label": "Yogures / Kéfir", "icon": "🥣" },
+      "MILK": { "label": "Leche Líquida", "icon": "🥛" }
+    }
+  },
+  "CARBS": {
+    "label": "Cereales y Tubérculos",
+    "icon": "🌾",
+    "subs": {
+      "PASTA_RICE": { "label": "Pasta y Arroces", "icon": "🍝" },
+      "BREAD": { "label": "Panes y Masas", "icon": "🍞" },
+      "TUBER": { "label": "Patata y Batata", "icon": "🥔" }
+    }
+  },
+  "LEGUME": {
+    "label": "Legumbres",
+    "icon": "🥘",
+    "subs": {
+      "DRY": { "label": "Legumbre Seca", "icon": "🫘" },
+      "COOKED": { "label": "Cocida / Bote", "icon": "🥫" }
+    }
+  },
+  "VEG": {
+    "label": "Verduras y Hortalizas",
+    "icon": "🥦",
+    "subs": {
+      "GREEN": { "label": "Hoja y Verde", "icon": "🥬" },
+      "COLOR": { "label": "Frutos (Tomate/Pimiento)", "icon": "🍅" }
+    }
+  },
+  "FRUIT": {
+    "label": "Frutas",
+    "icon": "🍎",
+    "subs": {
+      "FRESH": { "label": "Fruta Fresca", "icon": "🍇" }
+    }
+  },
+  "LIPID": {
+    "label": "Grasas y Semillas",
+    "icon": "🥑",
+    "subs": {
+      "OIL": { "label": "Aceites", "icon": "🫒" },
+      "NUT": { "label": "Frutos Secos", "icon": "🥜" },
+      "FRUIT_FAT": { "label": "Aguacate / Coco", "icon": "🥥" }
+    }
+  },
+  "PURE": {
+    "label": "Macros Puros (Calibración)",
+    "icon": "🧪",
+    "subs": {
+      "P_PROT": { "label": "Proteína Pura", "icon": "💪" },
+      "P_CARB": { "label": "Carbohidrato Puro", "icon": "⚡" },
+      "P_FAT": { "label": "Grasa Pura", "icon": "💧" }
+    }
+  }
+}

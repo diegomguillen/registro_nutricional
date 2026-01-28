@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NutriApp</title>
+    <title>NutriApp-DEV</title>
     <meta name="theme-color" content="#ffffff">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
@@ -482,42 +482,11 @@
             closeActionModal();
             document.getElementById('recipeLogModal').classList.remove('hidden');
         }
-
-        // --- DATOS INICIALES ---
-        let foodData = [
-            { id: 1,  name: "Suplementos (Whey/Caseína)", p: 86.0, c: 3.0, f: 2.0, kcal: 375, unit: "g" },
-            { id: 2,  name: "Aceites Puros (AOVE)", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
-            { id: 3,  name: "Grasas Vegetales (Aguacate)", p: 1.5, c: 4.0, f: 17.0, kcal: 175, unit: "g" },
-            { id: 4,  name: "Frutos Secos y Semillas", p: 20.0, c: 16.0, f: 48.0, kcal: 575, unit: "g" },
-            { id: 5,  name: "Carnes Magras (Pollo/Pavo)", p: 21.0, c: 0.5, f: 3.5, kcal: 117, unit: "g" },
-            { id: 6,  name: "Carnes Rojas / Procesadas", p: 20.0, c: 0.5, f: 5.5, kcal: 130, unit: "g" },
-            { id: 7,  name: "Lácteos Quesos Curados", p: 20.5, c: 0.5, f: 26.5, kcal: 325, unit: "g" },
-            { id: 8,  name: "Lácteos semidesnatados", p: 4.0, c: 5.1, f: 1.8, kcal: 53, unit: "g" },
-            { id: 9,  name: "Lácteos Frescos (Yogur)", p: 6.5, c: 4.0, f: 3.0, kcal: 69, unit: "g" },
-            { id: 10, name: "Pescado Blanco y Mariscos", p: 19.5, c: 0.5, f: 2.0, kcal: 100, unit: "g" },
-            { id: 11, name: "Pescado Azul / Conservas", p: 19.5, c: 0.5, f: 11.5, kcal: 180, unit: "g" },
-            { id: 12, name: "Huevo (Unidad ~60g)", p: 6.5, c: 1.0, f: 7.5, kcal: 98, unit: "u" },   
-            { id: 13, name: "Harinas y Cereales (Crudo)", p: 12.5, c: 63.0, f: 5.5, kcal: 350, unit: "g" },
-            { id: 14, name: "Panes", p: 9.5, c: 47.5, f: 2.5, kcal: 250, unit: "g" },
-            { id: 15, name: "Hidratos Cocidos (Pasta)", p: 4.0, c: 25.0, f: 0.5, kcal: 120, unit: "g" },
-            { id: 16, name: "Frutas Frescas", p: 0.5, c: 12.0, f: 0.5, kcal: 55, unit: "g" },
-            { id: 17, name: "Verduras y Hortalizas", p: 1.5, c: 6.0, f: 0.5, kcal: 35, unit: "g" },
-            { id: 18, name: "Legumbres", p: 6.0, c: 12.0, f: 0.8, kcal: 79, unit: "g" },
-            { id: 19, name: "Macro proteina", p: 100.0, c: 0.0, f: 0.0, kcal: 400, unit: "g" },
-            { id: 20, name: "Macro carbohidrato", p: 0.0, c: 100.0, f: 0.0, kcal: 400, unit: "g" },
-            { id: 21, name: "Macro grasa", p: 0.0, c: 0.0, f: 100.0, kcal: 900, unit: "g" },
-            { id: 22, name: "Ñoquis (Gnocchi)", p: 3.5, c: 36.0, f: 0.5, kcal: 165, unit: "g" },
-            { id: 23, name: "Tubérculos (Patata/Batata)", p: 2, c: 21.0, f: 0.2, kcal: 94, unit: "g" },
-            { id: 24, name: "Aceituna (Unidad ~4g)", p: 0.0, c: 0.0, f: 0.5, kcal: 6, unit: "u" },
-            { id: 25, name: "Nuez (Grano ~5g)", p: 0.8, c: 0.7, f: 3.0, kcal: 33, unit: "u" },
-            { id: 26, name: "Tomate Cherry (Unidad ~12g)", p: 0.1, c: 0.5, f: 0.0, kcal: 3, unit: "u" },
-            { id: 27, name: "Tomate Ensalada (Unidad ~150g)", p: 1.5, c: 5.5, f: 0.3, kcal: 30, unit: "u" },
-            { id: 28, name: "Manzana (Media ~180g)", p: 0.5, c: 25.0, f: 0.5, kcal: 95, unit: "u" },
-            { id: 29, name: "Jamón Serrano", p: 33.5, c: 1.0, f: 12.2, kcal: 248, unit: "g" }
-        ];
-
+        //////////////
         let globalLog = []; 
         let recipeData = []; 
+        let foodData = [];
+        let FOOD_STRUCTURE = {};
         let chartInstance = null;
         let chartInstanceYesterday = null;
         let chartInstanceLastWeek = null;
@@ -594,9 +563,7 @@
                 }
             }
             //
-            loadData();
-            populateSelect();
-            populateRecipeSelect();
+            initApp();
             initDateInputs();
             
             document.getElementById('foodSelect').addEventListener('change', updatePreview);
@@ -964,20 +931,77 @@
                 showToast("Error al generar el enlace");
             }
         }        
-        
+
         // --- POPULATE SELECTS ---
-        function populateSelect() {
+        /*function populateSelect() {
             const sel = document.getElementById('foodSelect');
             const val = sel.value; sel.innerHTML = '';
             [...foodData].sort((a,b)=>a.name.localeCompare(b.name)).forEach(f => {
                 const o = document.createElement('option'); o.value = f.id; o.text = f.name; sel.appendChild(o);
             });
             if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
+        }*/
+        function populateSelect() {
+            const sel = document.getElementById('foodSelect');
+            const currentVal = sel.value; 
+            sel.innerHTML = ''; // Limpiar
+        
+            // 1. Agrupar datos por Familia
+            const groups = {};
+
+            // Ordenar alfabéticamente primero para que dentro de los grupos esté ordenado
+            [...foodData].sort((a,b) => a.name.localeCompare(b.name)).forEach(f => {
+                const famKey = f.fam || 'OTHER'; // Fallback por si falta la familia
+                if (!groups[famKey]) groups[famKey] = [];
+                groups[famKey].push(f);
+            });
+        
+            // 2. Definir el orden de visualización de las familias (opcional, para que Macros Puros salga 1º o último)
+            const order = ['PURE', 'PROTEIN', 'CARBS', 'LIPID', 'DAIRY', 'LEGUME', 'FRUIT', 'VEG'];
+        
+            // 3. Crear los <optgroup>
+            order.forEach(key => {
+                if(groups[key]) {
+                    const meta = FOOD_STRUCTURE[key];
+                    const groupEl = document.createElement('optgroup');
+                    // Usamos el icono y la etiqueta de la familia
+                    groupEl.label = `${meta.icon} ${meta.label}`; 
+                
+                    groups[key].forEach(f => {
+                        const subMeta = meta.subs[f.sub];
+                        const option = document.createElement('option');
+                        option.value = f.id;
+                        // Mostramos: Icono Subfamilia + Nombre Alimento
+                        const subIcon = subMeta ? subMeta.icon + " " : ""; 
+                        option.text = `${subIcon}${f.name}`;
+                        groupEl.appendChild(option);
+                    });
+                    sel.appendChild(groupEl);
+                }
+            });
+        
+            // Añadir items sin familia (compatibilidad hacia atrás o busquedas web guardadas)
+            if(groups['OTHER']) {
+                const groupEl = document.createElement('optgroup');
+                groupEl.label = "📂 Otros / Escaneados";
+                groups['OTHER'].forEach(f => {
+                    const o = document.createElement('option');
+                    o.value = f.id;
+                    o.text = f.name;
+                    groupEl.appendChild(o);
+                });
+                sel.appendChild(groupEl);
+            }
+        
+            // Restaurar selección previa si existe
+            if(currentVal && [...sel.options].some(o => o.value == currentVal)) {
+                sel.value = currentVal;
+            }
         }
 
-        function populateRecipeSelect() {
-            const sel = document.getElementById('recipeSelect');
-            const val = sel.value; 
+                function populateRecipeSelect() {
+                    const sel = document.getElementById('recipeSelect');
+                    const val = sel.value; 
             sel.innerHTML = '<option value="" disabled selected>Selecciona una receta...</option>';
             [...recipeData].sort((a,b)=>a.name.localeCompare(b.name)).forEach(r => {
                 const o = document.createElement('option'); o.value = r.id; o.text = `📖 ${r.name}`; sel.appendChild(o);
@@ -1167,18 +1191,71 @@
 
         // --- PERSISTENCIA ---
         function saveData() { localStorage.setItem('macroCalculatorData', JSON.stringify(globalLog)); }
-        function saveFoods() { localStorage.setItem('macroCalculatorFoods', JSON.stringify(foodData)); }
+        function saveFoods() {
+          // Solo guardamos en el móvil del usuario sus alimentos propios (IDs >= 1000)
+          // Los alimentos base (ID < 1000) NO se guardan, así siempre se leen del JSON.
+          const customFoods = foodData.filter(f => f.id >= 1000);
+          localStorage.setItem('macroCalculatorFoods', JSON.stringify(customFoods));
+        }
         function saveRecipes() { localStorage.setItem('macroCalculatorRecipes', JSON.stringify(recipeData)); }
         
-        function loadData() { 
-            const s = localStorage.getItem('macroCalculatorData'); 
-            if(s) globalLog = JSON.parse(s); 
+        
+        async function initApp() {
+            try {
+                // 1. Pedimos los archivos al servidor (GitHub Pages)
+                const [foodsRes, structRes] = await Promise.all([
+                    fetch('./foods.json'),
+                    fetch('./structure.json')
+                ]);
             
-            const f = localStorage.getItem('macroCalculatorFoods');
-            if(f) foodData = JSON.parse(f);
+                if (!foodsRes.ok || !structRes.ok) throw new Error("No se pudieron cargar los archivos JSON");
+            
+                const remoteFoods = await foodsRes.json();
+                FOOD_STRUCTURE = await structRes.json();
+            
+                // 2. Cargamos el historial y recetas del usuario (LocalStorage)
+                const historyData = localStorage.getItem('macroCalculatorData');
+                if(historyData) globalLog = JSON.parse(historyData);
+            
+                const recipesData = localStorage.getItem('macroCalculatorRecipes');
+                if(recipesData) recipeData = JSON.parse(recipesData);
+            
+                // 3. FUSIÓN INTELIGENTE: 
+                // Recuperamos alimentos guardados en el móvil, pero SOLO los personalizados (ID >= 1000).
+                // Los alimentos base (Pollo, Huevo, etc.) los ignoramos para usar siempre los del JSON actualizado.
+                const localFoodsRaw = localStorage.getItem('macroCalculatorFoods');
+                let userCustomFoods = [];
+            
+                if (localFoodsRaw) {
+                    const parsed = JSON.parse(localFoodsRaw);
+                    userCustomFoods = parsed.filter(f => f.id >= 1000); 
+                }
+            
+                // Combinamos: [Base de Datos Remota] + [Mis Alimentos Personalizados]
+                foodData = [...remoteFoods, ...userCustomFoods];
+            
+                // 4. Arrancamos la interfaz (Todo lo que antes hacías en el DOMContentLoaded)
+                initDateInputs();
+                populateSelect();
+                populateRecipeSelect();
+                applyFilter();
+                updateComparisonCharts();
+                updateLiveCounter();
 
-            const r = localStorage.getItem('macroCalculatorRecipes');
-            if(r) recipeData = JSON.parse(r);
+                // Activamos los "escuchadores" de cambios
+                document.getElementById('foodSelect').addEventListener('change', updatePreview);
+                document.getElementById('amountInput').addEventListener('input', updatePreview);
+                document.getElementById('recipeSelect').addEventListener('change', updateRecipePreview);
+                document.getElementById('recipeAmountInput').addEventListener('input', updateRecipePreview);
+            
+            } catch (error) {
+                console.error("Error iniciando la app:", error);
+                // Si falla (ej: sin internet y sin caché), intentamos cargar al menos lo local
+                showToast("Modo Offline: Usando datos locales disponibles.");
+                const f = localStorage.getItem('macroCalculatorFoods');
+                if(f) foodData = JSON.parse(f);
+                populateSelect();
+            }
         }
 
         async function exportData() {
@@ -1200,22 +1277,53 @@
         function handleImport(input) {
             const f = input.files[0]; if(!f) return;
             const r = new FileReader(); 
-            r.onload = e => { 
+            
+            // Hacemos la función async para poder llamar a initApp() al final
+            r.onload = async e => { 
                 try { 
                     const d = JSON.parse(e.target.result); 
+                    
+                    // Detectar si es un backup válido
                     if (d.history || d.foods || d.recipes) {
-                         if(confirm(`Backup encontrado.\n- ${d.history?.length||0} registros\n- ${d.foods?.length||0} alimentos\n- ${d.recipes?.length||0} recetas\n¿Restaurar?`)) {
-                            if(d.history) { globalLog = d.history; saveData(); }
-                            if(d.foods) { foodData = d.foods; saveFoods(); populateSelect(); }
-                            if(d.recipes) { recipeData = d.recipes; saveRecipes(); populateRecipeSelect(); }
-                            applyFilter();
-                            updateComparisonCharts();
-                            showToast("Restauración completa.");
+                         if(confirm(`Backup encontrado.\n- ${d.history?.length||0} registros\n- ${d.foods?.length||0} alimentos\n- ${d.recipes?.length||0} recetas\n¿Restaurar y actualizar formato?`)) {
+                            
+                            // 1. RESTAURAR HISTORIAL
+                            if(d.history) { 
+                                globalLog = d.history; 
+                                saveData(); // Guarda en localStorage
+                            }
+
+                            // 2. RESTAURAR ALIMENTOS (LÓGICA BLINDADA)
+                            if(d.foods) { 
+                                // TRUCO: Del backup, solo nos interesan los alimentos PERSONALIZADOS (ID >= 1000).
+                                // Los alimentos base (Pollo, Huevo, etc.) los ignoramos porque usaremos los nuevos del JSON con iconos.
+                                const customFoodsFromBackup = d.foods.filter(f => f.id >= 1000);
+                                
+                                // Guardamos en memoria local SOLO los personalizados
+                                localStorage.setItem('macroCalculatorFoods', JSON.stringify(customFoodsFromBackup));
+                            }
+
+                            // 3. RESTAURAR RECETAS
+                            if(d.recipes) { 
+                                recipeData = d.recipes; 
+                                saveRecipes(); 
+                            }
+
+                            // 4. REINICIAR LA APP (FUSIÓN)
+                            // Llamamos a initApp() para que vuelva a descargar el JSON base 
+                            // y lo mezcle limpiamente con los datos que acabamos de restaurar.
+                            await initApp(); 
+                            
+                            showToast("Datos restaurados y actualizados a la nueva versión.");
                         }
                     } else if(Array.isArray(d)) {
-                         globalLog = d; saveData(); applyFilter();
+                         // Soporte para backups muy antiguos (solo historial)
+                         globalLog = d; saveData(); await initApp();
                     }
-                } catch(err){ console.error(err); showToast("Error al leer archivo."); } 
+                } catch(err){ 
+                    console.error(err); 
+                    showToast("Error al leer archivo de copia de seguridad."); 
+                } 
                 input.value=''; 
             }; 
             r.readAsText(f);
