@@ -1,9 +1,11 @@
-const CACHE_NAME = 'nutri-app-v1.2a';
+const CACHE_NAME = 'nutri-app-v1.30';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
   './manifest.json',
   './icon3.png',
+  './foods.json',      
+  './structure.json',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
   './README.md'
@@ -39,5 +41,3 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
-
-
