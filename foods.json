@@ -383,5 +383,49 @@
   "unit": "g",
   "fam": "FRUIT",
   "sub": "FRESH"
+  },
+  {
+    "id": 38,
+    "name": "Lata 56gr atún conserva natural",
+    "p": 23.0,
+    "c": 0.0,
+    "f": 0.7,
+    "kcal": 98,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE"
+  },
+  {
+    "id": 39,
+    "name": "Lata 52gr atún aove",
+    "p": 22.0,
+    "c": 0.0,
+    "f": 12.0,
+    "kcal": 196,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE"
+  },
+  {
+    "id": 40,
+    "name": "Lata 65gr caballa al natural",
+    "p": 23.0,
+    "c": 0.0,
+    "f": 3.3,
+    "kcal": 122,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE"
+  },
+  {
+    "id": 41,
+    "name": "Lata 80gr sardinas aove",
+    "p": 18.8,
+    "c": 0.0,
+    "f": 29.2,
+    "kcal": 340,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE"
   }
 ]
