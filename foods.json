@@ -178,10 +178,10 @@
   {
     "id": 8,
     "name": "Leche Semidesnatada",
-    "p": 3.4,
-    "c": 5.0,
+    "p": 3.1,
+    "c": 4.7,
     "f": 1.6,
-    "kcal": 48,
+    "kcal": 46,
     "unit": "g",
     "fam": "DAIRY",
     "sub": "MILK"
@@ -361,5 +361,16 @@
   "unit": "g", 
   "fam": "CARBS", 
   "sub": "TUBER" 
+  },
+  {
+    "id": 36,
+    "name": "Leche Desnatada",
+    "p": 3.2,
+    "c": 4.8,
+    "f": 0.5,
+    "kcal": 37,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "MILK"
   }
 ]
