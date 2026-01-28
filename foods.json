@@ -1,38 +1,5 @@
 [
   {
-    "id": 19,
-    "name": "Proteína",
-    "p": 100.0,
-    "c": 0.0,
-    "f": 0.0,
-    "kcal": 400,
-    "unit": "g",
-    "fam": "PURE",
-    "sub": "P_PROT"
-  },
-  {
-    "id": 20,
-    "name": "Carbohidrato",
-    "p": 0.0,
-    "c": 100.0,
-    "f": 0.0,
-    "kcal": 400,
-    "unit": "g",
-    "fam": "PURE",
-    "sub": "P_CARB"
-  },
-  {
-    "id": 21,
-    "name": "Grasa",
-    "p": 0.0,
-    "c": 0.0,
-    "f": 100.0,
-    "kcal": 900,
-    "unit": "g",
-    "fam": "PURE",
-    "sub": "P_FAT"
-  },
-  {
     "id": 2,
     "name": "Aceite de Oliva (AOVE)",
     "p": 0.0,
@@ -57,35 +24,13 @@
   {
     "id": 4,
     "name": "Mix Frutos Secos",
-    "p": 20.0,
-    "c": 16.0,
-    "f": 50.0,
-    "kcal": 600,
+    "p": 4.7,
+    "c": 9.4,
+    "f": 60.0,
+    "kcal": 615,
     "unit": "g",
     "fam": "LIPID",
     "sub": "NUT"
-  },
-  {
-    "id": 25,
-    "name": "Nuez (Grano)",
-    "p": 15.0,
-    "c": 14.0,
-    "f": 65.0,
-    "kcal": 650,
-    "unit": "g",
-    "fam": "LIPID",
-    "sub": "NUT"
-  },
-  {
-    "id": 24,
-    "name": "Aceituna (ud 4gr)",
-    "p": 0.03,
-    "c": 0.0,
-    "f": 0.6,
-    "kcal": 6,
-    "unit": "u",
-    "fam": "LIPID",
-    "sub": "FRUIT_FAT"
   },
   {
     "id": 5,
@@ -110,15 +55,37 @@
     "sub": "MEAT_RED"
   },
   {
-    "id": 29,
-    "name": "Jamón Serrano (Sin grasa)",
-    "p": 30.0,
-    "c": 0.0,
-    "f": 8.0,
-    "kcal": 190,
+    "id": 7,
+    "name": "Queso Curado/Semicurado",
+    "p": 25.0,
+    "c": 1.0,
+    "f": 33.0,
+    "kcal": 400,
     "unit": "g",
-    "fam": "PROTEIN",
-    "sub": "MEAT_RED"
+    "fam": "DAIRY",
+    "sub": "CHEESE"
+  },
+  {
+    "id": 8,
+    "name": "Leche Semidesnatada",
+    "p": 3.1,
+    "c": 4.7,
+    "f": 1.6,
+    "kcal": 46,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "MILK"
+  },
+  {
+    "id": 9,
+    "name": "Yogur Natural / Kéfir",
+    "p": 3.5,
+    "c": 4.5,
+    "f": 3.0,
+    "kcal": 60,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "YOGURT"
   },
   {
     "id": 10,
@@ -154,50 +121,6 @@
     "sub": "EGG"
   },
   {
-    "id": 7,
-    "name": "Queso Curado/Semicurado",
-    "p": 25.0,
-    "c": 1.0,
-    "f": 33.0,
-    "kcal": 400,
-    "unit": "g",
-    "fam": "DAIRY",
-    "sub": "CHEESE"
-  },
-  {
-    "id": 9,
-    "name": "Yogur Natural / Kéfir",
-    "p": 3.5,
-    "c": 4.5,
-    "f": 3.0,
-    "kcal": 60,
-    "unit": "g",
-    "fam": "DAIRY",
-    "sub": "YOGURT"
-  },
-  {
-    "id": 8,
-    "name": "Leche Semidesnatada",
-    "p": 3.1,
-    "c": 4.7,
-    "f": 1.6,
-    "kcal": 46,
-    "unit": "g",
-    "fam": "DAIRY",
-    "sub": "MILK"
-  },
-  {
-    "id": 30,
-    "name": "Queso Fresco Batido / Skyr",
-    "p": 8.0,
-    "c": 3.5,
-    "f": 0.1,
-    "kcal": 46,
-    "unit": "g",
-    "fam": "DAIRY",
-    "sub": "YOGURT"
-  },
-  {
     "id": 13,
     "name": "Arroz / Cereales (Cocido)",
     "p": 2.3,
@@ -207,17 +130,6 @@
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE"
-  },
-  { 
-  "id": 15, 
-  "name": "Pasta Trigo (Cocido)", 
-  "p": 4.8, 
-  "c": 28.0, 
-  "f": 0.6, 
-  "kcal": 140, 
-  "unit": "g", 
-  "fam": "CARBS", 
-  "sub": "PASTA_RICE" 
   },
   {
     "id": 14,
@@ -230,49 +142,16 @@
     "fam": "CARBS",
     "sub": "BREAD"
   },
-  { 
-  "id": 23, 
-  "name": "Patata / Batata (Cocido)", 
-  "p": 1.9, 
-  "c": 19.0, 
-  "f": 0.1, 
-  "kcal": 84, 
-  "unit": "g", 
-  "fam": "CARBS", 
-  "sub": "TUBER" 
-  },
   {
-    "id": 22,
-    "name": "Ñoquis (Gnocchi)",
-    "p": 3.5,
-    "c": 36.0,
-    "f": 0.5,
-    "kcal": 165,
+    "id": 15,
+    "name": "Pasta Trigo (Cocido)",
+    "p": 4.8,
+    "c": 28.0,
+    "f": 0.6,
+    "kcal": 140,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "TUBER"
-  },
-  {
-    "id": 18,
-    "name": "Legumbres Cocidas (Bote)",
-    "p": 7.0,
-    "c": 14.0,
-    "f": 0.5,
-    "kcal": 95,
-    "unit": "g",
-    "fam": "LEGUME",
-    "sub": "COOKED"
-  },
-  {
-    "id": 31,
-    "name": "Legumbres Secas (Lenteja/Garbanzo)",
-    "p": 22.0,
-    "c": 55.0,
-    "f": 1.5,
-    "kcal": 330,
-    "unit": "g",
-    "fam": "LEGUME",
-    "sub": "DRY"
+    "sub": "PASTA_RICE"
   },
   {
     "id": 16,
@@ -286,15 +165,103 @@
     "sub": "FRESH"
   },
   {
-    "id": 28,
-    "name": "Manzana / Pera",
-    "p": 0.3,
-    "c": 12.0,
+    "id": 17,
+    "name": "Verdura Hoja / Calabacín",
+    "p": 1.5,
+    "c": 3.0,
     "f": 0.2,
-    "kcal": 52,
+    "kcal": 25,
     "unit": "g",
-    "fam": "FRUIT",
-    "sub": "FRESH"
+    "fam": "VEG",
+    "sub": "GREEN"
+  },
+  {
+    "id": 18,
+    "name": "Legumbres Cocidas (Bote)",
+    "p": 7.0,
+    "c": 14.0,
+    "f": 0.5,
+    "kcal": 95,
+    "unit": "g",
+    "fam": "LEGUME",
+    "sub": "COOKED"
+  },
+  {
+    "id": 19,
+    "name": "Proteína",
+    "p": 100.0,
+    "c": 0.0,
+    "f": 0.0,
+    "kcal": 400,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_PROT"
+  },
+  {
+    "id": 20,
+    "name": "Carbohidrato",
+    "p": 0.0,
+    "c": 100.0,
+    "f": 0.0,
+    "kcal": 400,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_CARB"
+  },
+  {
+    "id": 21,
+    "name": "Grasa",
+    "p": 0.0,
+    "c": 0.0,
+    "f": 100.0,
+    "kcal": 900,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_FAT"
+  },
+  {
+    "id": 22,
+    "name": "Ñoquis (Gnocchi)",
+    "p": 3.5,
+    "c": 36.0,
+    "f": 0.5,
+    "kcal": 165,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "TUBER"
+  },
+  {
+    "id": 23,
+    "name": "Patata / Batata (Cocido)",
+    "p": 1.9,
+    "c": 19.0,
+    "f": 0.1,
+    "kcal": 84,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "TUBER"
+  },
+  {
+    "id": 24,
+    "name": "Aceituna (ud 4gr)",
+    "p": 0.03,
+    "c": 0.0,
+    "f": 0.6,
+    "kcal": 6,
+    "unit": "u",
+    "fam": "LIPID",
+    "sub": "FRUIT_FAT"
+  },
+  {
+    "id": 25,
+    "name": "Nuez (Grano)",
+    "p": 15.0,
+    "c": 14.0,
+    "f": 65.0,
+    "kcal": 650,
+    "unit": "g",
+    "fam": "LIPID",
+    "sub": "NUT"
   },
   {
     "id": 26,
@@ -308,59 +275,92 @@
     "sub": "COLOR"
   },
   {
-    "id": 17,
-    "name": "Verdura Hoja / Calabacín",
-    "p": 1.5,
-    "c": 3.0,
+    "id": 28,
+    "name": "Manzana / Pera",
+    "p": 0.3,
+    "c": 12.0,
     "f": 0.2,
-    "kcal": 25,
+    "kcal": 52,
     "unit": "g",
+    "fam": "FRUIT",
+    "sub": "FRESH"
+  },
+  {
+    "id": 29,
+    "name": "Jamón Serrano (Sin grasa)",
+    "p": 30.0,
+    "c": 0.0,
+    "f": 8.0,
+    "kcal": 190,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "MEAT_RED"
+  },
+  {
+    "id": 30,
+    "name": "Queso Fresco Batido / Skyr",
+    "p": 8.0,
+    "c": 3.5,
+    "f": 0.1,
+    "kcal": 46,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "YOGURT"
+  },
+  {
+    "id": 31,
+    "name": "Legumbres Secas (Lenteja/Garbanzo)",
+    "p": 22.0,
+    "c": 55.0,
+    "f": 1.5,
+    "kcal": 330,
+    "unit": "g",
+    "fam": "LEGUME",
+    "sub": "DRY"
+  },
+  {
+    "id": 32,
+    "name": "Cerdo Graso (Costilla/Secreto)",
+    "p": 16.0,
+    "c": 0.0,
+    "f": 25.0,
+    "kcal": 290,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "MEAT_RED"
+  },
+  {
+    "id": 33,
+    "name": "Remolacha (Cruda)",
+    "p": 1.6,
+    "c": 9.6,
+    "f": 0.2,
+    "kcal": 43,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "TUBER"
+  },
+  {
+    "id": 34,
+    "name": "Cerdo Magro (Lomo/Solomillo)",
+    "p": 21.0,
+    "c": 0.0,
+    "f": 3.5,
+    "kcal": 120,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "MEAT_RED"
+  },
+  {
+    "id": 35,
+    "name": "Tomate Cherry (Unidad)",
+    "p": 0.12,
+    "c": 0.42,
+    "f": 0.02,
+    "kcal": 2.5,
+    "unit": "u",
     "fam": "VEG",
-    "sub": "GREEN"
-  },
-  { 
-  "id": 32, 
-  "name": "Cerdo Graso (Costilla/Secreto)", 
-  "p": 16.0, 
-  "c": 0.0, 
-  "f": 25.0, 
-  "kcal": 290, 
-  "unit": "g", 
-  "fam": "PROTEIN", 
-  "sub": "MEAT_RED" 
-  },
-  { 
-  "id": 34, 
-  "name": "Cerdo Magro (Lomo/Solomillo)", 
-  "p": 21.0, 
-  "c": 0.0, 
-  "f": 3.5, 
-  "kcal": 120, 
-  "unit": "g", 
-  "fam": "PROTEIN", 
-  "sub": "MEAT_RED" 
-  },
-  { 
-  "id": 35, 
-  "name": "Tomate Cherry (Unidad)", 
-  "p": 0.12, 
-  "c": 0.42, 
-  "f": 0.02, 
-  "kcal": 2.5, 
-  "unit": "u", 
-  "fam": "VEG", 
-  "sub": "COLOR" 
-  },
-  { 
-  "id": 33, 
-  "name": "Remolacha (Cruda)", 
-  "p": 1.6, 
-  "c": 9.6, 
-  "f": 0.2, 
-  "kcal": 43, 
-  "unit": "g", 
-  "fam": "CARBS", 
-  "sub": "TUBER" 
+    "sub": "COLOR"
   },
   {
     "id": 36,
