@@ -152,7 +152,7 @@
 
                 <div class="grid grid-cols-4 gap-2 mt-4 text-center">
                     <div class="bg-green-50 rounded-lg p-2">
-                        <div class="text-[10px] text-red-600 font-bold">PROT</div>
+                        <div class="text-[10px] text-green-600 font-bold">PROT</div>
                         <div id="homeProt" class="text-xs font-bold text-slate-700">0g</div>
                     </div>
                     <div class="bg-yellow-50 rounded-lg p-2">
@@ -163,8 +163,8 @@
                         <div class="text-[10px] text-orange-600 font-bold">GRAS</div>
                         <div id="homeFats" class="text-xs font-bold text-slate-700">0g</div>
                     </div>
-                    <div class="bg-green-50 rounded-lg p-2">
-                        <div class="text-[10px] text-green-600 font-bold">KCAL</div>
+                    <div class="bg-blue-50 rounded-lg p-2">
+                        <div class="text-[10px] text-blue-600 font-bold">KCAL</div>
                         <div id="homeKcal" class="text-xs font-bold text-slate-700">0</div>
                     </div>
                 </div>
@@ -194,7 +194,7 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2 w-full mt-2">
                         <div class="bg-green-50 rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-red-600 font-bold uppercase">PROT</div>
+                            <div class="text-[8px] text-green-600 font-bold uppercase">PROT</div>
                             <div id="yesterdayProt" class="text-[10px] font-bold text-slate-700">0g</div>
                         </div>
                         <div class="bg-yellow-50 rounded-lg p-1.5 text-center">
@@ -205,8 +205,8 @@
                             <div class="text-[8px] text-orange-600 font-bold uppercase">GRAS</div>
                             <div id="yesterdayFats" class="text-[10px] font-bold text-slate-700">0g</div>
                         </div>
-                        <div class="bg-green-50 rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-green-600 font-bold uppercase">KCAL</div>
+                        <div class="bg-blue-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-blue-600 font-bold uppercase">KCAL</div>
                             <div id="yesterdayKcal" class="text-[10px] font-bold text-slate-700">0</div>
                         </div>
                     </div>
@@ -219,7 +219,7 @@
                     </div>
                     <div class="grid grid-cols-2 gap-2 w-full mt-2">
                         <div class="bg-green-50 rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-red-600 font-bold uppercase">PROT</div>
+                            <div class="text-[8px] text-green-600 font-bold uppercase">PROT</div>
                             <div id="lastWeekProt" class="text-[10px] font-bold text-slate-700">0g</div>
                         </div>
                         <div class="bg-yellow-50 rounded-lg p-1.5 text-center">
@@ -230,8 +230,8 @@
                             <div class="text-[8px] text-orange-600 font-bold uppercase">GRAS</div>
                             <div id="lastWeekFats" class="text-[10px] font-bold text-slate-700">0g</div>
                         </div>
-                        <div class="bg-green-50 rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-green-600 font-bold uppercase">KCAL</div>
+                        <div class="bg-blue-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-blue-600 font-bold uppercase">KCAL</div>
                             <div id="lastWeekKcal" class="text-[10px] font-bold text-slate-700">0</div>
                         </div>
                     </div>
@@ -453,7 +453,7 @@
                         class="w-full rounded-xl border-slate-200 bg-slate-50 focus:border-indigo-500 focus:ring-indigo-200 p-3 text-sm font-medium">
                 </div>
 
-                <div class="bg-blue-50 p-3 rounded-xl border border-blue-100">
+                <div id="scannerSection" class="bg-blue-50 p-3 rounded-xl border border-blue-100 hidden">
                     <label class="block text-xs font-bold text-blue-700 uppercase mb-1">Buscar Online / Escanear</label>
                     <div class="flex gap-2">
                         <input type="text" id="apiSearchInput" placeholder="Ej: Manzana..."
@@ -484,11 +484,11 @@
                 <div class="border-t border-slate-100 my-2"></div>
 
                 <div>
-                    <div class="flex gap-2 mb-2">
+                    <div id="foodSelectionControls" class="flex gap-2 mb-2">
                         <select id="foodSelect"
                             class="flex-1 min-w-0 rounded-xl border-slate-200 bg-white shadow-sm p-3 text-sm appearance-none focus:border-indigo-500 focus:ring-indigo-200"></select>
 
-                        <button onclick="shareSelectedFood()"
+                        <button id="shareFoodBtn" onclick="shareSelectedFood()"
                             class="shrink-0 bg-green-50 text-green-600 px-3 rounded-xl border border-green-100 hover:bg-green-100 transition-colors flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -497,7 +497,7 @@
                             </svg>
                         </button>
 
-                        <button onclick="deleteSelectedFood()"
+                        <button id="deleteFoodBtn" onclick="deleteSelectedFood()"
                             class="shrink-0 bg-red-50 text-red-500 px-3 rounded-xl border border-red-100 hover:bg-red-100 transition-colors flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -506,11 +506,38 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1" id="amountLabel">Cantidad
-                        (g)</label>
-                    <input type="number" id="amountInput"
-                        class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200"
-                        placeholder="100" value="100">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-[10px] font-bold text-slate-600 uppercase" id="amountLabel">Cantidad
+                            (g)</label>
+                        <span id="amountDisplay" class="text-2xl font-black text-indigo-600">0</span>
+                    </div>
+                    <!-- Input oculto para mantener la lógica existente sin romper nada -->
+                    <input type="number" id="amountInput" class="hidden" value="0">
+
+                    <!-- Botones Rápidos de Cantidad -->
+                    <div
+                        class="flex gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100 overflow-x-auto no-scrollbar justify-between">
+                        <button onclick="adjustAmount(1)"
+                            class="shrink-0 bg-white text-slate-600 w-10 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+1</button>
+                        <button onclick="adjustAmount(5)"
+                            class="shrink-0 bg-white text-slate-600 w-10 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+5</button>
+                        <button onclick="adjustAmount(10)"
+                            class="shrink-0 bg-white text-slate-600 w-10 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+10</button>
+                        <button onclick="adjustAmount(25)"
+                            class="shrink-0 bg-white text-slate-600 w-10 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+25</button>
+                        <button onclick="adjustAmount(50)"
+                            class="shrink-0 bg-white text-slate-600 w-10 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+50</button>
+                        <button onclick="adjustAmount(100)"
+                            class="shrink-0 bg-white text-slate-600 w-10 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform text-[10px]">+100</button>
+                        <button onclick="adjustAmount(0)"
+                            class="shrink-0 bg-red-50 text-red-500 w-10 h-10 rounded-lg text-xs font-bold border border-red-100 active:scale-95 transition-transform flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
@@ -613,8 +640,8 @@
             </div>
             <div class="p-5 pb-10">
                 <div class="grid grid-cols-3 gap-2 mb-6 text-center">
-                    <div class="p-2 bg-green-50 rounded-xl border border-red-100">
-                        <div class="text-[10px] text-red-600 font-bold uppercase">Prot</div>
+                    <div class="p-2 bg-green-50 rounded-xl border border-green-100">
+                        <div class="text-[10px] text-green-600 font-bold uppercase">Prot</div>
                         <div class="text-lg font-bold text-slate-800"><span id="modalP">0</span>g</div>
                     </div>
                     <div class="p-2 bg-yellow-50 rounded-xl border border-yellow-100">
@@ -626,7 +653,7 @@
                         <div class="text-lg font-bold text-slate-800"><span id="modalF">0</span>g</div>
                     </div>
                 </div>
-                <div class="text-center mb-6"><span class="text-3xl font-black text-slate-900"
+                <div class="text-center mb-6"><span class="text-3xl font-black text-blue-600"
                         id="modalKcal">0</span><span class="text-sm text-slate-500 font-medium ml-1">kcal</span></div>
                 <div class="h-40 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
                 <div class="border-t border-slate-100 pt-4">
@@ -779,6 +806,8 @@
         // --- FUNCIONES EXTRA (Mosaicos) ---
         function openQuickSearch() {
             document.getElementById('foodModal').classList.remove('hidden');
+            document.getElementById('scannerSection').classList.remove('hidden');
+            document.getElementById('foodSelectionControls').classList.add('hidden'); // Ocultar selects
             setTimeout(() => {
                 document.getElementById('apiSearchInput').focus();
             }, 300);
@@ -841,6 +870,8 @@
 
         // --- GESTIÓN DE MODALES DE REGISTRO ---
         function openFoodModal() {
+            document.getElementById('scannerSection').classList.add('hidden');
+            document.getElementById('foodSelectionControls').classList.remove('hidden'); // Mostrar selects
             document.getElementById('foodModal').classList.remove('hidden');
         }
         function openRecipeLogModal() {
@@ -865,16 +896,13 @@
                 grid.appendChild(btn);
             }
 
-            // 2. Botón Carpeta
+            // 2. Botón Resultados Web
             const folderBtn = document.createElement('button');
             folderBtn.className = "flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-indigo-50 hover:border-indigo-100 transition-all active:scale-95 h-24";
-            folderBtn.onclick = () => {
-                document.getElementById('categoryModal').classList.add('hidden');
-                openFoodModal();
-            };
+            folderBtn.onclick = () => openWebFoodsGrid();
             folderBtn.innerHTML = `
-                <div class="text-3xl mb-2">📂</div>
-                <span class="text-[10px] font-bold text-slate-600 uppercase text-center leading-tight">Todo / Listado</span>
+                <div class="text-3xl mb-2">🌐</div>
+                <span class="text-[10px] font-bold text-slate-600 uppercase text-center leading-tight">Resultados Web</span>
             `;
             grid.appendChild(folderBtn);
 
@@ -910,46 +938,146 @@
 
         function openSubCategorySelector(famKey) {
             const family = FOOD_STRUCTURE[famKey];
-            if (!family || !family.subs) return;
+            if (!family) return;
 
             const grid = document.getElementById('subCategoryGrid');
             grid.innerHTML = '';
+            // Para poder tener secciones scrollables o layout complejo, cambiamos grid a flex col
+            grid.className = "flex flex-col gap-4"; // Sobrescribimos la clase grid
+
             document.getElementById('subCategoryTitle').textContent = family.label;
 
-            for (const [subKey, subVal] of Object.entries(family.subs)) {
-                const btn = document.createElement('button');
-                btn.className = "flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 h-24";
-                btn.onclick = () => selectVisualCategory(famKey, subKey);
-                btn.innerHTML = `
-                    <div class="text-3xl mb-2">${subVal.icon}</div>
-                    <span class="text-[10px] font-bold text-slate-600 uppercase text-center leading-tight">${subVal.label}</span>
-                `;
-                grid.appendChild(btn);
+            // 1. Filtrar alimentos de esta familia
+            const foods = foodData.filter(f => f.fam === famKey);
+
+            // 2. Agrupar por SubCategoría
+            const grouped = {};
+            foods.forEach(f => {
+                const sub = f.sub || 'OTHER';
+                if (!grouped[sub]) grouped[sub] = [];
+                grouped[sub].push(f);
+            });
+
+            // 3. Iterar según el orden definido en FOOD_STRUCTURE (y luego los sobrantes)
+            const subOrder = family.subs ? Object.keys(family.subs) : [];
+            const unknownSubs = Object.keys(grouped).filter(s => !subOrder.includes(s));
+            const allSubs = [...subOrder, ...unknownSubs];
+
+            allSubs.forEach(subKey => {
+                const groupItems = grouped[subKey];
+                if (!groupItems || groupItems.length === 0) return;
+
+                // Metadatos de la subcategoría (icono, nombre)
+                const subMeta = (family.subs && family.subs[subKey]) || { label: 'Otros', icon: '🔹' };
+
+                // A. Título de la Subcategoría
+                const sectionTitle = document.createElement('div');
+                sectionTitle.className = "text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1";
+                sectionTitle.textContent = `${subMeta.icon} ${subMeta.label}`;
+
+                // Container de la sección (evitar fragments para gap)
+                const sectionContainer = document.createElement('div');
+                sectionContainer.appendChild(sectionTitle);
+
+                // B. Grid de Alimentos
+                const subGrid = document.createElement('div');
+                subGrid.className = "grid grid-cols-3 gap-3";
+
+                groupItems.sort((a, b) => a.name.localeCompare(b.name)).forEach(f => {
+                    const btn = document.createElement('button');
+                    btn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 min-h-[5rem]";
+                    btn.onclick = () => selectFood(f.id);
+                    // Usar nombre del alimento. Si queremos, podemos poner el icono de la subfamilia otra vez, o nada.
+                    // Para diferenciarlos, quizás solo texto sea suficiente, o el mismos icono repetido.
+                    btn.innerHTML = `
+                        <div class="text-2xl mb-1">${subMeta.icon}</div>
+                        <span class="text-[9px] font-bold text-slate-600 uppercase text-center leading-tight line-clamp-2">${f.name}</span>
+                    `;
+                    subGrid.appendChild(btn);
+                });
+
+                sectionContainer.appendChild(subGrid);
+                grid.appendChild(sectionContainer);
+            });
+
+            document.getElementById('subCategoryModal').classList.remove('hidden');
+        }
+
+        function selectFood(foodId) {
+            document.getElementById('subCategoryModal').classList.add('hidden');
+            document.getElementById('categoryModal').classList.add('hidden');
+            openFoodModal();
+
+            // Seleccionar ID exacto
+            const select = document.getElementById('foodSelect');
+            select.value = foodId;
+            updatePreview();
+        }
+        function openWebFoodsGrid() {
+            const grid = document.getElementById('subCategoryGrid');
+            grid.innerHTML = '';
+            // Cambio de layout: grid simple
+            grid.className = "grid grid-cols-3 gap-3";
+
+            document.getElementById('subCategoryTitle').textContent = "Resultados Web / Otros";
+
+            // Filtrar alimentos personalizados/web (ID >= 1000)
+            const foods = foodData.filter(f => f.id >= 1000).sort((a, b) => a.name.localeCompare(b.name));
+
+            if (foods.length === 0) {
+                grid.innerHTML = '<div class="col-span-3 text-center text-slate-400 py-4 italic text-sm">No hay alimentos web guardados.</div>';
+            } else {
+                foods.forEach(f => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "relative group";
+
+                    const btn = document.createElement('button');
+                    btn.className = "w-full h-full flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-all active:scale-95 min-h-[5rem]";
+                    btn.onclick = () => selectFood(f.id);
+                    const displayName = f.name.replace(/^\[WEB\]\s*/, '');
+                    btn.innerHTML = `
+                        <div class="text-2xl mb-1">🌐</div>
+                        <span class="text-[9px] font-bold text-slate-600 uppercase text-center leading-tight line-clamp-2">${displayName}</span>
+                    `;
+
+                    const delBtn = document.createElement('button');
+                    // Estilo mejorado: más grande y z-index alto para asegurar click
+                    delBtn.className = "absolute -top-2 -right-2 z-10 w-8 h-8 bg-red-50 text-red-500 border border-red-200 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
+                    delBtn.onclick = (e) => deleteWebFood(e, f.id);
+                    delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+
+                    wrapper.appendChild(btn);
+                    wrapper.appendChild(delBtn);
+                    grid.appendChild(wrapper);
+                });
             }
 
             document.getElementById('subCategoryModal').classList.remove('hidden');
         }
 
-        function selectVisualCategory(famKey, subKey) {
-            document.getElementById('subCategoryModal').classList.add('hidden');
-            document.getElementById('categoryModal').classList.add('hidden');
-            openFoodModal();
+        function deleteWebFood(e, id) {
+            e.stopPropagation();
+            e.preventDefault();
 
-            // Intentar pre-seleccionar en el select
-            const select = document.getElementById('foodSelect');
-            const targetFood = foodData.find(f => f.fam === famKey && f.sub === subKey);
+            if (!confirm("¿Borrar este alimento?")) return;
 
-            if (targetFood) {
-                select.value = targetFood.id;
-                updatePreview();
-            } else {
-                const targetFam = foodData.find(f => f.fam === famKey);
-                if (targetFam) {
-                    select.value = targetFam.id;
-                    updatePreview();
-                }
+            const initialCount = foodData.length;
+
+            // Usamos desigualdad débil (!=) para que borrar funcione tanto si el ID es string como number
+            foodData = foodData.filter(f => f.id != id);
+
+            if (foodData.length === initialCount) {
+                // Si no ha bajado el conteo, es que no lo encontró
+                showToast(`Error: ID ${id} no encontrado.`);
+                return;
             }
+
+            saveFoods();
+            openWebFoodsGrid(); // Refrescar la vista
+            showToast("Alimento eliminado correctamente");
         }
+
+
         //////////////
         let globalLog = [];
         let recipeData = [];
@@ -1060,6 +1188,10 @@
             if (food) {
                 document.getElementById('amountLabel').textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
                 const amount = parseFloat(amountInput.value) || 0;
+
+                // Actualizar display visual
+                document.getElementById('amountDisplay').textContent = amount;
+
                 const factor = food.unit === 'g' ? amount / 100 : amount;
                 const p = (food.p * factor).toFixed(1);
                 const c = (food.c * factor).toFixed(1);
@@ -1095,7 +1227,7 @@
             return `
                 <div class="flex justify-between items-center text-slate-700">
                     <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
-                        <span class="text-[10px] font-bold text-green-500 uppercase">Prot</span>
+                        <span class="text-[10px] font-bold text-green-600 uppercase">Prot</span>
                         <span class="font-mono font-bold">${p}</span>
                     </div>
                     <div class="flex flex-col text-center w-1/4 border-r border-slate-200 last:border-0">
@@ -1107,8 +1239,8 @@
                         <span class="font-mono font-bold">${f}</span>
                     </div>
                     <div class="flex flex-col text-center w-1/4">
-                        <span class="text-[10px] font-bold text-green-600 uppercase">Kcal</span>
-                        <span class="font-bold text-green-700">${k}</span>
+                        <span class="text-[10px] font-bold text-blue-600 uppercase">Kcal</span>
+                        <span class="font-bold text-blue-700">${k}</span>
                     </div>
                 </div>`;
         }
@@ -1302,6 +1434,8 @@
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
             populateSelect();
             document.getElementById('foodSelect').value = newId;
+            document.getElementById('amountInput').value = 100; // Reset default
+            document.getElementById('amountDisplay').textContent = "100";
             updatePreview();
             document.getElementById('searchResults').classList.add('hidden');
             document.getElementById('apiSearchInput').value = '';
@@ -1467,6 +1601,17 @@
             }
         }
 
+        function adjustAmount(val) {
+            const input = document.getElementById('amountInput');
+            if (val === 0) {
+                input.value = 0;
+            } else {
+                let current = parseFloat(input.value) || 0;
+                input.value = current + val;
+            }
+            updatePreview(); // Actualizar cálculos
+        }
+
         function populateRecipeSelect() {
             const sel = document.getElementById('recipeSelect');
             const val = sel.value;
@@ -1510,7 +1655,9 @@
             updateComparisonCharts(); // ACTUALIZAR GRÁFICOS
             incrementLocalCounter();
             showToast("Guardado!");
-            document.getElementById('foodModal').classList.add('hidden'); // Cerrar modal
+            document.getElementById('foodModal').classList.add('hidden'); // Cerrar modal alimento
+            document.getElementById('scannerSection').classList.add('hidden'); // Asegurar scanner cerrado
+            document.getElementById('categoryModal').classList.remove('hidden'); // Volver a categorías
         }
 
         // --- CRUD RECETAS ---
@@ -1816,7 +1963,7 @@
                 p += i.p; c += i.c; f += i.f; k += i.kcal;
 
                 if (i.ingredients && Array.isArray(i.ingredients) && i.ingredients.length > 0) {
-                    list.innerHTML += `<li class="font-bold text-indigo-600 text-xs mt-2 border-b border-indigo-100 pb-1">${i.foodName} (${i.amount} u)</li>`;
+                    list.innerHTML += `<li class="font-bold text-slate-700 text-xs mt-2 border-b border-slate-100 pb-1">${i.foodName} (${i.amount} u)</li>`;
                     i.ingredients.forEach(ing => {
                         const itemAmount = (ing.amount * i.amount).toFixed(1).replace('.0', '');
                         list.innerHTML += `
