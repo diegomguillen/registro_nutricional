@@ -8,7 +8,8 @@
     "kcal": 900,
     "unit": "g",
     "fam": "LIPID",
-    "sub": "OIL"
+    "sub": "OIL",
+    "icon": "🫒"
   },
   {
     "id": 3,
@@ -19,7 +20,8 @@
     "kcal": 160,
     "unit": "g",
     "fam": "LIPID",
-    "sub": "FRUIT_FAT"
+    "sub": "FRUIT_FAT",
+    "icon": "🥑"
   },
   {
     "id": 4,
@@ -30,7 +32,8 @@
     "kcal": 615,
     "unit": "g",
     "fam": "LIPID",
-    "sub": "NUT"
+    "sub": "NUT",
+    "icon": "🥜"
   },
   {
     "id": 5,
@@ -41,7 +44,8 @@
     "kcal": 106,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "MEAT_WHITE"
+    "sub": "MEAT_WHITE",
+    "icon": "🍗"
   },
   {
     "id": 6,
@@ -52,7 +56,8 @@
     "kcal": 170,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "MEAT_RED"
+    "sub": "MEAT_RED",
+    "icon": "🥩"
   },
   {
     "id": 7,
@@ -63,7 +68,8 @@
     "kcal": 400,
     "unit": "g",
     "fam": "DAIRY",
-    "sub": "CHEESE"
+    "sub": "CHEESE",
+    "icon": "🧀"
   },
   {
     "id": 8,
@@ -74,7 +80,8 @@
     "kcal": 46,
     "unit": "g",
     "fam": "DAIRY",
-    "sub": "MILK"
+    "sub": "MILK",
+    "icon": "🥛"
   },
   {
     "id": 9,
@@ -85,7 +92,8 @@
     "kcal": 60,
     "unit": "g",
     "fam": "DAIRY",
-    "sub": "YOGURT"
+    "sub": "YOGURT",
+    "icon": "🥣"
   },
   {
     "id": 10,
@@ -96,7 +104,8 @@
     "kcal": 85,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "FISH_WHITE"
+    "sub": "FISH_WHITE",
+    "icon": "🦐"
   },
   {
     "id": 11,
@@ -107,7 +116,8 @@
     "kcal": 190,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "FISH_BLUE"
+    "sub": "FISH_BLUE",
+    "icon": "🍣"
   },
   {
     "id": 12,
@@ -118,7 +128,8 @@
     "kcal": 80,
     "unit": "u",
     "fam": "PROTEIN",
-    "sub": "EGG"
+    "sub": "EGG",
+    "icon": "🥚"
   },
   {
     "id": 13,
@@ -129,7 +140,8 @@
     "kcal": 120,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "PASTA_RICE"
+    "sub": "PASTA_RICE",
+    "icon": "🍚"
   },
   {
     "id": 14,
@@ -140,7 +152,8 @@
     "kcal": 260,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "BREAD"
+    "sub": "BREAD",
+    "icon": "🍞"
   },
   {
     "id": 15,
@@ -151,7 +164,8 @@
     "kcal": 140,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "PASTA_RICE"
+    "sub": "PASTA_RICE",
+    "icon": "🍝"
   },
   {
     "id": 16,
@@ -162,7 +176,8 @@
     "kcal": 55,
     "unit": "g",
     "fam": "FRUIT",
-    "sub": "FRESH"
+    "sub": "FRESH",
+    "icon": "🍎"
   },
   {
     "id": 17,
@@ -173,7 +188,8 @@
     "kcal": 25,
     "unit": "g",
     "fam": "VEG",
-    "sub": "GREEN"
+    "sub": "GREEN",
+    "icon": "🥬"
   },
   {
     "id": 18,
@@ -184,7 +200,8 @@
     "kcal": 95,
     "unit": "g",
     "fam": "LEGUME",
-    "sub": "COOKED"
+    "sub": "COOKED",
+    "icon": "🥫"
   },
   {
     "id": 19,
@@ -195,7 +212,8 @@
     "kcal": 400,
     "unit": "g",
     "fam": "PURE",
-    "sub": "P_PROT"
+    "sub": "P_PROT",
+    "icon": "💪"
   },
   {
     "id": 20,
@@ -206,7 +224,8 @@
     "kcal": 400,
     "unit": "g",
     "fam": "PURE",
-    "sub": "P_CARB"
+    "sub": "P_CARB",
+    "icon": "⚡"
   },
   {
     "id": 21,
@@ -217,7 +236,8 @@
     "kcal": 900,
     "unit": "g",
     "fam": "PURE",
-    "sub": "P_FAT"
+    "sub": "P_FAT",
+    "icon": "🧈"
   },
   {
     "id": 22,
@@ -228,7 +248,8 @@
     "kcal": 165,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "TUBER"
+    "sub": "TUBER",
+    "icon": "🥔"
   },
   {
     "id": 23,
@@ -239,7 +260,8 @@
     "kcal": 84,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "TUBER"
+    "sub": "TUBER",
+    "icon": "🥔"
   },
   {
     "id": 24,
@@ -250,7 +272,8 @@
     "kcal": 6,
     "unit": "u",
     "fam": "LIPID",
-    "sub": "FRUIT_FAT"
+    "sub": "FRUIT_FAT",
+    "icon": "🫒"
   },
   {
     "id": 25,
@@ -261,7 +284,8 @@
     "kcal": 650,
     "unit": "g",
     "fam": "LIPID",
-    "sub": "NUT"
+    "sub": "NUT",
+    "icon": "🥜"
   },
   {
     "id": 26,
@@ -272,18 +296,20 @@
     "kcal": 20,
     "unit": "g",
     "fam": "VEG",
-    "sub": "COLOR"
+    "sub": "COLOR",
+    "icon": "🍅"
   },
   {
-  "id": 28,
-  "name": "Plátano / Banana",
-  "p": 1.1,
-  "c": 23.0,
-  "f": 0.3,
-  "kcal": 90,
-  "unit": "g",
-  "fam": "FRUIT",
-  "sub": "FRESH"
+    "id": 28,
+    "name": "Plátano / Banana",
+    "p": 1.1,
+    "c": 23.0,
+    "f": 0.3,
+    "kcal": 90,
+    "unit": "g",
+    "fam": "FRUIT",
+    "sub": "FRESH",
+    "icon": "🍌"
   },
   {
     "id": 29,
@@ -294,7 +320,8 @@
     "kcal": 190,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "MEAT_RED"
+    "sub": "MEAT_RED",
+    "icon": "🐷"
   },
   {
     "id": 30,
@@ -305,7 +332,8 @@
     "kcal": 46,
     "unit": "g",
     "fam": "DAIRY",
-    "sub": "YOGURT"
+    "sub": "YOGURT",
+    "icon": "🥣"
   },
   {
     "id": 31,
@@ -316,7 +344,8 @@
     "kcal": 330,
     "unit": "g",
     "fam": "LEGUME",
-    "sub": "DRY"
+    "sub": "DRY",
+    "icon": "🫘"
   },
   {
     "id": 32,
@@ -327,7 +356,8 @@
     "kcal": 290,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "MEAT_RED"
+    "sub": "MEAT_RED",
+    "icon": "🐷"
   },
   {
     "id": 33,
@@ -338,7 +368,8 @@
     "kcal": 43,
     "unit": "g",
     "fam": "CARBS",
-    "sub": "TUBER"
+    "sub": "TUBER",
+    "icon": "🍠"
   },
   {
     "id": 34,
@@ -349,7 +380,8 @@
     "kcal": 120,
     "unit": "g",
     "fam": "PROTEIN",
-    "sub": "MEAT_RED"
+    "sub": "MEAT_RED",
+    "icon": "🐗"
   },
   {
     "id": 35,
@@ -360,7 +392,8 @@
     "kcal": 2.5,
     "unit": "u",
     "fam": "VEG",
-    "sub": "COLOR"
+    "sub": "COLOR",
+    "icon": "🍒"
   },
   {
     "id": 36,
@@ -371,18 +404,20 @@
     "kcal": 37,
     "unit": "g",
     "fam": "DAIRY",
-    "sub": "MILK"
+    "sub": "MILK",
+    "icon": "🥛"
   },
   {
-  "id": 37,
-  "name": "Frutos Rojos / Sandía",
-  "p": 0.6,
-  "c": 7.0,
-  "f": 0.2,
-  "kcal": 32,
-  "unit": "g",
-  "fam": "FRUIT",
-  "sub": "FRESH"
+    "id": 37,
+    "name": "Frutos Rojos / Sandía",
+    "p": 0.6,
+    "c": 7.0,
+    "f": 0.2,
+    "kcal": 32,
+    "unit": "g",
+    "fam": "FRUIT",
+    "sub": "FRESH",
+    "icon": "🍉"
   },
   {
     "id": 38,
@@ -393,7 +428,8 @@
     "kcal": 98,
     "unit": "u",
     "fam": "PROTEIN",
-    "sub": "FISH_BLUE"
+    "sub": "FISH_BLUE",
+    "icon": "🐟"
   },
   {
     "id": 39,
@@ -404,7 +440,8 @@
     "kcal": 196,
     "unit": "u",
     "fam": "PROTEIN",
-    "sub": "FISH_BLUE"
+    "sub": "FISH_BLUE",
+    "icon": "🥫"
   },
   {
     "id": 40,
@@ -415,7 +452,8 @@
     "kcal": 122,
     "unit": "u",
     "fam": "PROTEIN",
-    "sub": "FISH_BLUE"
+    "sub": "FISH_BLUE",
+    "icon": "🐟"
   },
   {
     "id": 41,
@@ -426,6 +464,7 @@
     "kcal": 340,
     "unit": "u",
     "fam": "PROTEIN",
-    "sub": "FISH_BLUE"
+    "sub": "FISH_BLUE",
+    "icon": "🐟"
   }
 ]

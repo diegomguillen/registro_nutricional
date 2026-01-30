@@ -4,24 +4,19 @@
     "icon": "🥩",
     "subs": {
       "MEAT_RED": {
-        "label": "Carnes Rojas/Procesados",
-        "icon": "🍖"
+        "label": "Carnes Rojas/Procesados"
       },
       "MEAT_WHITE": {
-        "label": "Aves y Magras",
-        "icon": "🍗"
+        "label": "Aves y Magras"
       },
       "FISH_WHITE": {
-        "label": "Pescado Blanco",
-        "icon": "🐟"
+        "label": "Pescado Blanco"
       },
       "FISH_BLUE": {
-        "label": "Pescado Azul",
-        "icon": "🐟"
+        "label": "Pescado Azul"
       },
       "EGG": {
-        "label": "Huevos",
-        "icon": "🥚"
+        "label": "Huevos"
       }
     }
   },
@@ -30,16 +25,13 @@
     "icon": "🥛",
     "subs": {
       "CHEESE": {
-        "label": "Quesos",
-        "icon": "🧀"
+        "label": "Quesos"
       },
       "YOGURT": {
-        "label": "Yogures / Kéfir",
-        "icon": "🥣"
+        "label": "Yogures / Kéfir"
       },
       "MILK": {
-        "label": "Leche Líquida",
-        "icon": "🥛"
+        "label": "Leche Líquida"
       }
     }
   },
@@ -48,16 +40,13 @@
     "icon": "🌾",
     "subs": {
       "PASTA_RICE": {
-        "label": "Pasta y Arroces",
-        "icon": "🍝"
+        "label": "Pasta y Arroces"
       },
       "BREAD": {
-        "label": "Panes y Masas",
-        "icon": "🍞"
+        "label": "Panes y Masas"
       },
       "TUBER": {
-        "label": "Patata y Batata",
-        "icon": "🥔"
+        "label": "Patata y Batata"
       }
     }
   },
@@ -66,12 +55,10 @@
     "icon": "🥘",
     "subs": {
       "DRY": {
-        "label": "Legumbre Seca",
-        "icon": "🫘"
+        "label": "Legumbre Seca"
       },
       "COOKED": {
-        "label": "Cocida / Bote",
-        "icon": "🥫"
+        "label": "Cocida / Bote"
       }
     }
   },
@@ -80,12 +67,10 @@
     "icon": "🥦",
     "subs": {
       "GREEN": {
-        "label": "Hoja y Verde",
-        "icon": "🥬"
+        "label": "Hoja y Verde"
       },
       "COLOR": {
-        "label": "Frutos (Tomate/Pimiento)",
-        "icon": "🍅"
+        "label": "Frutos (Tomate/Pimiento)"
       }
     }
   },
@@ -94,8 +79,7 @@
     "icon": "🍎",
     "subs": {
       "FRESH": {
-        "label": "Fruta Fresca",
-        "icon": "🍉"
+        "label": "Fruta Fresca"
       }
     }
   },
@@ -104,16 +88,13 @@
     "icon": "🥑",
     "subs": {
       "OIL": {
-        "label": "Aceites",
-        "icon": "🫒"
+        "label": "Aceites"
       },
       "NUT": {
-        "label": "Frutos Secos",
-        "icon": "🥜"
+        "label": "Frutos Secos"
       },
       "FRUIT_FAT": {
-        "label": "Aguacate / Coco",
-        "icon": "🥥"
+        "label": "Aguacate / Coco"
       }
     }
   },
@@ -122,16 +103,13 @@
     "icon": "🧪",
     "subs": {
       "P_PROT": {
-        "label": "Proteína Pura",
-        "icon": "💪"
+        "label": "Proteína Pura"
       },
       "P_CARB": {
-        "label": "Carbohidrato Puro",
-        "icon": "⚡"
+        "label": "Carbohidrato Puro"
       },
       "P_FAT": {
-        "label": "Grasa Pura",
-        "icon": "💧"
+        "label": "Grasa Pura"
       }
     }
   }

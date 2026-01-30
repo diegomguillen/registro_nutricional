@@ -853,6 +853,15 @@
 
         function selectRecipeFromGrid(id) {
             document.getElementById('recipeGridModal').classList.add('hidden');
+
+            // Forzar fecha a hoy
+            const dateInput = document.getElementById('recipeDate');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+            // Forzar cantidad a 1
+            const amountInput = document.getElementById('recipeAmountInput');
+            if (amountInput) amountInput.value = 1;
+
             // Abrir el modal de registro de receta con la receta pre-seleccionada
             document.getElementById('recipeLogModal').classList.remove('hidden');
             const sel = document.getElementById('recipeSelect');
@@ -970,12 +979,11 @@
 
             // 2. Renderizar todos los alimentos directamente en la grilla principal
             foods.forEach(f => {
-                const subMeta = (family.subs && family.subs[f.sub]) || { label: 'Otros', icon: '🔹' };
                 const btn = document.createElement('button');
                 btn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 min-h-[5rem]";
                 btn.onclick = () => selectFood(f.id);
                 btn.innerHTML = `
-                    <div class="text-2xl mb-1">${subMeta.icon}</div>
+                    <div class="text-2xl mb-1">${f.icon || '🔹'}</div>
                     <span class="text-[9px] font-bold text-slate-600 uppercase text-center leading-tight line-clamp-2">${f.name}</span>
                 `;
                 grid.appendChild(btn);
@@ -1003,11 +1011,27 @@
         function selectFood(foodId) {
             document.getElementById('subCategoryModal').classList.add('hidden');
             document.getElementById('categoryModal').classList.add('hidden');
+
+            // Forzar fecha a hoy
+            const dateInput = document.getElementById('foodDate');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
             openFoodModal();
 
             // Seleccionar ID exacto
             const select = document.getElementById('foodSelect');
             select.value = foodId;
+
+            // Ajustar cantidad por defecto según unidad
+            const food = foodData.find(f => f.id == foodId);
+            if (food) {
+                const amountInput = document.getElementById('amountInput');
+                const amountDisplay = document.getElementById('amountDisplay');
+                const defaultAmount = (food.unit === 'u' || food.unit === 'ud' || food.unit === 'u.') ? 1 : 100;
+                amountInput.value = defaultAmount;
+                if (amountDisplay) amountDisplay.textContent = defaultAmount;
+            }
+
             updatePreview();
         }
         function openWebFoodsGrid() {
@@ -1444,11 +1468,19 @@
 
         function selectApiItem(name, p, c, f, kcal) {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
-            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g' });
+            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g', icon: '🌐' });
             populateSelect();
+
+            // Forzar fecha y cantidad para items web
+            const dateInput = document.getElementById('foodDate');
+            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+
+            const amountInput = document.getElementById('amountInput');
+            const amountDisplay = document.getElementById('amountDisplay');
+            amountInput.value = 100;
+            if (amountDisplay) amountDisplay.textContent = "100";
+
             document.getElementById('foodSelect').value = newId;
-            document.getElementById('amountInput').value = 100; // Reset default
-            document.getElementById('amountDisplay').textContent = "100";
             updatePreview();
             document.getElementById('searchResults').classList.add('hidden');
             document.getElementById('apiSearchInput').value = '';
@@ -1457,8 +1489,18 @@
         // --- UTILS ---
         function initDateInputs() {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('foodDate').value = today;
-            document.getElementById('recipeDate').value = today;
+
+            // Filtros de historial
+            const start = document.getElementById('filterStart');
+            const end = document.getElementById('filterEnd');
+            if (start) start.value = today;
+            if (end) end.value = today;
+
+            // Inputs de registro
+            const foodDate = document.getElementById('foodDate');
+            const recipeDate = document.getElementById('recipeDate');
+            if (foodDate) foodDate.value = today;
+            if (recipeDate) recipeDate.value = today;
         }
 
         function setTodayFilter() { const t = new Date().toISOString().split('T')[0]; document.getElementById('filterStart').value = t; document.getElementById('filterEnd').value = t; updateDayLabels(); applyFilter(); }
@@ -1583,12 +1625,11 @@
                     groupEl.label = `${meta.icon} ${meta.label}`;
 
                     groups[key].forEach(f => {
-                        const subMeta = meta.subs[f.sub];
                         const option = document.createElement('option');
                         option.value = f.id;
-                        // Mostramos: Icono Subfamilia + Nombre Alimento
-                        const subIcon = subMeta ? subMeta.icon + " " : "";
-                        option.text = `${subIcon}${f.name}`;
+                        // Mostramos: Icono Alimento + Nombre Alimento
+                        const foodIcon = f.icon ? f.icon + " " : "";
+                        option.text = `${foodIcon}${f.name}`;
                         groupEl.appendChild(option);
                     });
                     sel.appendChild(groupEl);
@@ -1602,7 +1643,7 @@
                 groups['OTHER'].forEach(f => {
                     const o = document.createElement('option');
                     o.value = f.id;
-                    o.text = f.name;
+                    o.text = `${f.icon || '🌐'} ${f.name}`;
                     groupEl.appendChild(o);
                 });
                 sel.appendChild(groupEl);
@@ -1654,6 +1695,7 @@
                 type: 'food',
                 foodId: food.id,
                 foodName: food.name,
+                foodIcon: food.icon || '🔹',
                 amount: amount,
                 unit: food.unit,
                 p: parseFloat((food.p * factor).toFixed(1)),
@@ -2015,7 +2057,7 @@
             items.forEach(i => {
                 const ck = selectedIds.has(i.id) ? 'checked' : '';
                 const isRecipe = i.type === 'recipe';
-                const icon = isRecipe ? '📖 ' : '';
+                const icon = isRecipe ? '📖 ' : (i.foodIcon || '');
                 tb.innerHTML += `
                 <tr class="hover:bg-slate-50 group transition-colors">
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-indigo-600" onclick="toggleSelection(${i.id})" ${ck}></td>
