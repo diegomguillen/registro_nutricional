@@ -904,16 +904,46 @@
                 automáticamente.</p>
 
             <div id="ocrCameraContainer"
-                class="relative bg-black rounded-2xl overflow-hidden mb-4 h-64 shadow-inner border border-slate-100">
+                class="relative bg-black rounded-2xl overflow-hidden mb-4 h-80 shadow-inner border border-slate-100 group">
                 <video id="ocrVideo" class="w-full h-full object-cover" autoplay playsinline></video>
-                <div
-                    class="absolute inset-0 border-2 border-indigo-500/30 pointer-events-none flex items-center justify-center">
-                    <div class="w-48 h-32 border-2 border-dashed border-white/50 rounded-lg"></div>
+
+                <!-- Viewfinder / Marco de enfoque -->
+                <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                    <div id="ocrViewfinder"
+                        class="w-64 h-48 border-2 border-dashed border-white/80 rounded-lg shadow-[0_0_0_9999px_rgba(0,0,0,0.4)] relative">
+                        <!-- Esquinas decorativas -->
+                        <div class="absolute -top-1 -left-1 w-4 h-4 border-t-4 border-l-4 border-indigo-500"></div>
+                        <div class="absolute -top-1 -right-1 w-4 h-4 border-t-4 border-r-4 border-indigo-500"></div>
+                        <div class="absolute -bottom-1 -left-1 w-4 h-4 border-b-4 border-l-4 border-indigo-500"></div>
+                        <div class="absolute -bottom-1 -right-1 w-4 h-4 border-b-4 border-r-4 border-indigo-500"></div>
+                    </div>
                 </div>
-                <div id="ocrLoading"
-                    class="hidden absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
-                    <div class="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-xs font-bold text-white uppercase">Procesando...</span>
+
+                <div class="absolute bottom-4 left-0 right-0 text-center">
+                    <span class="bg-black/50 text-white text-[10px] px-3 py-1 rounded-full backdrop-blur-sm">Encuadra la
+                        tabla aquí</span>
+                </div>
+            </div>
+
+            <!-- Indicador de procesamiento GLOBAL (fuera del contenedor de cámara) -->
+            <div id="ocrLoading" class="hidden my-8 animate-fade-in">
+                <div class="flex flex-col items-center justify-center gap-4">
+                    <div class="relative w-16 h-16">
+                        <div class="absolute inset-0 border-4 border-indigo-100 rounded-full"></div>
+                        <div
+                            class="absolute inset-0 border-4 border-indigo-600 rounded-full border-t-transparent animate-spin">
+                        </div>
+                    </div>
+                    <div class="text-center">
+                        <h4 class="font-bold text-slate-800 text-sm uppercase tracking-wider">Analizando Etiqueta</h4>
+                        <p class="text-xs text-slate-500 mt-1">Extrayendo información nutricional...</p>
+                    </div>
+                    <!-- Barra de progreso simulada o real -->
+                    <div class="w-48 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                        <div id="ocrProgressBar" class="h-full bg-indigo-500 transition-all duration-300 w-0"></div>
+                    </div>
+                    <span id="ocrProgressStatus"
+                        class="text-[10px] font-bold text-indigo-600 uppercase">Iniciando...</span>
                 </div>
             </div>
 
@@ -1413,6 +1443,8 @@
             document.getElementById('ocrResultsForm').classList.add('hidden');
             document.getElementById('ocrControls').classList.remove('hidden');
             document.getElementById('ocrLoading').classList.add('hidden');
+            document.getElementById('ocrProgressBar').style.width = '0%';
+            document.getElementById('ocrProgressStatus').textContent = 'Iniciando...';
             if (document.getElementById('ocrInput')) document.getElementById('ocrInput').value = '';
         }
 
@@ -1428,21 +1460,51 @@
             const video = document.getElementById('ocrVideo');
             const canvas = document.getElementById('ocrCanvas');
             const context = canvas.getContext('2d');
+            const viewfinder = document.getElementById('ocrViewfinder');
 
-            // Usar resolución nativa del vídeo
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
+            // --- LÓGICA DE RECORTE (CROP) SEGÚN EL MARCO ---
+            const videoRect = video.getBoundingClientRect();
+            const vfRect = viewfinder.getBoundingClientRect();
 
-            // Dibujar original
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            // Resolución nativa del video
+            const vw = video.videoWidth;
+            const vh = video.videoHeight;
+
+            // Relación de aspecto del video y del contenedor
+            const videoRatio = vw / vh;
+            const elementRatio = videoRect.width / videoRect.height;
+
+            let scale, offsetX = 0, offsetY = 0;
+
+            // Calcular cómo está escalado el video por "object-cover"
+            if (videoRatio > elementRatio) {
+                // El video es más ancho que el elemento (se cortan los laterales)
+                scale = videoRect.height / vh;
+                offsetX = (vw * scale - videoRect.width) / 2;
+            } else {
+                // El video es más estrecho o igual (se corta arriba/abajo)
+                scale = videoRect.width / vw;
+                offsetY = (vh * scale - videoRect.height) / 2;
+            }
+
+            // Coordenadas del viewfinder relativas al VIDEO REAL (pixeles nativos)
+            const cropX = (vfRect.left - videoRect.left + offsetX) / scale;
+            const cropY = (vfRect.top - videoRect.top + offsetY) / scale;
+            const cropW = vfRect.width / scale;
+            const cropH = vfRect.height / scale;
+
+            // Ajustar canvas al tamaño del recorte
+            canvas.width = cropW;
+            canvas.height = cropH;
+
+            // Dibujar solo la parte del viewfinder
+            context.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
 
             // --- PRE-PROCESADO PARA MEJORAR OCR ---
-            // Grayscale + Filtro de Contraste para ayudar a Tesseract
             let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
             let data = imageData.data;
             for (let i = 0; i < data.length; i += 4) {
                 let gray = (data[i] * 0.3 + data[i + 1] * 0.59 + data[i + 2] * 0.11);
-                // Aumentar contraste drásticamente
                 let contrast = 1.3;
                 let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
                 let color = factor * (gray - 128) + 128;
@@ -1459,7 +1521,6 @@
             document.getElementById('ocrControls').classList.add('hidden');
             document.getElementById('ocrLoading').classList.remove('hidden');
 
-            // Procesar la imagen mejorada
             processOCRBlob(dataUrl);
         }
 
@@ -1477,12 +1538,26 @@
         }
 
         async function processOCRBlob(blobOrUrl) {
+            const bar = document.getElementById('ocrProgressBar');
+            const status = document.getElementById('ocrProgressStatus');
+
             try {
-                // Usar modo de segmentación de página 4 (Assume a single column of text of variable sizes)
-                // o 6 (Assume a single uniform block of text) que suelen ser mejores para tablas
                 const { data: { text } } = await Tesseract.recognize(blobOrUrl, 'spa+eng', {
                     tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
-                    logger: m => console.log(m.status, m.progress)
+                    logger: m => {
+                        console.log(m.status, m.progress);
+                        if (m.status === 'recognizing text') {
+                            const p = Math.round(m.progress * 100);
+                            bar.style.width = p + '%';
+                            status.textContent = `Analizando: ${p}%`;
+                        } else if (m.status === 'loading tesseract core') {
+                            status.textContent = 'Cargando Motor...';
+                            bar.style.width = '10%';
+                        } else if (m.status === 'initializing api') {
+                            status.textContent = 'Iniciando API...';
+                            bar.style.width = '20%';
+                        }
+                    }
                 });
 
                 console.log("OCR Result RAW:", text);
