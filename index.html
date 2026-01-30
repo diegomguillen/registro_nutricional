@@ -831,6 +831,22 @@
                     `;
                     grid.appendChild(btn);
                 });
+
+                // Completar fila (múltiplo de 3)
+                const remaining = (3 - (recipeData.length % 3)) % 3;
+                for (let i = 0; i < remaining; i++) {
+                    const emptyBtn = document.createElement('button');
+                    emptyBtn.className = "bg-orange-50/50 border border-orange-100/50 rounded-xl p-3 flex flex-col items-center gap-2 text-center opacity-40 cursor-default";
+                    emptyBtn.innerHTML = `
+                        <div class="w-12 h-12 rounded-full bg-white/50 shadow-sm flex items-center justify-center text-2xl">
+                            <svg class="w-6 h-6 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        <span class="text-[10px] font-bold text-orange-300 leading-tight">...</span>
+                    `;
+                    grid.appendChild(emptyBtn);
+                }
             }
             document.getElementById('recipeGridModal').classList.remove('hidden');
         }
@@ -942,63 +958,44 @@
 
             const grid = document.getElementById('subCategoryGrid');
             grid.innerHTML = '';
-            // Para poder tener secciones scrollables o layout complejo, cambiamos grid a flex col
-            grid.className = "flex flex-col gap-4"; // Sobrescribimos la clase grid
+            // Volvemos a grid de 3 columnas
+            grid.className = "grid grid-cols-3 gap-3";
 
             document.getElementById('subCategoryTitle').textContent = family.label;
 
-            // 1. Filtrar alimentos de esta familia
-            const foods = foodData.filter(f => f.fam === famKey);
+            // 1. Filtrar alimentos de esta familia y ordenar por nombre
+            const foods = foodData
+                .filter(f => f.fam === famKey)
+                .sort((a, b) => a.name.localeCompare(b.name));
 
-            // 2. Agrupar por SubCategoría
-            const grouped = {};
+            // 2. Renderizar todos los alimentos directamente en la grilla principal
             foods.forEach(f => {
-                const sub = f.sub || 'OTHER';
-                if (!grouped[sub]) grouped[sub] = [];
-                grouped[sub].push(f);
+                const subMeta = (family.subs && family.subs[f.sub]) || { label: 'Otros', icon: '🔹' };
+                const btn = document.createElement('button');
+                btn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 min-h-[5rem]";
+                btn.onclick = () => selectFood(f.id);
+                btn.innerHTML = `
+                    <div class="text-2xl mb-1">${subMeta.icon}</div>
+                    <span class="text-[9px] font-bold text-slate-600 uppercase text-center leading-tight line-clamp-2">${f.name}</span>
+                `;
+                grid.appendChild(btn);
             });
 
-            // 3. Iterar según el orden definido en FOOD_STRUCTURE (y luego los sobrantes)
-            const subOrder = family.subs ? Object.keys(family.subs) : [];
-            const unknownSubs = Object.keys(grouped).filter(s => !subOrder.includes(s));
-            const allSubs = [...subOrder, ...unknownSubs];
-
-            allSubs.forEach(subKey => {
-                const groupItems = grouped[subKey];
-                if (!groupItems || groupItems.length === 0) return;
-
-                // Metadatos de la subcategoría (icono, nombre)
-                const subMeta = (family.subs && family.subs[subKey]) || { label: 'Otros', icon: '🔹' };
-
-                // A. Título de la Subcategoría
-                const sectionTitle = document.createElement('div');
-                sectionTitle.className = "text-xs font-bold text-slate-400 uppercase tracking-wider mb-2 border-b border-slate-100 pb-1";
-                sectionTitle.textContent = `${subMeta.icon} ${subMeta.label}`;
-
-                // Container de la sección (evitar fragments para gap)
-                const sectionContainer = document.createElement('div');
-                sectionContainer.appendChild(sectionTitle);
-
-                // B. Grid de Alimentos
-                const subGrid = document.createElement('div');
-                subGrid.className = "grid grid-cols-3 gap-3";
-
-                groupItems.sort((a, b) => a.name.localeCompare(b.name)).forEach(f => {
-                    const btn = document.createElement('button');
-                    btn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50 hover:border-emerald-100 transition-all active:scale-95 min-h-[5rem]";
-                    btn.onclick = () => selectFood(f.id);
-                    // Usar nombre del alimento. Si queremos, podemos poner el icono de la subfamilia otra vez, o nada.
-                    // Para diferenciarlos, quizás solo texto sea suficiente, o el mismos icono repetido.
-                    btn.innerHTML = `
-                        <div class="text-2xl mb-1">${subMeta.icon}</div>
-                        <span class="text-[9px] font-bold text-slate-600 uppercase text-center leading-tight line-clamp-2">${f.name}</span>
-                    `;
-                    subGrid.appendChild(btn);
-                });
-
-                sectionContainer.appendChild(subGrid);
-                grid.appendChild(sectionContainer);
-            });
+            // 3. Rellenar hasta completar la fila (múltiplo de 3)
+            const remaining = (3 - (foods.length % 3)) % 3;
+            for (let i = 0; i < remaining; i++) {
+                const emptyBtn = document.createElement('button');
+                emptyBtn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-50 opacity-40 cursor-default min-h-[5rem]";
+                emptyBtn.innerHTML = `
+                    <div class="text-slate-300 mb-1">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                    </div>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase text-center leading-tight">...</span>
+                `;
+                grid.appendChild(emptyBtn);
+            }
 
             document.getElementById('subCategoryModal').classList.remove('hidden');
         }
@@ -1050,6 +1047,22 @@
                     wrapper.appendChild(delBtn);
                     grid.appendChild(wrapper);
                 });
+
+                // Completar fila (múltiplo de 3)
+                const remaining = (3 - (foods.length % 3)) % 3;
+                for (let i = 0; i < remaining; i++) {
+                    const emptyBtn = document.createElement('button');
+                    emptyBtn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50 border border-slate-50 opacity-40 cursor-default min-h-[5rem]";
+                    emptyBtn.innerHTML = `
+                        <div class="text-slate-300 mb-1">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                        </div>
+                        <span class="text-[9px] font-bold text-slate-400 uppercase text-center leading-tight">...</span>
+                    `;
+                    grid.appendChild(emptyBtn);
+                }
             }
 
             document.getElementById('subCategoryModal').classList.remove('hidden');
