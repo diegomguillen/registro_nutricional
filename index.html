@@ -15,12 +15,34 @@
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 
     <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #e0e7ff;
+            --secondary: #0f172a;
+            --accent: #10b981;
+            --bg-main: #f8fafc;
+            --card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --card-shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f8fafc;
+            font-family: 'Outfit', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main);
+            color: #1e293b;
             -webkit-tap-highlight-color: transparent;
+            overflow-x: hidden;
+        }
+
+        /* Improved Contrast Headers */
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #0f172a !important;
+            letter-spacing: -0.02em;
         }
 
         .no-scrollbar::-webkit-scrollbar {
@@ -36,26 +58,96 @@
             padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .custom-checkbox {
-            width: 1.2rem;
-            height: 1.2rem;
-            cursor: pointer;
+        /* Smooth Interactive Elements */
+        .action-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        .modal-enter {
-            opacity: 0;
-            transform: scale(0.95);
+        .action-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: var(--primary-light);
         }
 
-        .modal-enter-active {
-            opacity: 1;
-            transform: scale(1);
-            transition: opacity 0.2s, transform 0.2s;
+        .action-card:active {
+            transform: scale(0.96);
+            background-color: #f1f5f9;
+        }
+
+        /* Modern Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in-up {
+            animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        @keyframes scaleIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .animate-scale-in {
+            animation: scaleIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        /* Better Focus for Buttons */
+        button:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* Glassmorphism for specific elements */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* Text Contrast Bump */
+        .text-slate-500 {
+            color: #475569 !important;
+        }
+
+        .text-slate-400 {
+            color: #64748b !important;
         }
 
         .loader {
             border: 2px solid #f3f3f3;
-            border-top: 2px solid #3b82f6;
+            border-top: 2px solid var(--primary);
             border-radius: 50%;
             width: 16px;
             height: 16px;
@@ -73,43 +165,12 @@
             }
         }
 
-        .action-card {
-            transition: transform 0.1s, background-color 0.2s;
-        }
-
-        .action-card:active {
-            transform: scale(0.98);
-            background-color: #f9fafb;
-        }
-
-        @keyframes slideUp {
-            from {
-                transform: translateY(100%);
-                opacity: 0;
-            }
-
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        .animate-slide-up {
-            animation: slideUp 0.3s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        .animate-fade-in {
-            animation: fadeIn 0.3s ease-out forwards;
+        /* Card stylings */
+        .premium-card {
+            background: white;
+            border-radius: 1.5rem;
+            box-shadow: var(--card-shadow);
+            border: 1px solid #f1f5f9;
         }
     </style>
 </head>
@@ -136,13 +197,8 @@
                 </button>
             </header>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 relative">
-                <button onclick="openCategorySelector()"
-                    class="absolute top-5 right-5 bg-indigo-600 hover:bg-indigo-700 text-white w-9 h-9 rounded-full shadow-md flex items-center justify-center active:scale-90 transition-transform z-10">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
-                    </svg>
-                </button>
+            <div class="premium-card p-5 relative animate-fade-in-up">
+
 
                 <h3 class="text-sm font-semibold text-slate-700 mb-4 text-center">DISTRIBUCIÓN CALÓRICA (HOY)</h3>
 
@@ -187,7 +243,7 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col items-center">
+                <div class="premium-card p-4 flex flex-col items-center action-card">
                     <h4 class="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2">Ayer</h4>
                     <div class="h-20 w-full relative flex justify-center mb-2">
                         <canvas id="chartYesterday"></canvas>
@@ -212,7 +268,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-4 flex flex-col items-center">
+                <div class="premium-card p-4 flex flex-col items-center action-card">
                     <h4 class="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2">Semana Pasada</h4>
                     <div class="h-20 w-full relative flex justify-center mb-2">
                         <canvas id="chartLastWeek"></canvas>
@@ -236,6 +292,57 @@
                         </div>
                     </div>
                 </div>
+                <div class="premium-card p-4 flex flex-col items-center action-card">
+                    <h4 class="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2" id="extraTitle1">...
+                    </h4>
+                    <div class="h-20 w-full relative flex justify-center mb-2">
+                        <canvas id="chartExtra1"></canvas>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 w-full mt-2">
+                        <div class="bg-green-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-green-600 font-bold uppercase">PROT</div>
+                            <div id="extra1Prot" class="text-[10px] font-bold text-slate-700">0g</div>
+                        </div>
+                        <div class="bg-yellow-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-yellow-600 font-bold uppercase">CARB</div>
+                            <div id="extra1Carbs" class="text-[10px] font-bold text-slate-700">0g</div>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-orange-600 font-bold uppercase">GRAS</div>
+                            <div id="extra1Fats" class="text-[10px] font-bold text-slate-700">0g</div>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-blue-600 font-bold uppercase">KCAL</div>
+                            <div id="extra1Kcal" class="text-[10px] font-bold text-slate-700">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="premium-card p-4 flex flex-col items-center action-card">
+                    <h4 class="text-[10px] font-bold text-slate-600 uppercase tracking-wider mb-2" id="extraTitle2">...
+                    </h4>
+                    <div class="h-20 w-full relative flex justify-center mb-2">
+                        <canvas id="chartExtra2"></canvas>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 w-full mt-2">
+                        <div class="bg-green-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-green-600 font-bold uppercase">PROT</div>
+                            <div id="extra2Prot" class="text-[10px] font-bold text-slate-700">0g</div>
+                        </div>
+                        <div class="bg-yellow-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-yellow-600 font-bold uppercase">CARB</div>
+                            <div id="extra2Carbs" class="text-[10px] font-bold text-slate-700">0g</div>
+                        </div>
+                        <div class="bg-red-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-orange-600 font-bold uppercase">GRAS</div>
+                            <div id="extra2Fats" class="text-[10px] font-bold text-slate-700">0g</div>
+                        </div>
+                        <div class="bg-blue-50 rounded-lg p-1.5 text-center">
+                            <div class="text-[8px] text-blue-600 font-bold uppercase">KCAL</div>
+                            <div id="extra2Kcal" class="text-[10px] font-bold text-slate-700">0</div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -245,7 +352,7 @@
                 <p class="text-slate-500 text-sm">Consulta y filtra tus registros</p>
             </header>
 
-            <div class="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 space-y-3">
+            <div class="premium-card p-4 space-y-3 animate-fade-in-up">
                 <div class="flex gap-2 text-sm">
                     <div class="flex-1">
                         <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Desde</label>
@@ -272,7 +379,7 @@
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div class="premium-card overflow-hidden animate-fade-in-up" style="animation-delay: 0.1s">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-slate-100">
                         <thead class="bg-slate-50 text-slate-500">
@@ -303,7 +410,8 @@
 
             <div class="space-y-4">
                 <div onclick="exportData()"
-                    class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up"
+                    style="animation-delay: 0.1s">
                     <div
                         class="w-12 h-12 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -321,7 +429,8 @@
                 </div>
 
                 <div onclick="document.getElementById('importFile').click()"
-                    class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up"
+                    style="animation-delay: 0.2s">
                     <div
                         class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -340,7 +449,8 @@
                 <input type="file" id="importFile" accept=".json" class="hidden" onchange="handleImport(this)">
 
                 <div onclick="resetApp()"
-                    class="action-card bg-white rounded-2xl p-4 border border-slate-100 shadow-sm flex items-center gap-4 cursor-pointer">
+                    class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up"
+                    style="animation-delay: 0.3s">
                     <div
                         class="w-12 h-12 rounded-full bg-red-50 flex items-center justify-center text-red-500 flex-shrink-0">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,7 +472,7 @@
                 <h1 class="text-2xl font-bold text-slate-900">Información y guía de uso</h1>
                 <p class="text-slate-500 text-sm">Documentación del proyecto</p>
             </header>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 overflow-hidden">
+            <div class="premium-card p-5 overflow-hidden animate-fade-in-up">
                 <div id="readmeContainer"
                     class="prose prose-slate prose-sm max-w-none prose-headings:text-slate-800 prose-a:text-indigo-600">
                     <div class="flex flex-col items-center justify-center py-10 text-slate-400">
@@ -397,6 +507,15 @@
                 </path>
             </svg>
             <span class="text-[10px] font-bold">Historial</span>
+        </button>
+        <button onclick="openCategorySelector()"
+            class="nav-btn flex flex-col items-center justify-center w-full h-full text-indigo-600" id="btn-add">
+            <div class="border-2 border-indigo-600 rounded-xl p-1 mb-1 shadow-sm bg-indigo-50/50">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+            </div>
+            <span class="text-[10px] font-bold uppercase">Añadir</span>
         </button>
         <button onclick="switchView('backup')"
             class="nav-btn flex flex-col items-center justify-center w-full h-full text-slate-400" id="btn-backup">
@@ -509,7 +628,10 @@
                     <div class="flex items-center justify-between mb-2">
                         <label class="block text-[10px] font-bold text-slate-600 uppercase" id="amountLabel">Cantidad
                             (g)</label>
-                        <span id="amountDisplay" class="text-2xl font-black text-indigo-600">0</span>
+                        <div class="flex items-baseline gap-1">
+                            <span id="amountDisplay" class="text-2xl font-black text-indigo-600">0</span>
+                            <span id="amountUnitDisplay" class="text-xs font-bold text-slate-400 uppercase">gr</span>
+                        </div>
                     </div>
                     <!-- Input oculto para mantener la lógica existente sin romper nada -->
                     <input type="number" id="amountInput" class="hidden" value="0">
@@ -560,7 +682,7 @@
         <div
             class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-slide-up sm:animate-fade-in">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-emerald-700">Registrar Receta</h3>
+                <h3 class="text-lg font-bold text-slate-800">Registrar Receta</h3>
                 <button onclick="document.getElementById('recipeLogModal').classList.add('hidden')"
                     class="text-slate-400 hover:text-slate-600 bg-slate-50 p-1 rounded-full"><svg class="w-6 h-6"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -601,10 +723,34 @@
                             </svg>
                         </button>
                     </div>
-                    <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Cantidad (Unidades)</label>
-                    <input type="number" id="recipeAmountInput" step="0.1"
-                        class="w-full rounded-xl border-slate-200 bg-slate-50 p-2.5 text-sm font-medium focus:border-indigo-500 focus:ring-indigo-200"
-                        placeholder="1.0" value="1">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-[10px] font-bold text-slate-600 uppercase">Cantidad (Unidades)</label>
+                        <div class="flex items-baseline gap-1">
+                            <span id="recipeAmountDisplay" class="text-2xl font-black text-indigo-600">1</span>
+                            <span id="recipeAmountUnitDisplay"
+                                class="text-xs font-bold text-slate-400 uppercase">ud</span>
+                        </div>
+                    </div>
+                    <!-- Input oculto para lógica existente -->
+                    <input type="number" id="recipeAmountInput" class="hidden" value="1" step="0.1">
+
+                    <!-- Botones Rápidos de Cantidad de Receta -->
+                    <div class="flex gap-2 bg-slate-50 p-2 rounded-xl border border-slate-100 justify-between">
+                        <button onclick="adjustRecipeAmount(0.1)"
+                            class="shrink-0 bg-white text-slate-600 w-12 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+0.1</button>
+                        <button onclick="adjustRecipeAmount(0.5)"
+                            class="shrink-0 bg-white text-slate-600 w-12 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+0.5</button>
+                        <button onclick="adjustRecipeAmount(1)"
+                            class="shrink-0 bg-white text-slate-600 w-12 h-10 rounded-lg text-xs font-bold shadow-sm border border-slate-200 active:scale-95 transition-transform">+1</button>
+                        <button onclick="adjustRecipeAmount(0)"
+                            class="shrink-0 bg-red-50 text-red-500 w-12 h-10 rounded-lg text-xs font-bold border border-red-100 active:scale-95 transition-transform flex items-center justify-center">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="bg-slate-50 rounded-xl p-3 border border-slate-100">
@@ -741,6 +887,113 @@
         </div>
     </div>
 
+    <!-- Modal OCR Scanner -->
+    <div id="ocrModal"
+        class="fixed inset-0 bg-black hidden z-[100] flex flex-col items-center justify-center animate-fade-in p-4">
+        <div class="absolute top-4 right-4 z-50">
+            <button onclick="closeOCR()" class="text-white bg-white/20 p-2 rounded-full backdrop-blur-md">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <div class="w-full max-w-sm bg-white rounded-2xl p-6 shadow-2xl overflow-hidden text-center">
+            <h3 class="text-xl font-bold text-slate-800 mb-2">Escáner de Etiqueta(en pruebas)</h3>
+            <p class="text-slate-500 text-sm mb-6">Fotografía la tabla nutricional para extraer los datos
+                automáticamente.</p>
+
+            <div id="ocrCameraContainer"
+                class="relative bg-black rounded-2xl overflow-hidden mb-4 h-64 shadow-inner border border-slate-100">
+                <video id="ocrVideo" class="w-full h-full object-cover" autoplay playsinline></video>
+                <div
+                    class="absolute inset-0 border-2 border-indigo-500/30 pointer-events-none flex items-center justify-center">
+                    <div class="w-48 h-32 border-2 border-dashed border-white/50 rounded-lg"></div>
+                </div>
+                <div id="ocrLoading"
+                    class="hidden absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
+                    <div class="w-8 h-8 border-4 border-white border-t-transparent rounded-full animate-spin"></div>
+                    <span class="text-xs font-bold text-white uppercase">Procesando...</span>
+                </div>
+            </div>
+
+            <div id="ocrPreviewContainer" class="hidden mb-4">
+                <img id="ocrImagePreview"
+                    class="max-h-64 mx-auto rounded-xl shadow-inner border border-slate-100 object-contain">
+            </div>
+
+            <div id="ocrResultsForm" class="hidden text-left space-y-4 py-4 animate-fade-in">
+                <p class="text-[10px] text-slate-400 text-center mb-2 italic">Revisa y corrige los datos detectados
+                    antes de guardar</p>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-blue-50/50 p-2 rounded-xl border border-blue-100">
+                        <label class="block text-[8px] font-black text-blue-600 uppercase mb-1">Calorías (kcal)</label>
+                        <input type="number" id="ocrKcal"
+                            class="w-full bg-transparent font-bold text-slate-800 focus:outline-none text-lg">
+                    </div>
+                    <div class="bg-green-50/50 p-2 rounded-xl border border-green-100">
+                        <label class="block text-[8px] font-black text-green-600 uppercase mb-1">Proteína (g)</label>
+                        <input type="number" id="ocrP" step="0.1"
+                            class="w-full bg-transparent font-bold text-slate-800 focus:outline-none text-lg"
+                            placeholder="0.0">
+                    </div>
+                    <div class="bg-yellow-50/50 p-2 rounded-xl border border-yellow-100">
+                        <label class="block text-[8px] font-black text-yellow-600 uppercase mb-1">Carbohidratos
+                            (g)</label>
+                        <input type="number" id="ocrC" step="0.1"
+                            class="w-full bg-transparent font-bold text-slate-800 focus:outline-none text-lg"
+                            placeholder="0.0">
+                    </div>
+                    <div class="bg-red-50/50 p-2 rounded-xl border border-red-100">
+                        <label class="block text-[8px] font-black text-red-600 uppercase mb-1">Grasas (g)</label>
+                        <input type="number" id="ocrF" step="0.1"
+                            class="w-full bg-transparent font-bold text-slate-800 focus:outline-none text-lg"
+                            placeholder="0.0">
+                    </div>
+                </div>
+                <div class="bg-slate-50 p-2 rounded-xl border border-slate-200">
+                    <label class="block text-[8px] font-black text-slate-500 uppercase mb-1">Nombre del Alimento</label>
+                    <input type="text" id="ocrName"
+                        class="w-full bg-transparent font-medium text-slate-700 focus:outline-none text-sm"
+                        value="Alimento Escaneado">
+                </div>
+                <button onclick="saveOCRResult()"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-indigo-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Confirmar y Guardar
+                </button>
+                <button onclick="resetOCRScanner()"
+                    class="w-full text-slate-400 text-[10px] font-bold uppercase py-2">Repetir Escaneo</button>
+            </div>
+
+            <div id="ocrControls" class="flex flex-col gap-3">
+                <button onclick="captureOCR()" id="captureBtn"
+                    class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-200 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                        </path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                    Capturar Tabla
+                </button>
+                <label
+                    class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-3 rounded-xl cursor-pointer text-xs uppercase flex justify-center items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                    </svg>
+                    Subir de Galería
+                    <input type="file" id="ocrInput" accept="image/*" class="hidden" onchange="processOCRFile(this)">
+                </label>
+            </div>
+            <canvas id="ocrCanvas" class="hidden"></canvas>
+        </div>
+    </div>
+
     <!-- Nuevos Modales de Selección Visual -->
     <div id="categoryModal"
         class="fixed inset-0 bg-black/60 hidden z-[70] flex items-end sm:items-center justify-center backdrop-blur-sm">
@@ -790,7 +1043,7 @@
         <div
             class="bg-white w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-bold text-orange-700">Mis Recetas</h3>
+                <h3 class="text-lg font-bold text-slate-800">Mis Recetas</h3>
                 <button onclick="document.getElementById('recipeGridModal').classList.add('hidden')"
                     class="text-slate-400 hover:text-slate-600 bg-slate-50 p-1 rounded-full"><svg class="w-6 h-6"
                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -822,12 +1075,12 @@
             } else {
                 [...recipeData].sort((a, b) => a.name.localeCompare(b.name)).forEach(r => {
                     const btn = document.createElement('button');
-                    btn.className = "bg-orange-50 border border-orange-100 rounded-xl p-3 flex flex-col items-center gap-2 text-center active:scale-95 transition-transform";
+                    btn.className = "bg-slate-50 border border-slate-100 rounded-xl p-3 flex flex-col items-center gap-2 text-center active:scale-95 transition-transform";
                     btn.onclick = () => selectRecipeFromGrid(r.id);
                     btn.innerHTML = `
                         <div class="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center text-2xl">📖</div>
-                        <span class="text-[10px] font-bold text-orange-900 leading-tight line-clamp-2">${r.name}</span>
-                        <span class="text-[9px] text-orange-700 bg-orange-100 px-1.5 rounded-full">${Math.round(r.kcal)} kcal</span>
+                        <span class="text-[10px] font-bold text-slate-900 leading-tight line-clamp-2">${r.name}</span>
+                        <span class="text-[9px] text-slate-700 bg-slate-100 px-1.5 rounded-full">${Math.round(r.kcal)} kcal</span>
                     `;
                     grid.appendChild(btn);
                 });
@@ -836,14 +1089,14 @@
                 const remaining = (3 - (recipeData.length % 3)) % 3;
                 for (let i = 0; i < remaining; i++) {
                     const emptyBtn = document.createElement('button');
-                    emptyBtn.className = "bg-orange-50/50 border border-orange-100/50 rounded-xl p-3 flex flex-col items-center gap-2 text-center opacity-40 cursor-default";
+                    emptyBtn.className = "bg-slate-50/50 border border-slate-100/50 rounded-xl p-3 flex flex-col items-center gap-2 text-center opacity-40 cursor-default";
                     emptyBtn.innerHTML = `
                         <div class="w-12 h-12 rounded-full bg-white/50 shadow-sm flex items-center justify-center text-2xl">
-                            <svg class="w-6 h-6 text-orange-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-6 h-6 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
                         </div>
-                        <span class="text-[10px] font-bold text-orange-300 leading-tight">...</span>
+                        <span class="text-[10px] font-bold text-slate-300 leading-tight">...</span>
                     `;
                     grid.appendChild(emptyBtn);
                 }
@@ -934,11 +1187,11 @@
             // 3. NUEVOS ICONOS (MOVIDOS AQUÍ) - Fila Inferior
             // A. Mis Recetas
             const recipesBtn = document.createElement('button');
-            recipesBtn.className = "flex flex-col items-center justify-center p-3 rounded-xl bg-orange-50 border border-orange-100 active:scale-95 transition-transform h-24";
+            recipesBtn.className = "flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-indigo-50 hover:border-indigo-100 transition-all active:scale-95 h-24";
             recipesBtn.onclick = () => { document.getElementById('categoryModal').classList.add('hidden'); openRecipeGrid(); };
             recipesBtn.innerHTML = `
-                <div class="text-orange-600 mb-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
-                <span class="text-[9px] font-bold text-orange-900 uppercase text-center leading-tight">Mis Recetas</span>`;
+                <div class="text-indigo-600 mb-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg></div>
+                <span class="text-[9px] font-bold text-slate-800 uppercase text-center leading-tight">Mis Recetas</span>`;
             grid.appendChild(recipesBtn);
 
             // B. Buscar / Scan
@@ -947,16 +1200,17 @@
             searchBtn.onclick = () => { document.getElementById('categoryModal').classList.add('hidden'); openQuickSearch(); };
             searchBtn.innerHTML = `
                 <div class="text-blue-600 mb-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
-                <span class="text-[9px] font-bold text-blue-900 uppercase text-center leading-tight">Buscar / Scan</span>`;
+                <span class="text-[9px] font-bold text-blue-900 uppercase text-center leading-tight">Buscar / BarCode</span>`;
             grid.appendChild(searchBtn);
 
-            // C. Próximamente (Empty)
-            const emptyBtn = document.createElement('button');
-            emptyBtn.className = "flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 opacity-50 cursor-default h-24";
-            emptyBtn.innerHTML = `
-                <div class="text-slate-300 mb-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg></div>
-                <span class="text-[9px] font-bold text-slate-400 uppercase text-center leading-tight">Próximamente</span>`;
-            grid.appendChild(emptyBtn);
+            // C. OCR Labels
+            const ocrBtn = document.createElement('button');
+            ocrBtn.className = "flex flex-col items-center justify-center p-3 rounded-xl bg-slate-50 border border-slate-100 hover:bg-indigo-50 hover:border-indigo-100 transition-all active:scale-95 h-24";
+            ocrBtn.onclick = () => { document.getElementById('categoryModal').classList.add('hidden'); openOCRScanner(); };
+            ocrBtn.innerHTML = `
+                <div class="text-indigo-600 mb-1"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
+                <span class="text-[9px] font-bold text-slate-800 uppercase text-center leading-tight">OCR / Etiqueta</span>`;
+            grid.appendChild(ocrBtn);
 
             document.getElementById('categoryModal').classList.remove('hidden');
         }
@@ -1123,9 +1377,195 @@
         let chartInstance = null;
         let chartInstanceYesterday = null;
         let chartInstanceLastWeek = null;
+        let chartInstanceExtra1 = null;
+        let chartInstanceExtra2 = null;
         let modalChartInstance = null;
         let selectedIds = new Set();
         let html5QrcodeScanner = null;
+
+        // --- SISTEMA OCR ---
+        let ocrStream = null;
+
+        async function openOCRScanner() {
+            document.getElementById('ocrModal').classList.remove('hidden');
+            resetOCRScanner();
+
+            try {
+                // Solicitar resolución HD para mejor lectura del OCR
+                const constraints = {
+                    video: {
+                        facingMode: "environment",
+                        width: { ideal: 1920 },
+                        height: { ideal: 1080 }
+                    }
+                };
+                ocrStream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('ocrVideo').srcObject = ocrStream;
+            } catch (err) {
+                console.error("Camera error:", err);
+                showToast("No se pudo acceder a la cámara o resolución no soportada.");
+            }
+        }
+
+        function resetOCRScanner() {
+            document.getElementById('ocrCameraContainer').classList.remove('hidden');
+            document.getElementById('ocrPreviewContainer').classList.add('hidden');
+            document.getElementById('ocrResultsForm').classList.add('hidden');
+            document.getElementById('ocrControls').classList.remove('hidden');
+            document.getElementById('ocrLoading').classList.add('hidden');
+            if (document.getElementById('ocrInput')) document.getElementById('ocrInput').value = '';
+        }
+
+        function closeOCR() {
+            document.getElementById('ocrModal').classList.add('hidden');
+            if (ocrStream) {
+                ocrStream.getTracks().forEach(track => track.stop());
+                ocrStream = null;
+            }
+        }
+
+        async function captureOCR() {
+            const video = document.getElementById('ocrVideo');
+            const canvas = document.getElementById('ocrCanvas');
+            const context = canvas.getContext('2d');
+
+            // Usar resolución nativa del vídeo
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+
+            // Dibujar original
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // --- PRE-PROCESADO PARA MEJORAR OCR ---
+            // Grayscale + Filtro de Contraste para ayudar a Tesseract
+            let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            let data = imageData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                let gray = (data[i] * 0.3 + data[i + 1] * 0.59 + data[i + 2] * 0.11);
+                // Aumentar contraste drásticamente
+                let contrast = 1.3;
+                let factor = (259 * (contrast + 255)) / (255 * (259 - contrast));
+                let color = factor * (gray - 128) + 128;
+                data[i] = data[i + 1] = data[i + 2] = color;
+            }
+            context.putImageData(imageData, 0, 0);
+
+            const dataUrl = canvas.toDataURL('image/png');
+            document.getElementById('ocrImagePreview').src = dataUrl;
+
+            // UI Switch
+            document.getElementById('ocrCameraContainer').classList.add('hidden');
+            document.getElementById('ocrPreviewContainer').classList.remove('hidden');
+            document.getElementById('ocrControls').classList.add('hidden');
+            document.getElementById('ocrLoading').classList.remove('hidden');
+
+            // Procesar la imagen mejorada
+            processOCRBlob(dataUrl);
+        }
+
+        function processOCRFile(input) {
+            if (!input.files || !input.files[0]) return;
+            const file = input.files[0];
+
+            document.getElementById('ocrImagePreview').src = URL.createObjectURL(file);
+            document.getElementById('ocrCameraContainer').classList.add('hidden');
+            document.getElementById('ocrPreviewContainer').classList.remove('hidden');
+            document.getElementById('ocrControls').classList.add('hidden');
+            document.getElementById('ocrLoading').classList.remove('hidden');
+
+            processOCRBlob(file);
+        }
+
+        async function processOCRBlob(blobOrUrl) {
+            try {
+                // Usar modo de segmentación de página 4 (Assume a single column of text of variable sizes)
+                // o 6 (Assume a single uniform block of text) que suelen ser mejores para tablas
+                const { data: { text } } = await Tesseract.recognize(blobOrUrl, 'spa+eng', {
+                    tessedit_pageseg_mode: Tesseract.PSM.SINGLE_BLOCK,
+                    logger: m => console.log(m.status, m.progress)
+                });
+
+                console.log("OCR Result RAW:", text);
+                extractMacros(text);
+            } catch (err) {
+                console.error(err);
+                showToast("Error al procesar la imagen.");
+                resetOCRScanner();
+            } finally {
+                document.getElementById('ocrLoading').classList.add('hidden');
+            }
+        }
+
+
+
+        function extractMacros(text) {
+            // Normalizar: Cambiar comas por puntos y tratar espacios entre números (ej: "1 5" -> "1.5")
+            let cleanText = text.toLowerCase()
+                .replace(/[,]/g, '.')
+                .replace(/(\d)\s+(\d)/g, '$1.$2');
+
+            const lines = cleanText.split('\n');
+            const found = { kcal: 0, p: 0, c: 0, f: 0 };
+
+            const findNumberInLine = (regex) => {
+                for (let line of lines) {
+                    if (regex.test(line)) {
+                        const matches = line.match(/(\d+(?:\.\d+)?)/g);
+                        if (matches) return parseFloat(matches[0]);
+                    }
+                }
+                return 0;
+            };
+
+            found.kcal = Math.round(findNumberInLine(/(?:energ|valor|kcal|calor)/));
+            found.p = findNumberInLine(/(?:prot|vincin|prote)/);
+            found.c = findNumberInLine(/(?:hidra|carbo|azuc|h\.c)/);
+            found.f = findNumberInLine(/(?:gras|lipid|satur|lip)/);
+
+            // Mostrar el formulario editable
+            document.getElementById('ocrKcal').value = found.kcal || '';
+            document.getElementById('ocrP').value = found.p || '';
+            document.getElementById('ocrC').value = found.c || '';
+            document.getElementById('ocrF').value = found.f || '';
+            document.getElementById('ocrResultsForm').classList.remove('hidden');
+        }
+
+        function saveOCRResult() {
+            const kcal = parseFloat(document.getElementById('ocrKcal').value) || 0;
+            const p = parseFloat(document.getElementById('ocrP').value) || 0;
+            const c = parseFloat(document.getElementById('ocrC').value) || 0;
+            const f = parseFloat(document.getElementById('ocrF').value) || 0;
+            const name = document.getElementById('ocrName').value || "Escaneado";
+
+            selectApiItem(name, p, c, f, kcal);
+            closeOCR();
+            showToast("Alimento guardado con éxito.");
+        }
+
+        // --- SISTEMA DE SONIDOS ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playClick() {
+            try {
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.04);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.04);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.04);
+            } catch (e) { console.error("Audio error", e); }
+        }
+
+        document.addEventListener('mousedown', (e) => {
+            if (e.target.closest('button') || e.target.closest('.nav-btn')) {
+                playClick();
+            }
+        });
 
         // --- CONTADOR SIMULADO ---
         const COUNTER_START_DATE = 1704067200000;
@@ -1226,8 +1666,10 @@
                 document.getElementById('amountLabel').textContent = food.unit === 'u' ? "Cantidad (unidades)" : "Cantidad (gramos)";
                 const amount = parseFloat(amountInput.value) || 0;
 
-                // Actualizar display visual
+                // Actualizar display visual y unidad
                 document.getElementById('amountDisplay').textContent = amount;
+                const isUnit = (food.unit === 'u' || food.unit === 'ud' || food.unit === 'u.');
+                document.getElementById('amountUnitDisplay').textContent = isUnit ? "ud" : "gr";
 
                 const factor = food.unit === 'g' ? amount / 100 : amount;
                 const p = (food.p * factor).toFixed(1);
@@ -1250,6 +1692,10 @@
 
             if (recipe) {
                 const amount = parseFloat(amountInput.value) || 0;
+                // Actualizar display visual
+                document.getElementById('recipeAmountDisplay').textContent = amount;
+                document.getElementById('recipeAmountUnitDisplay').textContent = "ud";
+
                 const p = (recipe.p * amount).toFixed(1);
                 const c = (recipe.c * amount).toFixed(1);
                 const f = (recipe.f * amount).toFixed(1);
@@ -1286,50 +1732,89 @@
         function updateComparisonCharts() {
             const today = new Date();
 
-            // Ayer
+            // 1. AYER
             const yesterdayDate = new Date(today);
             yesterdayDate.setDate(today.getDate() - 1);
             const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
-
-            // Semana Pasada (Mismo día)
-            const lastWeekDate = new Date(today);
-            lastWeekDate.setDate(today.getDate() - 7);
-            const lastWeekStr = lastWeekDate.toISOString().split('T')[0];
-
-            // Renderizar Ayer
             const yesterdayIds = { p: 'yesterdayProt', c: 'yesterdayCarbs', f: 'yesterdayFats', k: 'yesterdayKcal' };
             renderMiniChart('chartYesterday', yesterdayIds, yesterdayStr, chartInstanceYesterday, (c) => chartInstanceYesterday = c);
 
-            // Renderizar Semana Pasada
+            // 2. SEMANA PASADA (Mismo día)
+            const lastWeekDate = new Date(today);
+            lastWeekDate.setDate(today.getDate() - 7);
+            const lastWeekStr = lastWeekDate.toISOString().split('T')[0];
             const lastWeekIds = { p: 'lastWeekProt', c: 'lastWeekCarbs', f: 'lastWeekFats', k: 'lastWeekKcal' };
             renderMiniChart('chartLastWeek', lastWeekIds, lastWeekStr, chartInstanceLastWeek, (c) => chartInstanceLastWeek = c);
+
+            // 3. MEDIA SEMANA ACTUAL (L-V)
+            const currentWeekData = getAverageMacrosForWeek(today, true);
+            document.getElementById('extraTitle1').textContent = "Media Sem. Actual.(L-V)";
+            const extra1Ids = { p: 'extra1Prot', c: 'extra1Carbs', f: 'extra1Fats', k: 'extra1Kcal' };
+            renderMiniChartFromData('chartExtra1', extra1Ids, currentWeekData, chartInstanceExtra1, (c) => chartInstanceExtra1 = c);
+
+            // 4. MEDIA SEMANA ANTERIOR (L-V)
+            const prevWeek = new Date(today);
+            prevWeek.setDate(today.getDate() - 7);
+            const lastWeekData = getAverageMacrosForWeek(prevWeek, false);
+            document.getElementById('extraTitle2').textContent = "Media Sem. Anter.(L-V)";
+            const extra2Ids = { p: 'extra2Prot', c: 'extra2Carbs', f: 'extra2Fats', k: 'extra2Kcal' };
+            renderMiniChartFromData('chartExtra2', extra2Ids, lastWeekData, chartInstanceExtra2, (c) => chartInstanceExtra2 = c);
         }
 
-        function renderMiniChart(canvasId, macroIds, dateStr, chartInstance, setChartInstance) {
-            const logs = globalLog.filter(l => l.date === dateStr);
+        function getAverageMacrosForWeek(referenceDate, upToToday = false) {
+            const ref = new Date(referenceDate);
+            const day = ref.getDay(); // 0 is Sunday, 1 is Monday...
+            const diffToMon = (day === 0 ? -6 : 1 - day); // Distance to Monday
 
-            let p = 0, c = 0, f = 0, k = 0;
-            logs.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
+            const monday = new Date(ref);
+            monday.setDate(ref.getDate() + diffToMon);
 
-            // Actualizar textos de los cuadraditos
+            let totalP = 0, totalC = 0, totalF = 0, totalK = 0, daysCount = 0;
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            for (let i = 0; i < 5; i++) { // Monday to Friday
+                const currentDay = new Date(monday);
+                currentDay.setDate(monday.getDate() + i);
+                const dateStr = currentDay.toISOString().split('T')[0];
+
+                // Si estamos en semana actual, solo contar hasta ayer incluido (o hasta hoy si se prefiere)
+                // Usualmente "días transcurridos" excluye el futuro.
+                if (upToToday && dateStr > todayStr) continue;
+
+                const dayLogs = globalLog.filter(l => l.date === dateStr);
+                dayLogs.forEach(l => {
+                    totalP += l.p; totalC += l.c; totalF += l.f; totalK += l.kcal;
+                });
+                daysCount++;
+            }
+
+            return {
+                p: daysCount > 0 ? (totalP / daysCount) : 0,
+                c: daysCount > 0 ? (totalC / daysCount) : 0,
+                f: daysCount > 0 ? (totalF / daysCount) : 0,
+                k: daysCount > 0 ? (totalK / daysCount) : 0
+            };
+        }
+
+        function renderMiniChartFromData(canvasId, macroIds, data, chartInstance, setChartInstance) {
             if (macroIds) {
-                document.getElementById(macroIds.p).textContent = p.toFixed(0) + 'g';
-                document.getElementById(macroIds.c).textContent = c.toFixed(0) + 'g';
-                document.getElementById(macroIds.f).textContent = f.toFixed(0) + 'g';
-                document.getElementById(macroIds.k).textContent = k;
+                document.getElementById(macroIds.p).textContent = data.p.toFixed(0) + 'g';
+                document.getElementById(macroIds.c).textContent = data.c.toFixed(0) + 'g';
+                document.getElementById(macroIds.f).textContent = data.f.toFixed(0) + 'g';
+                document.getElementById(macroIds.k).textContent = Math.round(data.k);
             }
 
             const ctx = document.getElementById(canvasId).getContext('2d');
             if (chartInstance) chartInstance.destroy();
 
-            const hasData = (p + c + f) > 0;
+            const hasData = (data.p + data.c + data.f) > 0;
 
             const newChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: {
                     labels: ['P', 'C', 'G'],
                     datasets: [{
-                        data: hasData ? [p * 4, c * 4, f * 9] : [1],
+                        data: hasData ? [data.p * 4, data.c * 4, data.f * 9] : [1],
                         backgroundColor: hasData ? ['#39f792', '#eab308', '#ef4444'] : ['#f1f5f9'],
                         borderWidth: 0
                     }]
@@ -1343,6 +1828,15 @@
             });
 
             setChartInstance(newChart);
+        }
+
+        function renderMiniChart(canvasId, macroIds, dateStr, chartInstance, setChartInstance) {
+            const logs = globalLog.filter(l => l.date === dateStr);
+
+            let p = 0, c = 0, f = 0, k = 0;
+            logs.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
+
+            renderMiniChartFromData(canvasId, macroIds, { p, c, f, k }, chartInstance, setChartInstance);
         }
 
 
@@ -1664,6 +2158,17 @@
                 input.value = current + val;
             }
             updatePreview(); // Actualizar cálculos
+        }
+
+        function adjustRecipeAmount(val) {
+            const input = document.getElementById('recipeAmountInput');
+            if (val === 0) {
+                input.value = 0;
+            } else {
+                let current = parseFloat(input.value) || 0;
+                input.value = (current + val).toFixed(1);
+            }
+            updateRecipePreview(); // Actualizar cálculos
         }
 
         function populateRecipeSelect() {
