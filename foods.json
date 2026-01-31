@@ -421,7 +421,7 @@
   },
   {
     "id": 38,
-    "name": "Lata 56gr atún conserva natural",
+    "name": "Lata 56gr atún natural",
     "p": 23.0,
     "c": 0.0,
     "f": 0.7,
@@ -429,7 +429,7 @@
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
-    "icon": "🐟"
+    "icon": "🥫"
   },
   {
     "id": 39,
@@ -453,7 +453,7 @@
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
-    "icon": "🐟"
+    "icon": "🥫"
   },
   {
     "id": 41,
@@ -465,6 +465,6 @@
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
-    "icon": "🐟"
+    "icon": "🥫"
   }
 ]
