@@ -205,7 +205,7 @@
   },
   {
     "id": 19,
-    "name": "Proteína",
+    "name": "Proteína macro",
     "p": 100.0,
     "c": 0.0,
     "f": 0.0,
@@ -217,7 +217,7 @@
   },
   {
     "id": 20,
-    "name": "Carbohidrato",
+    "name": "Carbohidrato macro",
     "p": 0.0,
     "c": 100.0,
     "f": 0.0,
@@ -229,7 +229,7 @@
   },
   {
     "id": 21,
-    "name": "Grasa",
+    "name": "Grasa macro",
     "p": 0.0,
     "c": 0.0,
     "f": 100.0,
