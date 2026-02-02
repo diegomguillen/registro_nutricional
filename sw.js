@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nutri-app-v1.43';
+const CACHE_NAME = 'nutri-app-v1.44';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -41,4 +41,5 @@ self.addEventListener('fetch', (event) => {
   );
 
 });
+
 
