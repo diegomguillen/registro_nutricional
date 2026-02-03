@@ -702,6 +702,8 @@
                     <!-- Botones Rápidos de Cantidad -->
                     <div
                         class="flex gap-2 bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] overflow-x-auto no-scrollbar justify-between">
+                        <button onclick="adjustAmount(0.1)"
+                            class="shrink-0 bg-[#3a3a3c] text-white w-10 h-10 rounded-lg text-xs font-medium shadow-sm border border-[#4a4a4c] active:scale-95 transition-transform">+0.1</button>
                         <button onclick="adjustAmount(1)"
                             class="shrink-0 bg-[#3a3a3c] text-white w-10 h-10 rounded-lg text-xs font-medium shadow-sm border border-[#4a4a4c] active:scale-95 transition-transform">+1</button>
                         <button onclick="adjustAmount(5)"
@@ -711,9 +713,7 @@
                         <button onclick="adjustAmount(25)"
                             class="shrink-0 bg-[#3a3a3c] text-white w-10 h-10 rounded-lg text-xs font-medium shadow-sm border border-[#4a4a4c] active:scale-95 transition-transform">+25</button>
                         <button onclick="adjustAmount(50)"
-                            class="shrink-0 bg-[#3a3a3c] text-white w-10 h-10 rounded-lg text-xs font-medium shadow-sm border border-[#4a4a4c] active:scale-95 transition-transform">+50</button>
-                        <button onclick="adjustAmount(100)"
-                            class="shrink-0 bg-[#3a3a3c] text-white w-10 h-10 rounded-lg text-xs font-medium shadow-sm border border-[#4a4a4c] active:scale-95 transition-transform text-[10px]">+100</button>
+                            class="shrink-0 bg-[#3a3a3c] text-white w-10 h-10 rounded-lg text-xs font-medium shadow-sm border border-[#4a4a4c] active:scale-95 transition-transform text-[10px]">+50</button>
                         <button onclick="adjustAmount(0)"
                             class="shrink-0 bg-fat-soft text-fat w-10 h-10 rounded-lg text-xs font-medium border border-fat/20 active:scale-95 transition-transform flex items-center justify-center">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1641,28 +1641,62 @@
 
 
         function extractMacros(text) {
-            // Normalizar: Cambiar comas por puntos y tratar espacios entre números (ej: "1 5" -> "1.5")
-            let cleanText = text.toLowerCase()
-                .replace(/[,]/g, '.')
+            console.log("OCR RAW:", text);
+            // Normalización: 
+            // 1. Comas a puntos
+            // 2. Intentar limpiar unidades mal leídas (g -> 8, 9, s...) al final de un número
+            // 3. Unir números separados por espacio (común en puntos mal leídos)
+            let cleaned = text.toLowerCase()
+                .replace(/,/g, '.')
+                .replace(/(\d)\s*([gG89s])\b/g, '$1 ')
                 .replace(/(\d)\s+(\d)/g, '$1.$2');
 
-            const lines = cleanText.split('\n');
+            const lines = cleaned.split('\n');
             const found = { kcal: 0, p: 0, c: 0, f: 0 };
 
-            const findNumberInLine = (regex) => {
+            const extract = (keywords, isKcal = false) => {
                 for (let line of lines) {
-                    if (regex.test(line)) {
-                        const matches = line.match(/(\d+(?:\.\d+)?)/g);
-                        if (matches) return parseFloat(matches[0]);
+                    if (keywords.some(k => line.includes(k))) {
+                        // Buscar todos los números
+                        const numbers = line.match(/(\d+(?:\.\d+)?)/g);
+                        if (!numbers) continue;
+
+                        let vals = numbers.map(n => parseFloat(n));
+
+                        if (isKcal) {
+                            // Caso especial: Línea con KJ y Kcal
+                            if (vals.length >= 2) {
+                                // Prioridad 1: Seguido de palabra kcal
+                                const kcalMatch = line.match(/(\d+(?:\.\d+)?)\s*kcal/);
+                                if (kcalMatch) return parseFloat(kcalMatch[1]);
+                                // Prioridad 2: El valor más pequeño (1 kcal = 4.18 kj)
+                                return Math.min(...vals);
+                            }
+                            return vals[0];
+                        } else {
+                            // Caso especial Macros: 
+                            // Si el valor es > 100 y no hay puntos decimales, es muy probable que falte la coma
+                            // o que la 'g' se haya leído como un dígito extra.
+                            let val = vals[0];
+                            if (val > 100 && !numbers[0].includes('.')) {
+                                // Si hay más números en la línea, quizás el primero era basura
+                                if (vals.length > 1 && vals[1] < 100) return vals[1];
+                                // Si no, asumimos decimal perdido
+                                return val / 10;
+                            }
+                            return val;
+                        }
                     }
                 }
                 return 0;
             };
 
-            found.kcal = Math.round(findNumberInLine(/(?:energ|valor|kcal|calor)/));
-            found.p = findNumberInLine(/(?:prot|vincin|prote)/);
-            found.c = findNumberInLine(/(?:hidra|carbo|azuc|h\.c)/);
-            found.f = findNumberInLine(/(?:gras|lipid|satur|lip)/);
+            found.p = extract(['prot', 'vincin', 'prote']);
+            found.c = extract(['hidra', 'carbo', 'azuc', 'h.c']);
+            found.f = extract(['gras', 'lipid', 'satur', 'lip']);
+
+            // Cálculo automático: (P*4) + (C*4) + (F*9)
+            found.kcal = Math.round((found.p * 4) + (found.c * 4) + (found.f * 9));
 
             // Mostrar el formulario editable
             document.getElementById('ocrKcal').value = found.kcal || '';
@@ -1670,6 +1704,16 @@
             document.getElementById('ocrC').value = found.c || '';
             document.getElementById('ocrF').value = found.f || '';
             document.getElementById('ocrResultsForm').classList.remove('hidden');
+
+            // Añadir listeners para recalcular en tiempo real si el usuario edita
+            ['ocrP', 'ocrC', 'ocrF'].forEach(id => {
+                document.getElementById(id).addEventListener('input', () => {
+                    const p = parseFloat(document.getElementById('ocrP').value) || 0;
+                    const c = parseFloat(document.getElementById('ocrC').value) || 0;
+                    const f = parseFloat(document.getElementById('ocrF').value) || 0;
+                    document.getElementById('ocrKcal').value = Math.round((p * 4) + (c * 4) + (f * 9));
+                });
+            });
         }
 
         function saveOCRResult() {
@@ -2317,7 +2361,8 @@
                 input.value = 0;
             } else {
                 let current = parseFloat(input.value) || 0;
-                input.value = current + val;
+                let newValue = current + val;
+                input.value = Number.isInteger(newValue) ? newValue : newValue.toFixed(1);
             }
             updatePreview(); // Actualizar cálculos
         }
