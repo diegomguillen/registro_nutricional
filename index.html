@@ -1869,69 +1869,7 @@
         }
         const URL_LIMIT = 2048; // Límite seguro estándar para navegadores y clientes móviles
         document.addEventListener('DOMContentLoaded', () => {
-            // --- LÓGICA DE COMPARTIR E IMPORTAR ---
-            // Verificar si hay datos compartidos en la URL al iniciar
-            const params = new URLSearchParams(window.location.search);
-            const sharedData = params.get('share');
-            if (sharedData) {
-                try {
-                    // 1. Decodificar: Base64 -> JSON String -> Objeto
-                    // Usamos una decodificación segura para UTF-8
-                    const jsonString = decodeURIComponent(atob(sharedData.replace(/ /g, '+')));
-                    const payload = JSON.parse(jsonString);
-
-                    // 2. Confirmar e Importar según tipo
-                    if (payload.type === 'food' && payload.data) {
-                        const f = payload.data;
-                        if (confirm(`¿Importar alimento "${f.name}" a tu base de datos?`)) {
-                            // Asignar nuevo ID para evitar colisiones
-                            f.id = Date.now();
-                            foodData.push(f);
-                            saveFoods();
-                            populateSelect();
-                            showToast("Alimento importado correctamente");
-                        }
-                    } else if (payload.type === 'recipe' && payload.data) {
-                        const r = payload.data;
-                        if (confirm(`¿Importar receta "${r.name}" (${r.kcal} kcal) a tu base de datos?`)) {
-                            // Asignar nuevo ID
-                            r.id = Date.now();
-                            recipeData.push(r);
-                            saveRecipes();
-                            populateRecipeSelect();
-                            showToast("Receta importada correctamente");
-                        }
-                    }
-
-                    // 3. Limpiar URL para evitar reimportaciones al recargar (mantiene parámetros internos de VS Code si existen)
-                    const cleanParams = new URLSearchParams(window.location.search);
-                    cleanParams.delete('share');
-                    const newSearch = cleanParams.toString();
-                    window.history.replaceState({}, document.title, window.location.pathname + (newSearch ? '?' + newSearch : ''));
-
-                } catch (e) {
-                    console.error("Error importando datos:", e);
-                    showToast("Error: El enlace es inválido o está corrupto");
-                }
-            }
-            //
             initApp();
-            initDateInputs();
-
-            document.getElementById('foodSelect').addEventListener('change', updatePreview);
-            document.getElementById('amountInput').addEventListener('input', updatePreview);
-
-            document.getElementById('recipeSelect').addEventListener('change', updateRecipePreview);
-            document.getElementById('recipeAmountInput').addEventListener('input', updateRecipePreview);
-
-            setTodayFilter();
-            updatePreview();
-            updateDayLabels();
-            updateComparisonCharts(); // Inicializar gráficos extra
-            switchView('home');
-
-            updateLiveCounter();
-            setInterval(updateLiveCounter, 10000);
         });
 
         function updatePreview() {
@@ -2696,7 +2634,6 @@
 
                 // 3. FUSIÓN INTELIGENTE: 
                 // Recuperamos alimentos guardados en el móvil, pero SOLO los personalizados (ID >= 1000).
-                // Los alimentos base (Pollo, Huevo, etc.) los ignoramos para usar siempre los del JSON actualizado.
                 const localFoodsRaw = localStorage.getItem('macroCalculatorFoods');
                 let userCustomFoods = [];
 
@@ -2705,10 +2642,9 @@
                     userCustomFoods = parsed.filter(f => f.id >= 1000);
                 }
 
-                // Combinamos: [Base de Datos Remota] + [Mis Alimentos Personalizados]
                 foodData = [...remoteFoods, ...userCustomFoods];
 
-                // 4. Arrancamos la interfaz (Todo lo que antes hacías en el DOMContentLoaded)
+                // 4. Arrancamos la interfaz
                 initDateInputs();
                 populateSelect();
                 populateRecipeSelect();
@@ -2722,13 +2658,64 @@
                 document.getElementById('recipeSelect').addEventListener('change', updateRecipePreview);
                 document.getElementById('recipeAmountInput').addEventListener('input', updateRecipePreview);
 
+                // --- LÓGICA DE COMPARTIR E IMPORTAR (AHORA DESPUÉS DE CARGAR DATOS) ---
+                const params = new URLSearchParams(window.location.search);
+                const sharedData = params.get('share');
+                if (sharedData) {
+                    try {
+                        const jsonString = decodeURIComponent(atob(sharedData.replace(/ /g, '+')));
+                        const payload = JSON.parse(jsonString);
+
+                        if (payload.type === 'food' && payload.data) {
+                            const f = payload.data;
+                            if (confirm(`¿Importar alimento "${f.name}" a tu base de datos?`)) {
+                                f.id = Date.now();
+                                foodData.push(f);
+                                saveFoods();
+                                populateSelect();
+                                showToast("Alimento importado correctamente");
+                            }
+                        } else if (payload.type === 'recipe' && payload.data) {
+                            const r = payload.data;
+                            if (confirm(`¿Importar receta "${r.name}" (${r.kcal} kcal) a tu base de datos?`)) {
+                                r.id = Date.now();
+                                recipeData.push(r);
+                                saveRecipes();
+                                populateRecipeSelect();
+                                showToast("Receta importada correctamente");
+                            }
+                        }
+
+                        const cleanParams = new URLSearchParams(window.location.search);
+                        cleanParams.delete('share');
+                        const newSearch = cleanParams.toString();
+                        window.history.replaceState({}, document.title, window.location.pathname + (newSearch ? '?' + newSearch : ''));
+                    } catch (e) {
+                        console.error("Error importando datos:", e);
+                        showToast("Error: El enlace es inválido o está corrupto");
+                    }
+                }
+
+                // Finalización de UI
+                setTodayFilter();
+                updatePreview();
+                updateDayLabels();
+                switchView('home');
+                setInterval(updateLiveCounter, 10000);
+
             } catch (error) {
                 console.error("Error iniciando la app:", error);
-                // Si falla (ej: sin internet y sin caché), intentamos cargar al menos lo local
                 showToast("Modo Offline: Usando datos locales disponibles.");
                 const f = localStorage.getItem('macroCalculatorFoods');
+                const r = localStorage.getItem('macroCalculatorRecipes');
+                const h = localStorage.getItem('macroCalculatorData');
                 if (f) foodData = JSON.parse(f);
+                if (r) recipeData = JSON.parse(r);
+                if (h) globalLog = JSON.parse(h);
                 populateSelect();
+                populateRecipeSelect();
+                applyFilter();
+                switchView('home');
             }
         }
 
