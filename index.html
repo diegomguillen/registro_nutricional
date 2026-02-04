@@ -1043,11 +1043,21 @@
                             placeholder="0.0">
                     </div>
                 </div>
-                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c]">
-                    <label class="block text-[8px] font-black text-white uppercase mb-1">Nombre</label>
-                    <input type="text" id="ocrName"
-                        class="w-full bg-transparent font-medium text-white focus:outline-none text-sm"
-                        value="Alimento Escaneado">
+                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex items-center justify-between">
+                    <div>
+                        <label class="block text-[8px] font-black text-white uppercase mb-1">Nombre</label>
+                        <input type="text" id="ocrName"
+                            class="w-full bg-transparent font-medium text-white focus:outline-none text-sm"
+                            value="Alimento Escaneado">
+                    </div>
+                    <div class="flex flex-col items-end gap-1">
+                        <label class="block text-[8px] font-black text-white uppercase mb-1">Unidad</label>
+                        <select id="ocrUnit"
+                            class="bg-[#1c1c1e] text-white text-[10px] rounded px-2 py-1 border border-white/20">
+                            <option value="g">100g</option>
+                            <option value="u">u (ud)</option>
+                        </select>
+                    </div>
                 </div>
                 <button onclick="saveOCRResult()"
                     class="w-full bg-primary hover:bg-primary-light text-white font-medium py-3.5 rounded-xl shadow-lg active:scale-95 transition-transform flex justify-center items-center gap-2 border border-white/20">
@@ -1172,15 +1182,32 @@
                 grid.innerHTML = '<p class="col-span-3 text-center text-white italic py-4">No hay recetas guardadas.</p>';
             } else {
                 [...recipeData].sort((a, b) => a.name.localeCompare(b.name)).forEach(r => {
+                    const wrapper = document.createElement('div');
+                    wrapper.className = "relative group";
+
                     const btn = document.createElement('button');
-                    btn.className = "bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 flex flex-col items-center gap-2 text-center active:scale-95 transition-transform";
+                    btn.className = "w-full h-full flex flex-col items-center justify-center p-3 rounded-xl bg-[#2c2c2e] border border-[#3a3a3c] hover:bg-[#3a3a3c] transition-all active:scale-95 min-h-[5rem]";
                     btn.onclick = () => selectRecipeFromGrid(r.id);
                     btn.innerHTML = `
-                        <div class="w-12 h-12 rounded-full bg-[#1c1c1e] border border-[#3a3a3c] shadow-sm flex items-center justify-center text-2xl">📖</div>
-                        <span class="text-[10px] font-medium text-white leading-tight line-clamp-2">${r.name}</span>
-                        <span class="text-[9px] text-white bg-[#1c1c1e] px-1.5 rounded-full">${Math.round(r.kcal)} kcal</span>
+                        <div class="text-2xl mb-1">📖</div>
+                        <span class="text-[9px] font-medium text-white uppercase text-center leading-tight line-clamp-2">${r.name}</span>
+                        <span class="text-[8px] text-white/50 bg-black/30 px-1.5 rounded-full mt-1">${Math.round(r.kcal)} kcal</span>
                     `;
-                    grid.appendChild(btn);
+
+                    const editBtn = document.createElement('button');
+                    editBtn.className = "absolute -top-2 -left-2 z-10 w-8 h-8 bg-blue-500/20 text-blue-500 border border-blue-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
+                    editBtn.onclick = (e) => editRecipeName(e, r.id);
+                    editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
+
+                    const delBtn = document.createElement('button');
+                    delBtn.className = "absolute -top-2 -right-2 z-10 w-8 h-8 bg-red-500/20 text-red-500 border border-red-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
+                    delBtn.onclick = (e) => deleteRecipeFromGrid(e, r.id);
+                    delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+
+                    wrapper.appendChild(btn);
+                    wrapper.appendChild(editBtn);
+                    wrapper.appendChild(delBtn);
+                    grid.appendChild(wrapper);
                 });
 
                 // Completar fila (múltiplo de 3)
@@ -1413,12 +1440,18 @@
                         <span class="text-[9px] font-medium text-white uppercase text-center leading-tight line-clamp-2">${displayName}</span>
                     `;
 
+                    const editBtn = document.createElement('button');
+                    editBtn.className = "absolute -top-2 -left-2 z-10 w-8 h-8 bg-blue-500/20 text-blue-500 border border-blue-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
+                    editBtn.onclick = (e) => editWebFoodName(e, f.id);
+                    editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
+
                     const delBtn = document.createElement('button');
                     delBtn.className = "absolute -top-2 -right-2 z-10 w-8 h-8 bg-red-500/20 text-red-500 border border-red-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
                     delBtn.onclick = (e) => deleteWebFood(e, f.id);
                     delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
 
                     wrapper.appendChild(btn);
+                    wrapper.appendChild(editBtn);
                     wrapper.appendChild(delBtn);
                     grid.appendChild(wrapper);
                 });
@@ -1463,6 +1496,61 @@
             saveFoods();
             openWebFoodsGrid(); // Refrescar la vista
             showToast("Alimento eliminado correctamente");
+        }
+
+        function deleteRecipeFromGrid(e, id) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if (!confirm("¿Borrar esta receta permanentemente?")) return;
+
+            const initialCount = recipeData.length;
+            recipeData = recipeData.filter(r => r.id != id);
+
+            if (recipeData.length === initialCount) {
+                showToast("Error: Receta no encontrada.");
+                return;
+            }
+
+            saveRecipes();
+            populateRecipeSelect();
+            openRecipeGrid(); // Refrescar 
+            showToast("Receta eliminada correctamente");
+        }
+
+        function editWebFoodName(e, id) {
+            e.stopPropagation();
+            e.preventDefault();
+            const food = foodData.find(f => f.id == id);
+            if (!food) return;
+
+            const currentPlainName = food.name.replace(/^\[WEB\]\s*/, '');
+            const newName = prompt("Nuevo nombre para el alimento:", currentPlainName);
+
+            if (newName && newName.trim() && newName.trim() !== currentPlainName) {
+                food.name = `[WEB] ${newName.trim()}`;
+                saveFoods();
+                populateSelect();
+                openWebFoodsGrid();
+                showToast("Nombre actualizado");
+            }
+        }
+
+        function editRecipeName(e, id) {
+            e.stopPropagation();
+            e.preventDefault();
+            const recipe = recipeData.find(r => r.id == id);
+            if (!recipe) return;
+
+            const newName = prompt("Nuevo nombre para la receta:", recipe.name);
+
+            if (newName && newName.trim() && newName.trim() !== recipe.name) {
+                recipe.name = newName.trim();
+                saveRecipes();
+                populateRecipeSelect();
+                openRecipeGrid();
+                showToast("Nombre actualizado");
+            }
         }
 
 
@@ -1722,8 +1810,9 @@
             const c = parseFloat(document.getElementById('ocrC').value) || 0;
             const f = parseFloat(document.getElementById('ocrF').value) || 0;
             const name = document.getElementById('ocrName').value || "Escaneado";
+            const unit = document.getElementById('ocrUnit').value || "g";
 
-            selectApiItem(name, p, c, f, kcal);
+            selectApiItem(name, p, c, f, kcal, unit);
             closeOCR();
             showToast("Alimento guardado con éxito.");
         }
@@ -1787,7 +1876,8 @@
             if (sharedData) {
                 try {
                     // 1. Decodificar: Base64 -> JSON String -> Objeto
-                    const jsonString = atob(decodeURIComponent(sharedData));
+                    // Usamos una decodificación segura para UTF-8
+                    const jsonString = decodeURIComponent(atob(sharedData.replace(/ /g, '+')));
                     const payload = JSON.parse(jsonString);
 
                     // 2. Confirmar e Importar según tipo
@@ -1813,8 +1903,11 @@
                         }
                     }
 
-                    // 3. Limpiar URL para evitar reimportaciones al recargar
-                    window.history.replaceState({}, document.title, window.location.pathname);
+                    // 3. Limpiar URL para evitar reimportaciones al recargar (mantiene parámetros internos de VS Code si existen)
+                    const cleanParams = new URLSearchParams(window.location.search);
+                    cleanParams.delete('share');
+                    const newSearch = cleanParams.toString();
+                    window.history.replaceState({}, document.title, window.location.pathname + (newSearch ? '?' + newSearch : ''));
 
                 } catch (e) {
                     console.error("Error importando datos:", e);
@@ -2157,9 +2250,9 @@
             } catch (e) { console.error(e); showToast("Error al consultar."); } finally { loader.classList.add('hidden'); icon.classList.remove('hidden'); }
         }
 
-        function selectApiItem(name, p, c, f, kcal) {
+        function selectApiItem(name, p, c, f, kcal, unit = 'g') {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
-            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: 'g', icon: '🌐' });
+            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: unit, icon: '🌐' });
             populateSelect();
 
             // Forzar fecha y cantidad para items web
@@ -2219,15 +2312,17 @@
             document.getElementById('labelEnd').textContent = l(document.getElementById('filterEnd').value);
         }
         function shareWhatsapp() {
-            const url = encodeURIComponent(window.location.href);
-            const text = encodeURIComponent("¡Echa un vistazo a esta app de nutrición! 🥑📊\n");
-            window.location.href = `whatsapp://send?text=${text}${url}`;
+            const cleanUrl = window.location.origin + window.location.pathname;
+            const text = "¡Echa un vistazo a esta app de nutrición! 🥑📊\n";
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + cleanUrl)}`;
+            window.open(whatsappUrl, '_blank');
         }
-        // Función auxiliar para codificar objetos
+        // Función auxiliar para codificar objetos de forma segura con UTF-8
         function encodePayload(type, data) {
             const payload = { type: type, data: data };
-            // JSON.stringify mantiene las claves originales (no minificado)
-            return encodeURIComponent(btoa(JSON.stringify(payload)));
+            // Codificamos a URI primero para que btoa no falle con emojis/acentos, 
+            // y luego otra vez fuera para que el Base64 sea seguro en la URL
+            return encodeURIComponent(btoa(encodeURIComponent(JSON.stringify(payload))));
         }
 
         function shareSelectedFood() {
@@ -2243,15 +2338,14 @@
 
                 // Construcción del mensaje de WhatsApp
                 const text = `Te comparto este alimento: ${food.name} 🍎\n`;
-                const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(text + shareLink)}`;
+                const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + shareLink)}`;
 
-                // Validación de longitud
                 if (whatsappUrl.length > URL_LIMIT) {
                     showToast("Error: El enlace es demasiado largo para WhatsApp.");
                     return;
                 }
 
-                window.location.href = whatsappUrl;
+                window.open(whatsappUrl, '_blank');
 
             } catch (e) {
                 console.error(e);
@@ -2272,16 +2366,14 @@
 
                 // Construcción del mensaje de WhatsApp
                 const text = `Mira esta receta: ${recipe.name} 📖\n`;
-                const whatsappUrl = `whatsapp://send?text=${encodeURIComponent(text + shareLink)}`;
+                const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + shareLink)}`;
 
-                // Validación de longitud estricta
                 if (whatsappUrl.length > URL_LIMIT) {
-                    // Aviso bloqueante mediante Toast como solicitado
-                    showToast("⚠️ Receta demasiado extensa para compartir por enlace.");
-                    return; // Detiene la ejecución, no envía nada
+                    showToast("⚠️ Receta demasiado extensa para compartir.");
+                    return;
                 }
 
-                window.location.href = whatsappUrl;
+                window.open(whatsappUrl, '_blank');
 
             } catch (e) {
                 console.error(e);
