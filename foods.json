@@ -33,7 +33,7 @@
     "unit": "g",
     "fam": "LIPID",
     "sub": "NUT",
-    "icon": "🥜"
+    "icon": "🌰"
   },
   {
     "id": 5,
@@ -45,7 +45,7 @@
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "MEAT_WHITE",
-    "icon": "🍗"
+    "icon": "🐓"
   },
   {
     "id": 6,
@@ -117,7 +117,7 @@
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
-    "icon": "🍣"
+    "icon": "🐟"
   },
   {
     "id": 12,
@@ -153,7 +153,7 @@
     "unit": "g",
     "fam": "CARBS",
     "sub": "BREAD",
-    "icon": "🍞"
+    "icon": "🥖"
   },
   {
     "id": 15,
@@ -165,7 +165,7 @@
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE",
-    "icon": "🍝"
+    "icon": "🌾"
   },
   {
     "id": 16,
@@ -229,14 +229,14 @@
   },
   {
     "id": 21,
-    "name": "Grasa macro",
+    "name": "Mantecas",
     "p": 0.0,
     "c": 0.0,
     "f": 100.0,
     "kcal": 900,
     "unit": "g",
-    "fam": "PURE",
-    "sub": "P_FAT",
+    "fam": "LIPID",
+    "sub": "ANIMAL_FAT",
     "icon": "🧈"
   },
   {
@@ -467,127 +467,127 @@
     "sub": "FISH_BLUE",
     "icon": "🥫"
   },
-	{
-		"id": 42,
-		"name": "Pollo/Pavo Graso (Muslo/Ala)",
-		"p": 17.0,
-		"c": 0.0,
-		"f": 14.0,
-		"kcal": 195,
-		"unit": "g",
-		"fam": "PROTEIN",
-		"sub": "MEAT_WHITE",
-		"icon": "🍗"
- },
- {
-		"id": 43,
-		"name": "Queso Fresco (Burgos)",
-		"p": 11.0,
-		"c": 4.0,
-		"f": 14.0,
-		"kcal": 185,
-		"unit": "g",
-		"fam": "DAIRY",
-		"sub": "CHEESE",
-		"icon": "🧀"
- },
- {
-		"id": 44,
-		"name": "Leche Entera",
-		"p": 3.1,
-		"c": 4.7,
-		"f": 3.6,
-		"kcal": 64,
-		"unit": "g",
-		"fam": "DAIRY",
-		"sub": "MILK",
-		"icon": "🥛"
- },
- {
-		"id": 45,
-		"name": "Marisco Magro (Gamba/Langostino)",
-		"p": 21.0,
-		"c": 0.0,
-		"f": 1.0,
-		"kcal": 93,
-		"unit": "g",
-		"fam": "PROTEIN",
-		"sub": "FISH_WHITE",
-		"icon": "🦐"
- },
- {
-		"id": 46,
-		"name": "Cefalópodos (Calamar/Sepia/Pulpo)",
-		"p": 17.0,
-		"c": 0.5,
-		"f": 1.5,
-		"kcal": 82,
-		"unit": "g",
-		"fam": "PROTEIN",
-		"sub": "FISH_WHITE",
-		"icon": "🦑"
- },
- {
-		"id": 47,
-		"name": "Moluscos (Mejillón/Almeja)",
-		"p": 12.0,
-		"c": 3.5,
-		"f": 2.5,
-		"kcal": 85,
-		"unit": "g",
-		"fam": "PROTEIN",
-		"sub": "FISH_WHITE",
-		"icon": "🦪"
- },
- {
-		"id": 48,
-		"name": "Whey 80% Concentrado (WPC 80)",
-		"p": 80.0,
-		"c": 8.0,
-		"f": 6.0,
-		"kcal": 406,
-		"unit": "g",
-		"fam": "PURE",
-		"sub": "P_PROT",
-		"icon": "🥤"
- },
- {
-		"id": 49,
-		"name": "Whey 90% Aislado (Iso/CFM)",
-		"p": 90.0,
-		"c": 2.0,
-		"f": 1.0,
-		"kcal": 377,
-		"unit": "g",
-		"fam": "PURE",
-		"sub": "P_PROT",
-		"icon": "🥤"
- },
- {
-		"id": 50,
-		"name": "Caseína 78% Micelar",
-		"p": 78.0,
-		"c": 6.0,
-		"f": 2.0,
-		"kcal": 354,
-		"unit": "g",
-		"fam": "PURE",
-		"sub": "P_PROT",
-		"icon": "🥤"
- },
- {
-		"id": 51,
-		"name": "Whey Hidrolizado (Hydro)",
-		"p": 92.0,
-		"c": 1.0,
-		"f": 0.5,
-		"kcal": 376,
-		"unit": "g",
-		"fam": "PURE",
-		"sub": "P_PROT",
-		"icon": "🥤"
- },
- {
+  {
+    "id": 42,
+    "name": "Pollo/Pavo Graso (Muslo/Ala)",
+    "p": 17.0,
+    "c": 0.0,
+    "f": 14.0,
+    "kcal": 195,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "MEAT_WHITE",
+    "icon": "🍗"
+  },
+  {
+    "id": 43,
+    "name": "Queso Fresco (Burgos)",
+    "p": 11.0,
+    "c": 4.0,
+    "f": 14.0,
+    "kcal": 185,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "CHEESE",
+    "icon": "🧀"
+  },
+  {
+    "id": 44,
+    "name": "Leche Entera",
+    "p": 3.1,
+    "c": 4.7,
+    "f": 3.6,
+    "kcal": 64,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "MILK",
+    "icon": "🥛"
+  },
+  {
+    "id": 45,
+    "name": "Marisco Magro (Gamba/Langostino)",
+    "p": 21.0,
+    "c": 0.0,
+    "f": 1.0,
+    "kcal": 93,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "FISH_WHITE",
+    "icon": "🦐"
+  },
+  {
+    "id": 46,
+    "name": "Cefalópodos (Calamar/Sepia/Pulpo)",
+    "p": 17.0,
+    "c": 0.5,
+    "f": 1.5,
+    "kcal": 82,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "FISH_WHITE",
+    "icon": "🦑"
+  },
+  {
+    "id": 47,
+    "name": "Moluscos (Mejillón/Almeja)",
+    "p": 12.0,
+    "c": 3.5,
+    "f": 2.5,
+    "kcal": 85,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "FISH_WHITE",
+    "icon": "🦪"
+  },
+  {
+    "id": 48,
+    "name": "Whey 80% Concentrado (WPC 80)",
+    "p": 80.0,
+    "c": 8.0,
+    "f": 6.0,
+    "kcal": 406,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤"
+  },
+  {
+    "id": 49,
+    "name": "Whey 90% Aislado (Iso/CFM)",
+    "p": 90.0,
+    "c": 2.0,
+    "f": 1.0,
+    "kcal": 377,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤"
+  },
+  {
+    "id": 50,
+    "name": "Caseína 78% Micelar",
+    "p": 78.0,
+    "c": 6.0,
+    "f": 2.0,
+    "kcal": 354,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤"
+  },
+  {
+    "id": 51,
+    "name": "Whey Hidrolizado (Hydro)",
+    "p": 92.0,
+    "c": 1.0,
+    "f": 0.5,
+    "kcal": 376,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤"
+  },
+  {
     "id": 52,
     "name": "Requesón (Cottage)",
     "p": 12.0,
@@ -622,5 +622,17 @@
     "fam": "LEGUME",
     "sub": "COOKED",
     "icon": "🥫"
-  }	
+  },
+  {
+    "id": 55,
+    "name": "Patata cogelada airfryer",
+    "p": 2.7,
+    "c": 24.0,
+    "f": 5.4,
+    "kcal": 161,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "TUBER",
+    "icon": "🍟"
+  }
 ]

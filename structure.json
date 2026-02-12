@@ -84,7 +84,7 @@
     }
   },
   "LIPID": {
-    "label": "Grasas y Semillas",
+    "label": "Grasas/Frutos Secos",
     "icon": "🥑",
     "subs": {
       "OIL": {
@@ -95,6 +95,9 @@
       },
       "FRUIT_FAT": {
         "label": "Aguacate / Coco"
+      },
+      "ANIMAL_FAT": {
+        "label": "Grasa Animal"
       }
     }
   },
