@@ -289,6 +289,15 @@
                 </div>
             </div>
 
+            <!-- Cierre Retroactivo Garmin (Ayer) -->
+            <div id="yesterdayBalanceCard" class="premium-card p-4 flex justify-between items-center animate-fade-in border-l-4 border-l-primary">
+                <div>
+                    <div class="text-[10px] font-bold uppercase text-white/50 tracking-wider">Cierre Retroactivo (Ayer vs Garmin)</div>
+                    <div id="yesterdayBalanceText" class="text-xs text-white mt-0.5 font-medium">Cargando balance...</div>
+                </div>
+                <div id="yesterdayBalanceBadge"></div>
+            </div>
+
             <div class="grid grid-cols-2 gap-4">
                 <div class="premium-card p-4 flex flex-col action-card">
                     <div class="flex items-center gap-2 mb-4">
@@ -464,41 +473,71 @@
 
         <div id="view-backup" class="space-y-6 hidden animate-fade-in">
             <header>
-                <h1 class="text-2xl font-medium text-white">Datos</h1>
-                <p class="text-white text-sm">Gestiona copias de seguridad y tus objetivos</p>
+                <h1 class="text-2xl font-medium text-white">Datos & Métricas</h1>
+                <p class="text-white text-sm">Métricas deportivas Garmin y copias de seguridad</p>
             </header>
 
+            <!-- TARJETA GARMIN SPORTS MODULE -->
             <div class="premium-card p-5 space-y-4 animate-fade-in-up">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-white flex-shrink-0 text-xl">
-                        🎯
+                        ⌚
                     </div>
                     <div>
-                        <h3 class="font-medium text-white text-base">Objetivos Nutricionales</h3>
-                        <p class="text-xs text-white/60">Configura tu peso corporal y ratios (g/kg)</p>
+                        <h3 class="font-medium text-white text-base">Métricas Garmin & Nutrición FFM</h3>
+                        <p class="text-xs text-white/60">Gasto Referencia + Peso/% Grasa de Hoy</p>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-bold text-white uppercase mb-1">Peso Corporal (kg)</label>
-                        <input type="number" id="targetWeightInput" value="80" step="0.5" min="20" max="300" class="w-full text-sm p-2" oninput="onTargetsChange()">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-kcal uppercase mb-1">Gasto Garmin referencia (kcal)</label>
+                            <input type="number" id="garminKcalInput" value="2000" step="50" min="500" max="10000" class="w-full text-sm p-2" oninput="onGarminChange()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-amber-400 uppercase mb-1">Ajuste (kcal)</label>
+                            <input type="number" id="garminDeficitInput" value="0" step="25" min="-2000" max="2000" class="w-full text-sm p-2" oninput="onGarminChange()">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-prot uppercase mb-1">Proteínas (g/kg)</label>
-                        <input type="number" id="targetProtInput" value="1.96" step="0.01" min="0" class="w-full text-sm p-2" oninput="onTargetsChange()">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-white uppercase mb-1">Peso Hoy (kg)</label>
+                            <input type="number" id="garminWeightInput" value="80" step="0.5" min="20" max="300" class="w-full text-sm p-2" oninput="onGarminChange()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-white uppercase mb-1">% Grasa Hoy (%)</label>
+                            <input type="number" id="garminFatPctInput" value="15" step="0.5" min="3" max="60" class="w-full text-sm p-2" oninput="onGarminChange()">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-carb uppercase mb-1">Carbohidratos (g/kg)</label>
-                        <input type="number" id="targetCarbInput" value="3.35" step="0.01" min="0" class="w-full text-sm p-2" oninput="onTargetsChange()">
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-prot uppercase mb-1">Prot FFM (g/kg Masa Magra)</label>
+                            <input type="number" id="garminProtFFMInput" value="2.0" step="0.1" min="1.0" class="w-full text-sm p-2" oninput="onGarminChange()">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-fat uppercase mb-1">Grasa FFM (g/kg Masa Magra)</label>
+                            <input type="number" id="garminFatWeightInput" value="1.0" step="0.1" min="0.3" class="w-full text-sm p-2" oninput="onGarminChange()">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-[10px] font-bold text-fat uppercase mb-1">Grasas (g/kg)</label>
-                        <input type="number" id="targetFatInput" value="0.87" step="0.01" min="0" class="w-full text-sm p-2" oninput="onTargetsChange()">
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <button onclick="applySportsPreset()" class="w-full bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 py-2 px-2 rounded-xl text-[11px] font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5">
+                            <span>⚡</span> Preset Científico (2.4g P / 1.0g G)
+                        </button>
+                        <button onclick="applyMaxDeficit()" class="w-full bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 py-2 px-2 rounded-xl text-[11px] font-bold transition-all active:scale-95 flex items-center justify-center gap-1.5">
+                            <span>🔥</span> <span id="maxDeficitBtnText">Déficit Máximo Óptimo</span>
+                        </button>
                     </div>
-                </div>
-                <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 text-center space-y-1">
-                    <div class="text-[10px] font-bold uppercase text-white/50">Meta Diaria Calculada</div>
-                    <div id="targetSummaryText" class="text-xs text-white font-medium"></div>
+
+                    <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 text-center space-y-1">
+                        <div class="flex justify-between items-center text-[10px] uppercase font-bold text-white/60 mb-1">
+                            <span>Masa Magra (FFM): <strong id="garminFFMText" class="text-emerald-400 font-mono">68.0 kg</strong></span>
+                            <span>Carbs Restantes: <strong id="garminCarbCalcText" class="text-carb font-mono">Auto</strong></span>
+                        </div>
+                        <div id="garminTargetSummaryText" class="text-xs text-white font-medium"></div>
+                    </div>
                 </div>
             </div>
 
@@ -1301,7 +1340,7 @@
             document.getElementById('mainContainer').scrollTop = 0;
 
             if (viewName === 'history' || viewName === 'home') applyFilter();
-            if (viewName === 'backup') updateTargetsUI();
+            if (viewName === 'backup') { updateTargetsUI(); updateGarminUI(); }
             if (viewName === 'info') loadReadme();
         }
 
@@ -1604,6 +1643,231 @@
         let selectedIds = new Set();
         let html5QrcodeScanner = null;
 
+        // --- MÓDULO DEPORTIVO GARMIN ---
+        const DEFAULT_GARMIN = {
+            modeEnabled: true,
+            yesterdayKcal: 2000,
+            deficitKcal: 0,
+            weightKg: 80,
+            fatPct: 15,
+            protRatioFFM: 2.0,
+            fatRatioWeight: 1.0
+        };
+        let userGarmin = { ...DEFAULT_GARMIN };
+
+        function getGarminCalculatedTargets() {
+            const w = parseFloat(userGarmin.weightKg) || 80;
+            const fatPct = parseFloat(userGarmin.fatPct) || 15;
+            const yKcal = parseFloat(userGarmin.yesterdayKcal) || 2000;
+            const defKcal = parseFloat(userGarmin.deficitKcal) || 0;
+            const prFFM = parseFloat(userGarmin.protRatioFFM) || 2.0;
+            const frW = parseFloat(userGarmin.fatRatioWeight) || 1.0;
+
+            const ffm = w * (1 - (fatPct / 100));
+            const p = ffm * prFFM;
+            const f = ffm * frW;
+            const targetKcal = Math.max(500, yKcal + defKcal);
+
+            const protKcal = p * 4;
+            const fatKcal = f * 9;
+            const carbKcalRemaining = Math.max(0, targetKcal - (protKcal + fatKcal));
+            const c = carbKcalRemaining / 4;
+
+            return {
+                modeEnabled: true,
+                weight: w,
+                fatPct: fatPct,
+                ffm: ffm,
+                yesterdayKcal: yKcal,
+                deficitKcal: defKcal,
+                protRatioFFM: prFFM,
+                fatRatioWeight: frW,
+                p: p,
+                c: c,
+                f: f,
+                k: Math.round(targetKcal)
+            };
+        }
+
+        function saveGarmin() {
+            localStorage.setItem('macroCalculatorGarmin', JSON.stringify(userGarmin));
+        }
+
+        function loadGarmin() {
+            const raw = localStorage.getItem('macroCalculatorGarmin');
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    userGarmin = {
+                        modeEnabled: parsed.modeEnabled !== undefined ? Boolean(parsed.modeEnabled) : true,
+                        yesterdayKcal: parseFloat(parsed.yesterdayKcal) || DEFAULT_GARMIN.yesterdayKcal,
+                        weightKg: parseFloat(parsed.weightKg) || DEFAULT_GARMIN.weightKg,
+                        fatPct: parseFloat(parsed.fatPct) || DEFAULT_GARMIN.fatPct,
+                        protRatioFFM: parseFloat(parsed.protRatioFFM) || DEFAULT_GARMIN.protRatioFFM,
+                        fatRatioWeight: parseFloat(parsed.fatRatioWeight) || DEFAULT_GARMIN.fatRatioWeight,
+                        phaseAdjustment: parseFloat(parsed.phaseAdjustment) || 0
+                    };
+                } catch (e) {
+                    console.error("Error cargando Garmin:", e);
+                    userGarmin = { ...DEFAULT_GARMIN };
+                }
+            } else {
+                userGarmin = { ...DEFAULT_GARMIN };
+            }
+        }
+
+        function updateGarminUI() {
+            const kcalEl = document.getElementById('garminKcalInput');
+            const defEl = document.getElementById('garminDeficitInput');
+            const weightEl = document.getElementById('garminWeightInput');
+            const fatPctEl = document.getElementById('garminFatPctInput');
+            const protFFMEl = document.getElementById('garminProtFFMInput');
+            const fatWEl = document.getElementById('garminFatWeightInput');
+
+            if (kcalEl) kcalEl.value = userGarmin.yesterdayKcal;
+            if (defEl) defEl.value = userGarmin.deficitKcal || 0;
+            if (weightEl) weightEl.value = userGarmin.weightKg;
+            if (fatPctEl) fatPctEl.value = userGarmin.fatPct;
+            if (protFFMEl) protFFMEl.value = userGarmin.protRatioFFM;
+            if (fatWEl) fatWEl.value = userGarmin.fatRatioWeight;
+
+            renderGarminSummaryText();
+        }
+
+        function applySportsPreset() {
+            userGarmin.protRatioFFM = 2.4;
+            userGarmin.fatRatioWeight = 1.0;
+            saveGarmin();
+            updateGarminUI();
+            applyFilter();
+            showToast("Preset WOD Aplicado (2.4g Prot / 1.0g Grasa FFM)");
+        }
+
+        function applyMaxDeficit() {
+            const t = getGarminCalculatedTargets();
+            const minTargetKcal = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
+            const maxDef = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcal));
+            userGarmin.deficitKcal = -maxDef;
+            saveGarmin();
+            updateGarminUI();
+            applyFilter();
+            showToast(`Déficit Óptimo Aplicado (-${maxDef} kcal)`);
+        }
+
+        function renderGarminSummaryText() {
+            const t = getGarminCalculatedTargets();
+
+            const ffmEl = document.getElementById('garminFFMText');
+            if (ffmEl) ffmEl.textContent = `${t.ffm.toFixed(1)} kg`;
+
+            const carbTextEl = document.getElementById('garminCarbCalcText');
+            if (carbTextEl) carbTextEl.textContent = `${t.c.toFixed(1)}g`;
+
+            // Cálculo del Déficit Máximo Recomendado (manteniendo Carbs >= 2.5 g/kg FFM)
+            const minTargetKcalForSafeCarbs = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
+            const maxSafeDeficit = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcalForSafeCarbs));
+            const maxDefBtnEl = document.getElementById('maxDeficitBtnText');
+            if (maxDefBtnEl) {
+                maxDefBtnEl.textContent = `Déficit Máx Óptimo (-${maxSafeDeficit} kcal)`;
+            }
+
+            // Cálculos Fisiológicos Científicos
+            const carbRatioFFM = t.ffm > 0 ? (t.c / t.ffm) : 0;
+            const protPct = t.k > 0 ? Math.round((t.p * 4 / t.k) * 100) : 0;
+            const carbPct = t.k > 0 ? Math.round((t.c * 4 / t.k) * 100) : 0;
+            const fatPct = t.k > 0 ? Math.round((t.f * 9 / t.k) * 100) : 0;
+
+            let statusBadge = '';
+            const isOptimal = (t.protRatioFFM >= 2.3 && t.protRatioFFM <= 2.6 && t.fatRatioWeight >= 0.9 && t.fatRatioWeight <= 1.1 && carbRatioFFM >= 2.5 && carbRatioFFM <= 3.5);
+            if (isOptimal) {
+                statusBadge = `<div class="mt-2 text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md font-bold">🟢 Rango Óptimo Deportivo (Definición & WODs)</div>`;
+            }
+
+            let carbWarning = '';
+            if (carbRatioFFM < 2.5) {
+                carbWarning = `<div class="mt-2 text-[10px] bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-1 rounded-md font-medium">⚠️ Carbohidratos Bajos (${carbRatioFFM.toFixed(1)} g/kg FFM): Riesgo de vaciado de glucógeno en WODs</div>`;
+            }
+
+            const el = document.getElementById('garminTargetSummaryText');
+            if (el) {
+                let deficitInfo = t.deficitKcal !== 0 ? ` &bull; Ajuste: <strong class="${t.deficitKcal < 0 ? 'text-emerald-400' : 'text-amber-400'}">${t.deficitKcal > 0 ? '+' : ''}${t.deficitKcal} kcal</strong>` : '';
+                el.innerHTML = `
+                    <div class="grid grid-cols-4 gap-1 text-[11px] font-mono mt-1">
+                        <span class="text-prot font-bold">P: ${t.p.toFixed(1)}g</span>
+                        <span class="text-carb font-bold">C: ${t.c.toFixed(1)}g</span>
+                        <span class="text-fat font-bold">G: ${t.f.toFixed(1)}g</span>
+                        <span class="text-kcal font-bold">${t.k} kcal</span>
+                    </div>
+                    <div class="mt-1.5 text-[10px] text-white/60 font-mono">
+                        Distribución: <strong class="text-prot">${protPct}% P</strong> &bull; <strong class="text-carb">${carbPct}% C</strong> &bull; <strong class="text-fat">${fatPct}% G</strong> ${deficitInfo}
+                    </div>
+                    ${statusBadge}
+                    ${carbWarning}
+                `;
+            }
+        }
+
+        function onGarminToggleChange(el) {
+            userGarmin.modeEnabled = el.checked;
+            saveGarmin();
+            updateGarminUI();
+            applyFilter();
+        }
+
+        function onGarminChange() {
+            const kcalVal = parseFloat(document.getElementById('garminKcalInput').value);
+            const defVal = parseFloat(document.getElementById('garminDeficitInput').value);
+            const weightVal = parseFloat(document.getElementById('garminWeightInput').value);
+            const fatPctVal = parseFloat(document.getElementById('garminFatPctInput').value);
+            const protFFMVal = parseFloat(document.getElementById('garminProtFFMInput').value);
+            const fatWVal = parseFloat(document.getElementById('garminFatWeightInput').value);
+
+            userGarmin.yesterdayKcal = isNaN(kcalVal) ? 2000 : kcalVal;
+            userGarmin.deficitKcal = isNaN(defVal) ? 0 : defVal;
+            userGarmin.weightKg = isNaN(weightVal) ? 80 : weightVal;
+            userGarmin.fatPct = isNaN(fatPctVal) ? 15 : fatPctVal;
+            userGarmin.protRatioFFM = isNaN(protFFMVal) ? 2.0 : protFFMVal;
+            userGarmin.fatRatioWeight = isNaN(fatWVal) ? 1.0 : fatWVal;
+
+            saveGarmin();
+            renderGarminSummaryText();
+            applyFilter();
+        }
+
+        function updateYesterdayBalanceCard() {
+            const card = document.getElementById('yesterdayBalanceCard');
+            if (!card) return;
+
+            const yesterdayDate = new Date();
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+            const yesterdayStr = yesterdayDate.toISOString().split('T')[0];
+
+            const yesterdayLogs = globalLog.filter(l => l.date === yesterdayStr);
+            let eatenKcal = 0;
+            yesterdayLogs.forEach(l => eatenKcal += l.kcal);
+
+            const garminKcal = parseFloat(userGarmin.yesterdayKcal) || 2800;
+            const diff = eatenKcal - garminKcal;
+            const absDiff = Math.abs(diff).toFixed(0);
+
+            const textEl = document.getElementById('yesterdayBalanceText');
+            const badgeEl = document.getElementById('yesterdayBalanceBadge');
+
+            if (textEl) {
+                textEl.innerHTML = `Ingesta: <strong>${eatenKcal} kcal</strong> &bull; Garmin: <strong>${garminKcal} kcal</strong>`;
+            }
+
+            if (badgeEl) {
+                if (Math.abs(diff) < 25) {
+                    badgeEl.innerHTML = `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md font-bold">⚖️ Balance 0 kcal</span>`;
+                } else if (diff < 0) {
+                    badgeEl.innerHTML = `<span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md font-bold">🔥 Déficit Real: -${absDiff} kcal</span>`;
+                } else {
+                    badgeEl.innerHTML = `<span class="text-xs bg-amber-500/20 text-amber-400 px-2.5 py-1 rounded-md font-bold">💪 Superávit Real: +${absDiff} kcal</span>`;
+                }
+            }
+        }
+
         // --- SISTEMA DE OBJETIVOS NUTRICIONALES ---
         const DEFAULT_TARGETS = {
             weightKg: 80,
@@ -1614,6 +1878,9 @@
         let userTargets = { ...DEFAULT_TARGETS };
 
         function getTargetMacros() {
+            if (userGarmin && userGarmin.modeEnabled) {
+                return getGarminCalculatedTargets();
+            }
             const w = parseFloat(userTargets.weightKg) || 80;
             const pr = parseFloat(userTargets.protRatio) || 1.96;
             const cr = parseFloat(userTargets.carbRatio) || 3.35;
@@ -2711,11 +2978,12 @@
         }
 
         function resetApp() {
-            if (confirm('¿FACTORY RESET (Historial, Alimentos, Recetas y Objetivos)?')) {
+            if (confirm('¿FACTORY RESET (Historial, Alimentos, Recetas, Objetivos y Garmin)?')) {
                 localStorage.removeItem('macroCalculatorData');
                 localStorage.removeItem('macroCalculatorFoods');
                 localStorage.removeItem('macroCalculatorRecipes');
                 localStorage.removeItem('macroCalculatorTargets');
+                localStorage.removeItem('macroCalculatorGarmin');
                 window.location.reload();
             }
         }
@@ -2785,7 +3053,9 @@
 
                 foodData = [...remoteFoods, ...userCustomFoods];
 
-                // 4. Cargamos los objetivos del usuario
+                // 4. Cargamos los objetivos y Garmin del usuario
+                loadGarmin();
+                updateGarminUI();
                 loadTargets();
                 updateTargetsUI();
 
@@ -2868,12 +3138,13 @@
             if (!globalLog.length && foodData.length <= 29 && recipeData.length === 0) return showToast("Sin datos para exportar.");
 
             const backupObject = {
-                version: 3,
+                version: 4,
                 timestamp: new Date().toISOString(),
                 history: globalLog,
                 foods: foodData,
                 recipes: recipeData,
-                targets: userTargets
+                targets: userTargets,
+                garmin: userGarmin
             };
 
             const f = new File([JSON.stringify(backupObject, null, 2)], `backup_nutri_${new Date().toISOString().split('T')[0]}.json`, { type: "application/json" });
@@ -2916,11 +3187,16 @@
                                 saveRecipes();
                             }
 
-                            // 4. RESTAURAR OBJETIVOS
+                            // 4. RESTAURAR OBJETIVOS Y GARMIN
                             if (d.targets) {
                                 userTargets = { ...DEFAULT_TARGETS, ...d.targets };
                                 saveTargets();
                                 updateTargetsUI();
+                            }
+                            if (d.garmin) {
+                                userGarmin = { ...DEFAULT_GARMIN, ...d.garmin };
+                                saveGarmin();
+                                updateGarminUI();
                             }
 
                             // 4. REINICIAR LA APP (FUSIÓN)
@@ -3043,7 +3319,7 @@
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = globalLog.sort((a, b) => b.id - a.id);
             if (s && e) f = f.filter(i => i.date >= s && i.date <= e);
-            selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f);
+            selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard();
         }
         function renderTable(items) {
             const tb = document.getElementById('foodTableBody'); tb.innerHTML = '';
