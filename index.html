@@ -465,8 +465,42 @@
         <div id="view-backup" class="space-y-6 hidden animate-fade-in">
             <header>
                 <h1 class="text-2xl font-medium text-white">Datos</h1>
-                <p class="text-white text-sm">Gestiona copias de seguridad</p>
+                <p class="text-white text-sm">Gestiona copias de seguridad y tus objetivos</p>
             </header>
+
+            <div class="premium-card p-5 space-y-4 animate-fade-in-up">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-white flex-shrink-0 text-xl">
+                        🎯
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-white text-base">Objetivos Nutricionales</h3>
+                        <p class="text-xs text-white/60">Configura tu peso corporal y ratios (g/kg)</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-white uppercase mb-1">Peso Corporal (kg)</label>
+                        <input type="number" id="targetWeightInput" value="80" step="0.5" min="20" max="300" class="w-full text-sm p-2" oninput="onTargetsChange()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-prot uppercase mb-1">Proteínas (g/kg)</label>
+                        <input type="number" id="targetProtInput" value="1.96" step="0.01" min="0" class="w-full text-sm p-2" oninput="onTargetsChange()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-carb uppercase mb-1">Carbohidratos (g/kg)</label>
+                        <input type="number" id="targetCarbInput" value="3.35" step="0.01" min="0" class="w-full text-sm p-2" oninput="onTargetsChange()">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-fat uppercase mb-1">Grasas (g/kg)</label>
+                        <input type="number" id="targetFatInput" value="0.87" step="0.01" min="0" class="w-full text-sm p-2" oninput="onTargetsChange()">
+                    </div>
+                </div>
+                <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 text-center space-y-1">
+                    <div class="text-[10px] font-bold uppercase text-white/50">Meta Diaria Calculada</div>
+                    <div id="targetSummaryText" class="text-xs text-white font-medium"></div>
+                </div>
+            </div>
 
             <div class="space-y-4">
                 <div onclick="exportData()"
@@ -868,6 +902,7 @@
                         <div class="text-sm font-medium text-white mt-1"><span id="modalKcal">0</span></div>
                     </div>
                 </div>
+                <div id="modalTargetDiff" class="mb-4"></div>
                 <div class="h-40 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
                 <div class="border-t border-[#2c2c2e] pt-4">
                     <h4 class="text-xs font-medium text-white uppercase mb-2">Elementos (Desglose)</h4>
@@ -1266,6 +1301,7 @@
             document.getElementById('mainContainer').scrollTop = 0;
 
             if (viewName === 'history' || viewName === 'home') applyFilter();
+            if (viewName === 'backup') updateTargetsUI();
             if (viewName === 'info') loadReadme();
         }
 
@@ -1567,6 +1603,112 @@
         let modalChartInstance = null;
         let selectedIds = new Set();
         let html5QrcodeScanner = null;
+
+        // --- SISTEMA DE OBJETIVOS NUTRICIONALES ---
+        const DEFAULT_TARGETS = {
+            weightKg: 80,
+            protRatio: 1.96,
+            carbRatio: 3.35,
+            fatRatio: 0.87
+        };
+        let userTargets = { ...DEFAULT_TARGETS };
+
+        function getTargetMacros() {
+            const w = parseFloat(userTargets.weightKg) || 80;
+            const pr = parseFloat(userTargets.protRatio) || 1.96;
+            const cr = parseFloat(userTargets.carbRatio) || 3.35;
+            const fr = parseFloat(userTargets.fatRatio) || 0.87;
+
+            const p = w * pr;
+            const c = w * cr;
+            const f = w * fr;
+            const k = (p * 4) + (c * 4) + (f * 9);
+
+            return { weight: w, protRatio: pr, carbRatio: cr, fatRatio: fr, p, c, f, k: Math.round(k) };
+        }
+
+        function saveTargets() {
+            localStorage.setItem('macroCalculatorTargets', JSON.stringify(userTargets));
+        }
+
+        function loadTargets() {
+            const raw = localStorage.getItem('macroCalculatorTargets');
+            if (raw) {
+                try {
+                    const parsed = JSON.parse(raw);
+                    userTargets = {
+                        weightKg: parseFloat(parsed.weightKg) || DEFAULT_TARGETS.weightKg,
+                        protRatio: parseFloat(parsed.protRatio) || DEFAULT_TARGETS.protRatio,
+                        carbRatio: parseFloat(parsed.carbRatio) || DEFAULT_TARGETS.carbRatio,
+                        fatRatio: parseFloat(parsed.fatRatio) || DEFAULT_TARGETS.fatRatio
+                    };
+                } catch (e) {
+                    console.error("Error cargando targets:", e);
+                    userTargets = { ...DEFAULT_TARGETS };
+                }
+            } else {
+                userTargets = { ...DEFAULT_TARGETS };
+            }
+        }
+
+        function updateTargetsUI() {
+            const weightEl = document.getElementById('targetWeightInput');
+            const protEl = document.getElementById('targetProtInput');
+            const carbEl = document.getElementById('targetCarbInput');
+            const fatEl = document.getElementById('targetFatInput');
+
+            if (weightEl) weightEl.value = userTargets.weightKg;
+            if (protEl) protEl.value = userTargets.protRatio;
+            if (carbEl) carbEl.value = userTargets.carbRatio;
+            if (fatEl) fatEl.value = userTargets.fatRatio;
+
+            renderTargetSummaryText();
+        }
+
+        function renderTargetSummaryText() {
+            const t = getTargetMacros();
+            const el = document.getElementById('targetSummaryText');
+            if (el) {
+                el.innerHTML = `
+                    <div class="grid grid-cols-4 gap-1 text-[11px] font-mono mt-1">
+                        <span class="text-prot font-bold">P: ${t.p.toFixed(1)}g</span>
+                        <span class="text-carb font-bold">C: ${t.c.toFixed(1)}g</span>
+                        <span class="text-fat font-bold">G: ${t.f.toFixed(1)}g</span>
+                        <span class="text-kcal font-bold">${t.k} kcal</span>
+                    </div>
+                `;
+            }
+        }
+
+        function onTargetsChange() {
+            const weightVal = parseFloat(document.getElementById('targetWeightInput').value);
+            const protVal = parseFloat(document.getElementById('targetProtInput').value);
+            const carbVal = parseFloat(document.getElementById('targetCarbInput').value);
+            const fatVal = parseFloat(document.getElementById('targetFatInput').value);
+
+            userTargets.weightKg = isNaN(weightVal) ? 80 : weightVal;
+            userTargets.protRatio = isNaN(protVal) ? 1.96 : protVal;
+            userTargets.carbRatio = isNaN(carbVal) ? 3.35 : carbVal;
+            userTargets.fatRatio = isNaN(fatVal) ? 0.87 : fatVal;
+
+            saveTargets();
+            renderTargetSummaryText();
+            applyFilter();
+        }
+
+        function formatDiffBadge(current, target, isKcal = false) {
+            const diff = current - target;
+            const absDiff = Math.abs(diff).toFixed(isKcal ? 0 : 1).replace('.0', '');
+            const unit = isKcal ? 'kcal' : 'g';
+
+            if (Math.abs(diff) < 0.5) {
+                return `<span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold">✓ Meta</span>`;
+            } else if (diff < 0) {
+                return `<span class="text-[9px] bg-white/10 text-white/80 px-1.5 py-0.5 rounded font-medium">Faltan ${absDiff}${unit}</span>`;
+            } else {
+                return `<span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-bold">+${absDiff}${unit} Exceso</span>`;
+            }
+        }
 
         // --- SISTEMA OCR ---
         let ocrStream = null;
@@ -2571,10 +2713,11 @@
         }
 
         function resetApp() {
-            if (confirm('¿FACTORY RESET (Historial, Alimentos y Recetas)?')) {
+            if (confirm('¿FACTORY RESET (Historial, Alimentos, Recetas y Objetivos)?')) {
                 localStorage.removeItem('macroCalculatorData');
                 localStorage.removeItem('macroCalculatorFoods');
                 localStorage.removeItem('macroCalculatorRecipes');
+                localStorage.removeItem('macroCalculatorTargets');
                 window.location.reload();
             }
         }
@@ -2644,7 +2787,11 @@
 
                 foodData = [...remoteFoods, ...userCustomFoods];
 
-                // 4. Arrancamos la interfaz
+                // 4. Cargamos los objetivos del usuario
+                loadTargets();
+                updateTargetsUI();
+
+                // 5. Arrancamos la interfaz
                 initDateInputs();
                 populateSelect();
                 populateRecipeSelect();
@@ -2727,7 +2874,8 @@
                 timestamp: new Date().toISOString(),
                 history: globalLog,
                 foods: foodData,
-                recipes: recipeData
+                recipes: recipeData,
+                targets: userTargets
             };
 
             const f = new File([JSON.stringify(backupObject, null, 2)], `backup_nutri_${new Date().toISOString().split('T')[0]}.json`, { type: "application/json" });
@@ -2768,6 +2916,13 @@
                             if (d.recipes) {
                                 recipeData = d.recipes;
                                 saveRecipes();
+                            }
+
+                            // 4. RESTAURAR OBJETIVOS
+                            if (d.targets) {
+                                userTargets = { ...DEFAULT_TARGETS, ...d.targets };
+                                saveTargets();
+                                updateTargetsUI();
                             }
 
                             // 4. REINICIAR LA APP (FUSIÓN)
@@ -2827,6 +2982,35 @@
             document.getElementById('modalC').textContent = c.toFixed(1);
             document.getElementById('modalF').textContent = f.toFixed(1);
             document.getElementById('modalKcal').textContent = k;
+
+            // Diferencia con Objetivos Diarios
+            const targets = getTargetMacros();
+            const targetDiffContainer = document.getElementById('modalTargetDiff');
+            if (targetDiffContainer) {
+                targetDiffContainer.innerHTML = `
+                    <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 mb-2">
+                        <div class="text-[10px] font-bold text-white uppercase tracking-wider mb-2 text-center opacity-70">Aporte y Diferencia vs Objetivo Diario (${targets.weight} kg)</div>
+                        <div class="grid grid-cols-4 gap-1 text-center text-xs">
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] text-prot font-bold">PROT</span>
+                                ${formatDiffBadge(p, targets.p)}
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] text-carb font-bold">CARB</span>
+                                ${formatDiffBadge(c, targets.c)}
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] text-fat font-bold">GRAS</span>
+                                ${formatDiffBadge(f, targets.f)}
+                            </div>
+                            <div class="flex flex-col items-center">
+                                <span class="text-[10px] text-kcal font-bold">KCAL</span>
+                                ${formatDiffBadge(k, targets.k, true)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
             const ctx = document.getElementById('modalChart').getContext('2d');
             if (modalChartInstance) modalChartInstance.destroy();
             const hasD = (p + c + f) > 0;
@@ -2884,11 +3068,25 @@
         }
         function calcTotals(items) {
             let p = 0, c = 0, f = 0, k = 0; items.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
+            const targets = getTargetMacros();
+
             if (document.getElementById('homeProt')) {
-                document.getElementById('homeProt').textContent = p.toFixed(0) + 'g';
-                document.getElementById('homeCarbs').textContent = c.toFixed(0) + 'g';
-                document.getElementById('homeFats').textContent = f.toFixed(0) + 'g';
-                document.getElementById('homeKcal').textContent = k;
+                document.getElementById('homeProt').innerHTML = `
+                    <div class="text-xs font-medium text-white">${p.toFixed(0)} <span class="text-[9px] text-white/40">/ ${targets.p.toFixed(0)}g</span></div>
+                    <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                `;
+                document.getElementById('homeCarbs').innerHTML = `
+                    <div class="text-xs font-medium text-white">${c.toFixed(0)} <span class="text-[9px] text-white/40">/ ${targets.c.toFixed(0)}g</span></div>
+                    <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
+                `;
+                document.getElementById('homeFats').innerHTML = `
+                    <div class="text-xs font-medium text-white">${f.toFixed(0)} <span class="text-[9px] text-white/40">/ ${targets.f.toFixed(0)}g</span></div>
+                    <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
+                `;
+                document.getElementById('homeKcal').innerHTML = `
+                    <div class="text-xs font-medium text-white">${k} <span class="text-[9px] text-white/40">/ ${targets.k}</span></div>
+                    <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                `;
             }
             if (document.getElementById('footKcal')) {
                 document.getElementById('footKcal').innerHTML = `${k} <span class="text-xs font-normal text-white">kcal</span>`;
