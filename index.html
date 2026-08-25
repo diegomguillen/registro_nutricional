@@ -468,6 +468,19 @@
                         <canvas id="chartDeficitFFM"></canvas>
                     </div>
                 </div>
+
+                <!-- Tarjeta 5: Impacto de la Actividad -->
+                <div class="premium-card p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider">IMPACTO ACTIVIDAD</h4>
+                        <button onclick="openChartHelpModal('actImpactHelp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                            ❓
+                        </button>
+                    </div>
+                    <div class="h-44 w-full relative">
+                        <canvas id="chartActivityImpact"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -566,6 +579,22 @@
                             <span id="garminKcalVal" class="text-xs font-mono font-bold text-kcal">2000 kcal</span>
                         </div>
                         <input type="range" id="garminKcalInput" value="2000" step="50" min="1000" max="4000" class="w-full accent-[#0a84ff] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
+                    </div>
+
+                    <!-- Slider de 3 posiciones para Actividad del Día Anterior -->
+                    <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#1c1c1e] border border-[#2c2c2e] p-3 rounded-xl space-y-2 mb-1">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-[10px] font-bold text-purple-400 uppercase tracking-wider">🏃 Actividad del Día Anterior (Ayer)</label>
+                            <span id="garminActivityVal" class="text-xs font-mono font-bold text-purple-300">🛋️ Descanso</span>
+                        </div>
+                        <input type="range" id="garminActivitySlider" value="0" min="0" max="2" step="1" 
+                            class="w-full accent-purple-500 cursor-pointer h-2.5 bg-[#2c2c2e] rounded-lg appearance-none border border-[#3a3a3c]" 
+                            oninput="onActivitySliderChange(this.value)">
+                        <div class="flex justify-between text-[10px] text-white/60 px-1 font-medium select-none">
+                            <span class="cursor-pointer hover:text-white" onclick="setActivityType('rest')">🛋️ Descanso</span>
+                            <span class="cursor-pointer hover:text-white text-center" onclick="setActivityType('wod')">🏋️ WOD</span>
+                            <span class="cursor-pointer hover:text-white text-right" onclick="setActivityType('mtb')">🚴 MTB</span>
+                        </div>
                     </div>
 
                     <div class="flex flex-col justify-end">
@@ -707,13 +736,14 @@
                         <div class="overflow-x-auto max-h-72 overflow-y-auto pr-1">
                             <table class="w-full text-left border-collapse">
                                 <thead class="sticky top-0 bg-[#1c1c1e] z-10">
-                                    <tr class="text-[10px] uppercase font-bold text-white/50 border-b border-[#3a3a3c]">
+                                    <tr class="text-[9px] uppercase font-bold text-white/50 border-b border-[#3a3a3c]">
                                         <th class="py-2 px-1">Fecha</th>
-                                        <th class="py-2 px-1 text-center">Peso(kg)</th>
-                                        <th class="py-2 px-1 text-center">% Grasa</th>
-                                        <th class="py-2 px-1 text-center">Músculo(kg)</th>
-                                        <th class="py-2 px-1 text-center">% Agua</th>
-                                        <th class="py-2 px-1 text-right">Acción</th>
+                                        <th class="py-2 px-0.5 text-center">Training</th>
+                                        <th class="py-2 px-0.5 text-center">Peso</th>
+                                        <th class="py-2 px-0.5 text-center">% Gras</th>
+                                        <th class="py-2 px-0.5 text-center">Músc.</th>
+                                        <th class="py-2 px-0.5 text-center">% Agua</th>
+                                        <th class="py-2 px-1 text-right">Acc.</th>
                                     </tr>
                                 </thead>
                                 <tbody id="bodyCompTableBody" class="text-xs divide-y divide-[#2c2c2e]">
@@ -1897,15 +1927,16 @@
             protRatioFFM: 2.0,
             fatRatioWeight: 1.0,
             isFFMNutritionActive: false,
-            isMaxDeficitActive: false
+            isMaxDeficitActive: false,
+            activityType: 'rest'
         };
         let userGarmin = { ...DEFAULT_GARMIN };
         let bodyCompLog = [];
         let bodyCompTimeframe = 'all';
-        let chartInstanceBodyComp = null;
         let chartInstanceProtFFM = null;
         let chartInstanceCarbWater = null;
         let chartInstanceDeficitFFM = null;
+        let chartInstanceActivityImpact = null;
 
         function getGarminCalculatedTargets() {
             const w = parseFloat(userGarmin.weightKg) || 80;
@@ -1966,7 +1997,8 @@
                         protRatioFFM: parseFloat(parsed.protRatioFFM) || DEFAULT_GARMIN.protRatioFFM,
                         fatRatioWeight: parseFloat(parsed.fatRatioWeight) || DEFAULT_GARMIN.fatRatioWeight,
                         isFFMNutritionActive: Boolean(parsed.isFFMNutritionActive),
-                        isMaxDeficitActive: Boolean(parsed.isMaxDeficitActive)
+                        isMaxDeficitActive: Boolean(parsed.isMaxDeficitActive),
+                        activityType: parsed.activityType || 'rest'
                     };
                 } catch (e) {
                     console.error("Error cargando Garmin:", e);
@@ -1996,15 +2028,52 @@
             localStorage.setItem('macroCalculatorBodyCompLog', JSON.stringify(bodyCompLog));
         }
 
+        function onActivitySliderChange(val) {
+            const num = parseInt(val, 10);
+            let type = 'rest';
+            if (num === 1) type = 'wod';
+            else if (num === 2) type = 'mtb';
+
+            userGarmin.activityType = type;
+            saveGarmin();
+            updateActivityTypeButtonsUI();
+        }
+
+        function setActivityType(type) {
+            userGarmin.activityType = type;
+            saveGarmin();
+            updateActivityTypeButtonsUI();
+        }
+
+        function updateActivityTypeButtonsUI() {
+            const current = userGarmin.activityType || 'rest';
+            const slider = document.getElementById('garminActivitySlider');
+            const label = document.getElementById('garminActivityVal');
+
+            let num = 0;
+            let labelText = "🛋️ Descanso";
+            if (current === 'wod') {
+                num = 1;
+                labelText = "🏋️ WOD";
+            } else if (current === 'mtb') {
+                num = 2;
+                labelText = "🚴 MTB";
+            }
+
+            if (slider && parseInt(slider.value, 10) !== num) slider.value = num;
+            if (label) label.textContent = labelText;
+        }
+
         function saveBodyCompMeasurement(silent = false) {
             const todayStr = new Date().toISOString().split('T')[0];
             const weight = parseFloat(userGarmin.weightKg) || 80;
             const fatPct = parseFloat(userGarmin.fatPct) || 15;
             const ffmKg = parseFloat(userGarmin.ffmKg) || 68;
             const waterPct = parseFloat(userGarmin.waterPct) || 58.5;
+            const activityType = userGarmin.activityType || 'rest';
 
             const existingIdx = bodyCompLog.findIndex(e => e.date === todayStr);
-            const entry = { id: Date.now(), date: todayStr, weight, fatPct, ffmKg, waterPct };
+            const entry = { id: Date.now(), date: todayStr, weight, fatPct, ffmKg, waterPct, activityType };
 
             if (existingIdx >= 0) {
                 bodyCompLog[existingIdx] = entry;
@@ -2067,7 +2136,7 @@
             }
 
             if (!bodyCompLog || bodyCompLog.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="6" class="py-4 text-center text-white/40 italic">No hay mediciones guardadas.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="7" class="py-4 text-center text-white/40 italic">No hay mediciones guardadas.</td></tr>';
                 return;
             }
 
@@ -2075,18 +2144,26 @@
 
             sorted.forEach(item => {
                 const shortDate = item.date && item.date.length >= 10 ? item.date.slice(2) : item.date;
+                let actBadge = '<span class="text-[9px] text-gray-300 font-sans px-1 py-0.5 rounded bg-gray-500/20 border border-gray-500/30 font-bold inline-block" title="Descanso">🛋️ D</span>';
+                if (item.activityType === 'wod') {
+                    actBadge = '<span class="text-[9px] text-purple-300 font-sans px-1 py-0.5 rounded bg-purple-500/20 border border-purple-500/30 font-bold inline-block" title="WOD">🏋️ W</span>';
+                } else if (item.activityType === 'mtb') {
+                    actBadge = '<span class="text-[9px] text-cyan-300 font-sans px-1 py-0.5 rounded bg-cyan-500/20 border border-cyan-500/30 font-bold inline-block" title="MTB">🚴 M</span>';
+                }
+
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-[#3a3a3c]/50 transition-colors cursor-pointer";
                 tr.onclick = () => editBodyCompEntry(item.date);
                 tr.innerHTML = `
-                    <td class="py-2.5 px-1 font-mono font-medium text-white text-xs whitespace-nowrap">${shortDate}</td>
-                    <td class="py-2.5 px-1 text-center text-white/90 font-mono">${item.weight}</td>
-                    <td class="py-2.5 px-1 text-center text-red-400 font-mono">${item.fatPct}</td>
-                    <td class="py-2.5 px-1 text-center text-emerald-400 font-mono">${item.ffmKg}</td>
-                    <td class="py-2.5 px-1 text-center text-cyan-400 font-mono">${item.waterPct}</td>
-                    <td class="py-2.5 px-1 text-right">
+                    <td class="py-2 px-0.5 font-mono font-medium text-white text-[11px] whitespace-nowrap">${shortDate}</td>
+                    <td class="py-2 px-0.5 text-center whitespace-nowrap">${actBadge}</td>
+                    <td class="py-2 px-0.5 text-center text-white/90 font-mono text-xs">${item.weight}</td>
+                    <td class="py-2 px-0.5 text-center text-red-400 font-mono text-xs">${item.fatPct}</td>
+                    <td class="py-2 px-0.5 text-center text-emerald-400 font-mono text-xs">${item.ffmKg}</td>
+                    <td class="py-2 px-0.5 text-center text-cyan-400 font-mono text-xs">${item.waterPct}</td>
+                    <td class="py-2 px-0.5 text-right">
                         <div class="flex items-center justify-end gap-1">
-                            <button onclick="event.stopPropagation(); deleteBodyCompEntry('${item.date}')" class="p-1.5 rounded bg-red-500/20 text-red-400 hover:bg-red-500/40 active:scale-95 transition-all text-xs" title="Eliminar">
+                            <button onclick="event.stopPropagation(); deleteBodyCompEntry('${item.date}')" class="p-1 rounded bg-red-500/20 text-red-400 hover:bg-red-500/40 active:scale-95 transition-all text-xs" title="Eliminar">
                                 🗑️
                             </button>
                         </div>
@@ -2208,6 +2285,7 @@
             if (fatWEl) fatWEl.value = userGarmin.fatRatioWeight;
 
             updateGarminValueLabels();
+            updateActivityTypeButtonsUI();
             renderGarminSummaryText();
             renderBodyCompTable();
             updateBodyCompCharts();
@@ -2245,6 +2323,14 @@
                 purpose: "Evalúa cómo afecta el déficit o superávit calórico real diario (Ingesta Real - Gasto Referencia) a la conservación o pérdida de masa magra muscular.",
                 howTo: "• Déficit Real (Naranja/Rojo): Balance calórico diario (Kcal ingesta menos Gasto Referencia). Valores negativos representan déficit.\n• Masa Magra (Verde): Registro de masa libre de grasa en kg.\n• Indicador r (Déficit vs Músculo): 🔴 r negativo fuerte (ej. r = -0.70) alerta de que a mayor déficit mayor pérdida muscular. 🟢 r cercano a 0 o positivo indica buena conservación muscular.",
                 conclusiones: "✔ Déficit Sostenible: Un déficit calórico moderado manteniendo suficiente proteína preserva la masa magra.\n⚠️ Riesgo Catabólico: Si el circulito marca r en rojo, tu déficit está destruyendo masa magra; conviene elevar calorías o subir la proteína."
+            },
+            actImpactHelp: {
+                icon: "🏃",
+                title: "Impacto del Entrenamiento Anterior (Ayer -> Hoy)",
+                subtitle: "Efecto de WOD, MTB o Descanso sobre tu Masa Magra a la mañana siguiente",
+                purpose: "Demuestra la correlación directa entre el tipo de entrenamiento realizado y los cambios/conservación de Masa Magra a lo largo del tiempo.",
+                howTo: "• 🏋️ WOD (CrossFit): Provoca respuesta de reparación e hipertrofia/inflamación (subida de FFM muscular).\n• 🚴 MTB (Resistencia): Sesiones largas vacían glucógeno y pueden catabolizar si no se reponen hidratos.\n• 🛋️ Descanso: Refleja tu estado muscular basal y súper-compensación libre de inflamación agudas.\n• Indicador r (Actividad vs Masa Magra): 🟢 r ≥ +0.60 (Fuerte) confirma que la frecuencia de tus entrenamientos de alta intensidad (WOD) impulsa directamente tu masa muscular.",
+                conclusiones: "✔ Indicador r: Un valor positivo verde confirma que el entrenamiento de fuerza/WOD está protegiendo o ganando masa magra a lo largo de las semanas.\n✔ Contexto inmediato: Te indica si las salidas de MTB están afectando tu masa magra si no compensas con suficiente nutrición.\n✔ Estrategia nutricional: Te permite ajustar carbohidratos tras MTB y proteína tras WOD."
             },
             ocrHelp: {
                 icon: "📷",
@@ -2893,6 +2979,79 @@
                 }
             });
 
+            // 4. Gráfico Impacto Actividad: Correlación de Pearson por disciplina contra Masa Magra
+            const ctxAct = document.getElementById('chartActivityImpact');
+            if (ctxAct) {
+                if (chartInstanceActivityImpact) chartInstanceActivityImpact.destroy();
+
+                const ffmSeries = sortedLogs.map(l => l.ffmKg);
+                const isWod = sortedLogs.map(l => l.activityType === 'wod' ? 1 : 0);
+                const isMtb = sortedLogs.map(l => l.activityType === 'mtb' ? 1 : 0);
+                const isRest = sortedLogs.map(l => (!l.activityType || l.activityType === 'rest') ? 1 : 0);
+
+                const rWod = calculatePearsonR(isWod, ffmSeries);
+                const rMtb = calculatePearsonR(isMtb, ffmSeries);
+                const rRest = calculatePearsonR(isRest, ffmSeries);
+
+                const getBarColor = (rVal) => {
+                    if (rVal === null || rVal === undefined || isNaN(rVal)) return 'rgba(142, 142, 147, 0.6)';
+                    if (rVal >= 0.3) return 'rgba(52, 199, 89, 0.85)';
+                    if (rVal <= -0.3) return 'rgba(255, 69, 58, 0.85)';
+                    return 'rgba(255, 214, 10, 0.85)';
+                };
+
+                const valWod = rWod !== null ? rWod : 0;
+                const valMtb = rMtb !== null ? rMtb : 0;
+                const valRest = rRest !== null ? rRest : 0;
+
+                chartInstanceActivityImpact = new Chart(ctxAct, {
+                    type: 'bar',
+                    data: {
+                        labels: ['🏋️ WOD', '🚴 MTB', '🛋️ Descanso'],
+                        datasets: [
+                            {
+                                label: 'Correlación con Masa Magra (r)',
+                                data: [valWod, valMtb, valRest],
+                                backgroundColor: [getBarColor(rWod), getBarColor(rMtb), getBarColor(rRest)],
+                                borderRadius: 6,
+                                borderWidth: 0
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: {
+                            x: { ticks: { color: '#ffffff', font: { size: 11, weight: 'bold' } }, grid: { color: '#2c2c2e' } },
+                            y: {
+                                min: -1.0, max: 1.0,
+                                ticks: {
+                                    color: '#8e8e93', font: { size: 9 },
+                                    callback: v => (v > 0 ? '+' : '') + v.toFixed(2)
+                                },
+                                grid: { color: '#2c2c2e' }
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        const r = context.parsed.y;
+                                        const sign = r > 0 ? '+' : '';
+                                        let text = "Sin relación clara";
+                                        if (r >= 0.6) text = "Correlación fuerte positiva";
+                                        else if (r >= 0.3) text = "Correlación moderada positiva";
+                                        else if (r <= -0.6) text = "Correlación fuerte negativa";
+                                        else if (r <= -0.3) text = "Correlación moderada negativa";
+                                        return `Correlación Pearson r = ${sign}${r.toFixed(2)} (${text})`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             // Diagnóstico Fisiológico de Líquidos
             const diagTextEl = document.getElementById('bodyCompDiagnosisText');
             if (diagTextEl) {
@@ -2906,15 +3065,24 @@
                     const prevWaterKg = prev.weight * (prev.waterPct / 100);
                     const diffWaterKg = lastWaterKg - prevWaterKg;
 
+                    let baseDiag = "";
                     if (diffFFM < 0 && diffWaterKg < -0.2) {
-                        diagTextEl.innerHTML = `💧 <strong>Vaciado de Líquidos / Glucógeno:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) en paralelo con tu Masa de Agua (-${Math.abs(diffWaterKg).toFixed(1)} kg). <em>No es pérdida muscular real</em>, sino menor hidratación o vaciado de glucógeno.`;
+                        baseDiag = `💧 <strong>Vaciado de Líquidos / Glucógeno:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) en paralelo con tu Masa de Agua (-${Math.abs(diffWaterKg).toFixed(1)} kg). <em>No es pérdida muscular real</em>, sino menor hidratación o vaciado de glucógeno.`;
                     } else if (diffFFM < 0 && diffWaterKg >= -0.2) {
-                        diagTextEl.innerHTML = `⚠️ <strong>Posible Pérdida Muscular Real:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) manteniendo los niveles de agua. Se recomienda revisar la Proteína FFM (aumentar a 2.4 g/kg) o suavizar el déficit.`;
+                        baseDiag = `⚠️ <strong>Posible Pérdida Muscular Real:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) manteniendo los niveles de agua. Se recomienda revisar la Proteína FFM (aumentar a 2.4 g/kg) o suavizar el déficit.`;
                     } else if (diffFFM > 0) {
-                        diagTextEl.innerHTML = `🟢 <strong>Progreso Limpio:</strong> Tu Masa Magra subió (+${diffFFM.toFixed(1)} kg) con una Masa de Agua de ${lastWaterKg.toFixed(1)} kg (${last.waterPct}%). ¡Excelente preservación/ganancia muscular!`;
+                        baseDiag = `🟢 <strong>Progreso Limpio:</strong> Tu Masa Magra subió (+${diffFFM.toFixed(1)} kg) con una Masa de Agua de ${lastWaterKg.toFixed(1)} kg (${last.waterPct}%). ¡Excelente preservación/ganancia muscular!`;
                     } else {
-                        diagTextEl.innerHTML = `⚖️ <strong>Masa Magra Estante:</strong> Tu composición muscular se mantiene perfectamente estable entre mediciones (${last.ffmKg.toFixed(1)} kg).`;
+                        baseDiag = `⚖️ <strong>Masa Magra Estable:</strong> Tu composición muscular se mantiene perfectamente estable entre mediciones (${last.ffmKg.toFixed(1)} kg).`;
                     }
+
+                    if (last.activityType === 'wod') {
+                        baseDiag += `<br><span class="text-purple-300 font-medium">🏋️ <strong>Post-WOD (Ayer):</strong> Respuesta habitual de reparación tisular e inflamación muscular limpia (retención hídrica temporal).</span>`;
+                    } else if (last.activityType === 'mtb') {
+                        baseDiag += `<br><span class="text-cyan-300 font-medium">🚴 <strong>Post-MTB (Ayer):</strong> Vaciado hídrico y glucogénico típico de sesiones largas de resistencia.</span>`;
+                    }
+
+                    diagTextEl.innerHTML = baseDiag;
                 }
             }
         }
