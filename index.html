@@ -421,26 +421,16 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta 1: Evolución Corporal (Masa Magra vs Masa Grasa vs Masa de Agua) -->
-                <div class="premium-card p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">MUSCLE VS FAT VS WATER</h4>
-                        <button onclick="openChartHelpModal('bodyComp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                            ❓
-                        </button>
-                    </div>
-                    <div class="h-44 w-full relative">
-                        <canvas id="chartBodyComp"></canvas>
-                    </div>
-                </div>
-
                 <!-- Tarjeta 2: Proteína Real vs Masa Magra -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-prot uppercase tracking-wider">PROTEIN VS MUSCLE</h4>
-                        <button onclick="openChartHelpModal('protFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                            ❓
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <div id="badgeProtFFM" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
+                            <button onclick="openChartHelpModal('protFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                                ❓
+                            </button>
+                        </div>
                     </div>
                     <div class="h-44 w-full relative">
                         <canvas id="chartProtFFM"></canvas>
@@ -451,9 +441,12 @@
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-carb uppercase tracking-wider">CARBS VS WATER & MUSCLE</h4>
-                        <button onclick="openChartHelpModal('carbWater')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                            ❓
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <div id="badgeCarbWater" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
+                            <button onclick="openChartHelpModal('carbWater')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                                ❓
+                            </button>
+                        </div>
                     </div>
                     <div class="h-44 w-full relative">
                         <canvas id="chartCarbWater"></canvas>
@@ -464,9 +457,12 @@
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">DEFICIT REAL VS MUSCLE</h4>
-                        <button onclick="openChartHelpModal('deficitFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                            ❓
-                        </button>
+                        <div class="flex items-center gap-2">
+                            <div id="badgeDeficitFFM" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
+                            <button onclick="openChartHelpModal('deficitFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                                ❓
+                            </button>
+                        </div>
                     </div>
                     <div class="h-44 w-full relative">
                         <canvas id="chartDeficitFFM"></canvas>
@@ -2223,32 +2219,32 @@
                 title: "Evolución Corporal",
                 subtitle: "Masa Magra (kg) vs Masa Grasa (kg) vs Masa de Agua (kg)",
                 purpose: "Evalúa la calidad real de tu recomposición corporal o cambio de peso a lo largo del tiempo.",
-                howTo: "• Masa Magra (Verde): Representa tejido muscular y masa libre de grasa. Debe subir o mantenerse.\n• Masa Grasa (Rojo): Representa la cantidad total de grasa en kg. Debe bajar si tu objetivo es definir.\n• Masa de Agua (Azul): Muestra la masa total de agua corporal en kg. Caídas bruscas son pérdida de agua/glucógeno, no grasa.",
-                conclusiones: "✔ Éxito Total: Si la curva verde sube o se mantiene mientras la curva roja baja.\n⚠️ Alerta: Si bajas peso pero la curva verde cae rápido, estás perdiendo músculo (ajusta tu déficit calórico o aumenta la proteína)."
+                howTo: "• Masa Magra (Verde): Representa tejido muscular y masa libre de grasa. Debe subir o mantenerse.\n• Masa Grasa (Rojo): Representa la cantidad total de grasa en kg. Debe bajar si tu objetivo es definir.\n• Masa de Agua (Azul): Muestra la masa total de agua corporal en kg.\n• Indicador r (Músculo vs Grasa): 🟢 Negativo (r < -0.4) indica excelente recomposición (ganas/mantienes músculo perdiendo grasa). 🔴 Positivo (r > +0.4) indica que ambas suben o bajan juntas (volumen o catabolismo).",
+                conclusiones: "✔ Éxito Total: Si la curva verde sube o se mantiene mientras la curva roja baja.\n✔ Indicador r: Un circulito verde con r negativo refleja una recomposición corporal limpia en el filtro de tiempo elegido.\n⚠️ Alerta: Si bajas peso pero la curva verde cae rápido, estás perdiendo músculo."
             },
             protFFM: {
                 icon: "🥩",
                 title: "Proteína Real vs Masa Magra",
                 subtitle: "Proteína Ingerida (g) vs Masa Magra (kg)",
                 purpose: "Analiza el impacto directo de tu ingesta diaria de proteína sobre la retención o ganancias de masa muscular.",
-                howTo: "• Proteína Real (Púrpura): Ingesta diaria de proteína registrada en tu dieta.\n• Masa Magra (Verde): Tu masa libre de grasa medida en la báscula.",
-                conclusiones: "✔ En Déficit: Mantener una ingesta alta (picos altos púrpuras) es la clave principal para evitar que la curva verde caiga.\n✔ Si buscas ganar músculo: Revisa si los aumentos en proteína anteceden a subidas progresivas en la masa magra."
+                howTo: "• Proteína Real (Púrpura): Ingesta diaria de proteína registrada en tu dieta.\n• Masa Magra (Verde): Tu masa libre de grasa medida en la báscula.\n• Indicador r (Proteína vs Músculo): 🟢 r ≥ +0.70 (Fuerte) confirma matemáticamente que a mayor consumo de proteína, mejor proteges o ganas masa magra.",
+                conclusiones: "✔ En Déficit: Mantener una ingesta alta (picos altos púrpuras) es la clave principal para evitar que la curva verde caiga.\n✔ Indicador r: Un circulito verde (r alto positivo) es la prueba de que tu ingesta proteica responde eficazmente protegiendo tu musculatura."
             },
             carbWater: {
                 icon: "🍞",
                 title: "Carbohidratos vs Masa de Agua & Magra",
                 subtitle: "Efecto del glucógeno muscular sobre la hidratación y volumen",
                 purpose: "Demuestra la correlación entre la ingesta de carbohidratos, el almacenamiento de glucógeno y el agua corporal.",
-                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• Masa de Agua (Azul) y Masa Magra (Verde): El glucógeno muscular arrastra unos 3-4g de agua por cada gramo cargado.",
-                conclusiones: "✔ Efecto Tanque Lleno: Un pico en la ingesta de carbohidratos provocará una subida temporal de agua corporal (kg) y masa magra (hidratación muscular).\n⚠️ Bajadas de Peso Engañosas: Reducir carbohidratos vacía el agua corporal rápidamente en 1-2 días; no confundas esa bajada inicial con pérdida de grasa real."
+                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• Masa de Agua (Azul) y Masa Magra (Verde): El glucógeno muscular arrastra unos 3-4g de agua por cada gramo cargado.\n• Indicador r (Carbohidratos vs Agua): 🟢 r ≥ +0.70 demuestra cuantitativamente que los aumentos de agua/peso coinciden con días de recarga de glucógeno.",
+                conclusiones: "✔ Efecto Tanque Lleno: Un pico en la ingesta de carbohidratos provocará una subida temporal de agua corporal (kg) y masa magra (hidratación muscular).\n✔ Indicador r: Una correlación alta verde confirma que las subidas tras comer carbohidratos son solo agua retenida en el músculo y no grasa."
             },
             deficitFFM: {
                 icon: "🔥",
                 title: "Déficit Real vs Masa Magra",
                 subtitle: "Correlación entre el balance calórico diario y la conservación muscular",
                 purpose: "Evalúa cómo afecta el déficit o superávit calórico real diario (Ingesta Real - Gasto Referencia) a la conservación o pérdida de masa magra muscular.",
-                howTo: "• Déficit Real (Naranja/Rojo): Balance calórico diario (Kcal ingesta menos Gasto Referencia). Valores negativos representan déficit (ej. -500 kcal).\n• Masa Magra (Verde): Registro de masa libre de grasa en kg.",
-                conclusiones: "✔ Déficit Sostenible: Un déficit calórico moderado manteniendo suficiente proteína preserva la masa magra.\n⚠️ Riesgo Catabólico: Déficits excesivamente agresivos o prolongados sin proteína adecuada aumentan el riesgo de perder masa magra."
+                howTo: "• Déficit Real (Naranja/Rojo): Balance calórico diario (Kcal ingesta menos Gasto Referencia). Valores negativos representan déficit.\n• Masa Magra (Verde): Registro de masa libre de grasa en kg.\n• Indicador r (Déficit vs Músculo): 🔴 r negativo fuerte (ej. r = -0.70) alerta de que a mayor déficit mayor pérdida muscular. 🟢 r cercano a 0 o positivo indica buena conservación muscular.",
+                conclusiones: "✔ Déficit Sostenible: Un déficit calórico moderado manteniendo suficiente proteína preserva la masa magra.\n⚠️ Riesgo Catabólico: Si el circulito marca r en rojo, tu déficit está destruyendo masa magra; conviene elevar calorías o subir la proteína."
             },
             ocrHelp: {
                 icon: "📷",
@@ -2624,13 +2620,73 @@
             updateBodyCompCharts();
         }
 
+        function calculatePearsonR(x, y) {
+            if (!x || !y || x.length < 3 || x.length !== y.length) return null;
+            let n = x.length;
+            let sumX = 0, sumY = 0, sumXY = 0, sumX2 = 0, sumY2 = 0;
+            let validCount = 0;
+
+            for (let i = 0; i < n; i++) {
+                const xi = x[i];
+                const yi = y[i];
+                if (xi === null || xi === undefined || isNaN(xi) || yi === null || yi === undefined || isNaN(yi)) continue;
+                sumX += xi;
+                sumY += yi;
+                sumXY += xi * yi;
+                sumX2 += xi * xi;
+                sumY2 += yi * yi;
+                validCount++;
+            }
+
+            if (validCount < 3) return null;
+
+            const numerator = (validCount * sumXY) - (sumX * sumY);
+            const denominator = Math.sqrt(((validCount * sumX2) - (sumX * sumX)) * ((validCount * sumY2) - (sumY * sumY)));
+
+            if (denominator === 0) return 0;
+            return parseFloat((numerator / denominator).toFixed(2));
+        }
+
+        function renderCorrelationBadge(elementId, rValue) {
+            const badgeEl = document.getElementById(elementId);
+            if (!badgeEl) return;
+
+            if (rValue === null || rValue === undefined || isNaN(rValue)) {
+                badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full bg-gray-500 inline-block"></span><span class="text-white/50 text-[10px]">Pocos datos</span>`;
+                badgeEl.title = "Se necesitan al menos 3 días con registros en el rango seleccionado para calcular la correlación";
+                return;
+            }
+
+            let dotColorClass = "bg-yellow-400";
+            let textColorClass = "text-yellow-400";
+            let label = "Moderada";
+            const absR = Math.abs(rValue);
+
+            if (absR >= 0.7) {
+                dotColorClass = rValue > 0 ? "bg-emerald-400" : "bg-red-500";
+                textColorClass = rValue > 0 ? "text-emerald-400" : "text-red-400";
+                label = "Fuerte";
+            } else if (absR >= 0.4) {
+                dotColorClass = "bg-yellow-400";
+                textColorClass = "text-yellow-400";
+                label = "Moderada";
+            } else {
+                dotColorClass = "bg-gray-400";
+                textColorClass = "text-gray-400";
+                label = "Débil";
+            }
+
+            const sign = rValue > 0 ? '+' : '';
+            badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full ${dotColorClass} inline-block animate-pulse"></span><span class="font-mono ${textColorClass} font-bold text-[11px]">r = ${sign}${rValue}</span> <span class="text-white/60 text-[10px]">(${label})</span>`;
+            badgeEl.title = `Correlación de Pearson r = ${sign}${rValue}. Indica la relación entre ambas variables en el periodo de tiempo filtrado.`;
+        }
+
         function updateBodyCompCharts() {
-            const ctx1 = document.getElementById('chartBodyComp');
             const ctx2 = document.getElementById('chartProtFFM');
             const ctx3 = document.getElementById('chartCarbWater');
             const ctx4 = document.getElementById('chartDeficitFFM');
 
-            if (!ctx1 || !ctx2 || !ctx3 || !ctx4) return;
+            if (!ctx2 || !ctx3 || !ctx4) return;
 
             let sortedLogs = [...bodyCompLog].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -2668,6 +2724,39 @@
             const fatKgData = sortedLogs.map(l => parseFloat((l.weight * (l.fatPct / 100)).toFixed(1)));
             const waterKgData = sortedLogs.map(l => parseFloat((l.weight * (l.waterPct / 100)).toFixed(1)));
 
+            // Mapeo con la ingesta real del historial de alimentos
+            const protEatenData = sortedLogs.map(l => {
+                const logsOnDate = globalLog.filter(item => item.date === l.date);
+                let sum = 0;
+                logsOnDate.forEach(i => sum += (i.p || 0));
+                return Math.round(sum);
+            });
+
+            const carbEatenData = sortedLogs.map(l => {
+                const logsOnDate = globalLog.filter(item => item.date === l.date);
+                let sum = 0;
+                logsOnDate.forEach(i => sum += (i.c || 0));
+                return Math.round(sum);
+            });
+
+            const realDeficitData = sortedLogs.map(l => {
+                const logsOnDate = globalLog.filter(item => item.date === l.date);
+                let eaten = 0;
+                logsOnDate.forEach(i => eaten += (i.kcal || 0));
+                const refKcal = parseFloat(userGarmin.yesterdayKcal) || 2000;
+                return Math.round(eaten - refKcal);
+            });
+
+            // Actualizar Badges de Correlación para el Filtro Seleccionado
+            const rProt = calculatePearsonR(protEatenData, ffmData);
+            renderCorrelationBadge('badgeProtFFM', rProt);
+
+            const rCarb = calculatePearsonR(carbEatenData, waterKgData);
+            renderCorrelationBadge('badgeCarbWater', rCarb);
+
+            const rDeficit = calculatePearsonR(realDeficitData, ffmData);
+            renderCorrelationBadge('badgeDeficitFFM', rDeficit);
+
             // Valores de ejes Y (+1 máx y -1 mín) para Masa Magra y Masa de Agua
             const ffmMax = Math.max(...ffmData);
             const ffmMin = Math.min(...ffmData);
@@ -2693,29 +2782,6 @@
                 grid: { color: '#2c2c2e' }
             };
 
-            // Mapeo con la ingesta real del historial de alimentos
-            const protEatenData = sortedLogs.map(l => {
-                const logsOnDate = globalLog.filter(item => item.date === l.date);
-                let sum = 0;
-                logsOnDate.forEach(i => sum += (i.p || 0));
-                return Math.round(sum);
-            });
-
-            const carbEatenData = sortedLogs.map(l => {
-                const logsOnDate = globalLog.filter(item => item.date === l.date);
-                let sum = 0;
-                logsOnDate.forEach(i => sum += (i.c || 0));
-                return Math.round(sum);
-            });
-
-            const realDeficitData = sortedLogs.map(l => {
-                const logsOnDate = globalLog.filter(item => item.date === l.date);
-                let eaten = 0;
-                logsOnDate.forEach(i => eaten += (i.kcal || 0));
-                const refKcal = parseFloat(userGarmin.yesterdayKcal) || 2000;
-                return Math.round(eaten - refKcal);
-            });
-
             const createColoredLegend = (chart) => {
                 return chart.data.datasets.map((ds, i) => ({
                     text: ds.label,
@@ -2728,40 +2794,6 @@
                     datasetIndex: i
                 }));
             };
-
-            // 1. Gráfico de Evolución Corporal (Masa Magra vs Masa Grasa vs Masa de Agua)
-            if (chartInstanceBodyComp) chartInstanceBodyComp.destroy();
-            chartInstanceBodyComp = new Chart(ctx1, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' },
-                        { label: 'Masa Grasa (kg)', data: fatKgData, borderColor: '#ff3b30', backgroundColor: 'rgba(255, 59, 48, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: xAxisConfig,
-                        y: { position: 'left', ticks: { color: '#ff3b30', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } },
-                        y2: { position: 'right', min: waterKgYMin, max: waterKgYMax, ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                boxWidth: 0,
-                                boxHeight: 0,
-                                padding: 12,
-                                font: { size: 10, weight: 'bold' },
-                                generateLabels: createColoredLegend
-                            }
-                        }
-                    }
-                }
-            });
 
             // 2. Gráfico Proteína vs Masa Magra
             if (chartInstanceProtFFM) chartInstanceProtFFM.destroy();
