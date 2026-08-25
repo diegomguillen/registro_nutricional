@@ -289,14 +289,7 @@
                 </div>
             </div>
 
-            <!-- Cierre Retroactivo Garmin (Ayer) -->
-            <div id="yesterdayBalanceCard" class="premium-card p-4 flex justify-between items-center animate-fade-in border-l-4 border-l-primary">
-                <div>
-                    <div class="text-[10px] font-bold uppercase text-white/50 tracking-wider">Cierre Retroactivo (Ayer vs Garmin)</div>
-                    <div id="yesterdayBalanceText" class="text-xs text-white mt-0.5 font-medium">Cargando balance...</div>
-                </div>
-                <div id="yesterdayBalanceBadge"></div>
-            </div>
+
 
             <div class="grid grid-cols-2 gap-4">
                 <div class="premium-card p-4 flex flex-col action-card">
@@ -414,11 +407,21 @@
 
             <!-- SECCIÓN DE GRÁFICOS Y CORRELACIONES DEPORTIVAS (AL FINAL DE INICIO) -->
             <div class="space-y-4 animate-fade-in-up mt-6">
-                <h2 class="text-lg font-medium text-white flex items-center gap-2">
-                    <span>📈</span> Correlaciones & Composición Corporal
-                </h2>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <h2 class="text-lg font-medium text-white flex items-center gap-2">
+                        <span>📈</span> Correlaciones & Composición Corporal
+                    </h2>
+                    <!-- Filtro Temporal -->
+                    <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
+                        <button onclick="setBodyCompTimeframe('1m')" id="btnTimeframe1m" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">1 Mes</button>
+                        <button onclick="setBodyCompTimeframe('3m')" id="btnTimeframe3m" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">3 Meses</button>
+                        <button onclick="setBodyCompTimeframe('6m')" id="btnTimeframe6m" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">6 Meses</button>
+                        <button onclick="setBodyCompTimeframe('1y')" id="btnTimeframe1y" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">1 Año</button>
+                        <button onclick="setBodyCompTimeframe('all')" id="btnTimeframeall" class="px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0a84ff] text-white border border-[#0a84ff]/50 shadow-sm whitespace-nowrap">Todo</button>
+                    </div>
+                </div>
 
-                <!-- Tarjeta 1: Evolución Corporal (Masa Magra vs Masa Grasa vs % Agua) -->
+                <!-- Tarjeta 1: Evolución Corporal (Masa Magra vs Masa Grasa vs Masa de Agua) -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-white uppercase tracking-wider">MUSCLE VS FAT VS WATER</h4>
@@ -444,7 +447,7 @@
                     </div>
                 </div>
 
-                <!-- Tarjeta 3: Carbohidratos Reales vs % Agua & Masa Magra -->
+                <!-- Tarjeta 3: Carbohidratos Reales vs Masa de Agua & Masa Magra -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-carb uppercase tracking-wider">CARBS VS WATER & MUSCLE</h4>
@@ -454,6 +457,19 @@
                     </div>
                     <div class="h-44 w-full relative">
                         <canvas id="chartCarbWater"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tarjeta 4: Déficit Real vs Masa Magra -->
+                <div class="premium-card p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">DEFICIT REAL VS MUSCLE</h4>
+                        <button onclick="openChartHelpModal('deficitFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                            ❓
+                        </button>
+                    </div>
+                    <div class="h-44 w-full relative">
+                        <canvas id="chartDeficitFFM"></canvas>
                     </div>
                 </div>
             </div>
@@ -523,108 +539,151 @@
 
             <!-- TARJETA GARMIN SPORTS MODULE -->
             <div class="premium-card p-5 space-y-4 animate-fade-in-up">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-white flex-shrink-0 text-xl">
-                        ⌚
+                <div class="flex items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-white flex-shrink-0 text-xl">
+                            ⌚
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-white text-base">Métricas Garmin & Nutrición FFM</h3>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-medium text-white text-base">Métricas Garmin & Nutrición FFM</h3>
-                        <p class="text-xs text-white/60">Gasto Referencia + Peso/% Grasa de Hoy</p>
+                    <!-- Grupo Botón OCR & Ayudas -->
+                    <div class="flex items-center gap-1.5 flex-shrink-0">
+                        <button type="button" onclick="document.getElementById('garminOcrFileInput').click()" class="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-[#0a84ff] border border-[#3a3a3c] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-1.5 transition-all shadow-sm active:scale-95">
+                            <svg class="w-4 h-4 text-[#0a84ff]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                            </svg>
+                            <span class="whitespace-nowrap">OCR</span>
+                        </button>
+                        <button type="button" onclick="openChartHelpModal('ocrHelp')" class="w-7 h-7 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e información OCR">
+                            ❓
+                        </button>
+                        <input type="file" id="garminOcrFileInput" accept="image/*" class="hidden" onchange="handleGarminOcrImage(this)">
                     </div>
                 </div>
 
-                    <div class="grid grid-cols-2 gap-3 items-end">
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-kcal uppercase mb-1 h-7 flex items-end">Gasto Garmin referencia (kcal)</label>
-                            <input type="number" id="garminKcalInput" value="2000" step="50" min="500" max="10000" class="w-full text-sm p-2" oninput="onGarminChange()">
+                <div class="space-y-3.5">
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-kcal uppercase flex items-end">Gasto Calórico referencia (kcal)</label>
+                            <span id="garminKcalVal" class="text-xs font-mono font-bold text-kcal">2000 kcal</span>
                         </div>
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-amber-400 uppercase mb-1 h-7 flex items-end">Ajuste (kcal)</label>
-                            <input type="number" id="garminDeficitInput" value="0" step="25" min="-2000" max="2000" class="w-full text-sm p-2" oninput="onGarminChange()">
-                        </div>
+                        <input type="range" id="garminKcalInput" value="2000" step="50" min="1000" max="4000" class="w-full accent-[#0a84ff] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 items-end">
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-white uppercase mb-1 h-7 flex items-end">Peso Hoy (kg)</label>
-                            <input type="number" id="garminWeightInput" value="80" step="0.5" min="20" max="300" class="w-full text-sm p-2" oninput="onGarminChange()">
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-white uppercase flex items-end">Peso Hoy (kg)</label>
+                            <span id="garminWeightVal" class="text-xs font-mono font-bold text-white">80.0 kg</span>
                         </div>
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-white uppercase mb-1 h-7 flex items-end">% Grasa Hoy (%)</label>
-                            <input type="number" id="garminFatPctInput" value="15" step="0.5" min="3" max="60" class="w-full text-sm p-2" oninput="onGarminChange()">
-                        </div>
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-emerald-400 uppercase mb-1 h-7 flex items-end">Masa Magra Hoy (kg)</label>
-                            <input type="number" id="garminFFMInput" value="33.0" step="0.1" min="10" max="250" class="w-full text-sm p-2" oninput="onGarminChange()">
-                        </div>
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-cyan-400 uppercase mb-1 h-7 flex items-end">% Agua Hoy (%)</label>
-                            <input type="number" id="garminWaterPctInput" value="58.5" step="0.1" min="20" max="85" class="w-full text-sm p-2" oninput="onGarminChange()">
-                        </div>
+                        <input type="range" id="garminWeightInput" value="80" step="0.1" min="45" max="120" class="w-full accent-primary cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange(true)">
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 items-end">
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-prot uppercase mb-1 h-7 flex items-end">Prot FFM (g/kg Masa Magra)</label>
-                            <input type="number" id="garminProtFFMInput" value="2.0" step="0.1" min="1.0" class="w-full text-sm p-2" oninput="onGarminChange()">
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-red-400 uppercase flex items-end">% Grasa Hoy (%)</label>
+                            <span id="garminFatPctVal" class="text-xs font-mono font-bold text-red-400">15.0%</span>
                         </div>
-                        <div class="flex flex-col justify-end">
-                            <label class="block text-[10px] font-bold text-fat uppercase mb-1 h-7 flex items-end">Grasa FFM (g/kg Masa Magra)</label>
-                            <input type="number" id="garminFatWeightInput" value="1.0" step="0.1" min="0.3" class="w-full text-sm p-2" oninput="onGarminChange()">
-                        </div>
+                        <input type="range" id="garminFatPctInput" value="15" step="0.1" min="0" max="50" class="w-full accent-red-400 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange(true)">
                     </div>
 
-                    <div class="space-y-3 pt-1">
-                        <div onclick="applySportsPreset()"
-                            class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up border-primary/30 hover:border-primary/50">
-                            <div class="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-primary flex-shrink-0 text-xl font-bold">
-                                ⚡
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-white">Preset Científico WOD</h3>
-                                <p class="text-xs text-white/60">Ajusta 2.4g Proteína y 1.0g Grasa por kg FFM</p>
-                            </div>
-                            <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-emerald-400 uppercase flex items-end">Masa Magra Hoy (kg)</label>
+                            <span id="garminFFMVal" class="text-xs font-mono font-bold text-emerald-400">33.0 kg</span>
                         </div>
-
-                        <div onclick="applyMaxDeficit()"
-                            class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up border-amber-500/30 hover:border-amber-500/50">
-                            <div class="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0 text-xl font-bold">
-                                🔥
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-white">Déficit Máximo Óptimo</h3>
-                                <p id="maxDeficitSubtitleText" class="text-xs text-white/60">Aplica un déficit seguro manteniendo carbohidratos para WODs</p>
-                            </div>
-                            <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
-
-                        <div onclick="saveBodyCompMeasurement()"
-                            class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up border-emerald-500/30 hover:border-emerald-500/50">
-                            <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0 text-xl font-bold">
-                                💾
-                            </div>
-                            <div class="flex-1">
-                                <h3 class="font-medium text-white">Guardar Medición Corporal</h3>
-                                <p class="text-xs text-white/60">Registra peso, grasa, masa magra y agua en el historial</p>
-                            </div>
-                            <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                            </svg>
-                        </div>
+                        <input type="range" id="garminFFMInput" value="33" step="0.1" min="15" max="40" class="w-full accent-emerald-400 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange(true)">
                     </div>
 
-                    <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 text-center space-y-1">
-                        <div class="flex justify-between items-center text-[10px] uppercase font-bold text-white/60 mb-1">
-                            <span>Masa Magra (FFM): <strong id="garminFFMText" class="text-emerald-400 font-mono">68.0 kg</strong></span>
-                            <span>Carbs Restantes: <strong id="garminCarbCalcText" class="text-carb font-mono">Auto</strong></span>
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-teal-400 uppercase flex items-end">Masa Magra FFM (kg)</label>
+                            <span id="garminCalcFFMVal" class="text-xs font-mono font-bold text-teal-400">68.0 kg</span>
                         </div>
-                        <div id="garminTargetSummaryText" class="text-xs text-white font-medium"></div>
+                        <input type="range" id="garminCalcFFMInput" value="68" step="0.1" min="30" max="110" disabled class="w-full accent-teal-400 cursor-not-allowed opacity-75 h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]">
                     </div>
+
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-cyan-400 uppercase flex items-end">% Agua Hoy (%)</label>
+                            <span id="garminWaterPctVal" class="text-xs font-mono font-bold text-cyan-400">58.0%</span>
+                        </div>
+                        <input type="range" id="garminWaterPctInput" value="58" step="0.1" min="0" max="70" class="w-full accent-cyan-400 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange(true)">
+                    </div>
+
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-prot uppercase flex items-end">Prot FFM (g/kg Masa Magra)</label>
+                            <span id="garminProtFFMVal" class="text-xs font-mono font-bold text-prot">2.0 g/kg</span>
+                        </div>
+                        <input type="range" id="garminProtFFMInput" value="2.0" step="0.1" min="0" max="5" class="w-full accent-[#32d74b] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
+                    </div>
+
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-fat uppercase flex items-end">Grasa FFM (g/kg Masa Magra)</label>
+                            <span id="garminFatWeightVal" class="text-xs font-mono font-bold text-fat">1.0 g/kg</span>
+                        </div>
+                        <input type="range" id="garminFatWeightInput" value="1.0" step="0.1" min="0" max="5" class="w-full accent-[#ff453a] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
+                    </div>
+
+                    <div class="flex flex-col justify-end">
+                        <div class="flex justify-between items-center mb-1 h-6">
+                            <label class="block text-[10px] font-bold text-amber-400 uppercase flex items-end">Ajuste (kcal)</label>
+                            <span id="garminDeficitVal" class="text-xs font-mono font-bold text-amber-400">0 kcal</span>
+                        </div>
+                        <input type="range" id="garminDeficitInput" value="0" step="10" min="-1000" max="1000" class="w-full accent-amber-400 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()" ondblclick="resetGarminDeficit()">
+                    </div>
+                </div>
+
+                <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 text-center space-y-1 my-2">
+                    <div id="garminTargetSummaryText" class="text-xs text-white font-medium"></div>
+                </div>
+
+                <div class="space-y-3 pt-1">
+                    <div class="action-card premium-card p-4 flex items-center gap-4 animate-fade-in-up border-blue-500/40 hover:border-blue-500/60">
+                        <div class="w-10 h-10 rounded-full bg-blue-500/20 border border-blue-500/40 flex items-center justify-center text-[#0a84ff] flex-shrink-0 text-lg font-bold">
+                            ⚡
+                        </div>
+                        <div class="flex-1 cursor-pointer select-none" onclick="document.getElementById('ffmNutritionToggle').click()">
+                            <h3 class="font-medium text-white text-sm">Set Fat-Free Mass Based Nutrition</h3>
+                        </div>
+                        <button type="button" onclick="openChartHelpModal('ffmNutritionHelp')" class="w-7 h-7 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95 flex-shrink-0" title="Información y evidencia científica FFM">
+                            ❓
+                        </button>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="ffmNutritionToggle" class="sr-only peer" onchange="onFFMNutritionToggleChange(this.checked)">
+                            <div class="w-11 h-6 bg-[#3a3a3c] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0a84ff]"></div>
+                        </label>
+                    </div>
+
+                    <div class="action-card premium-card p-4 flex items-center gap-4 animate-fade-in-up border-amber-500/30 hover:border-amber-500/50">
+                        <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0 text-lg font-bold">
+                            🔥
+                        </div>
+                        <div class="flex-1 cursor-pointer select-none" onclick="document.getElementById('maxDeficitToggle').click()">
+                            <h3 id="maxDeficitTitleText" class="font-medium text-white text-sm">Set Déficit Máximo (-0 kcal)</h3>
+                        </div>
+                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
+                            <input type="checkbox" id="maxDeficitToggle" class="sr-only peer" onchange="onMaxDeficitToggleChange(this.checked)">
+                            <div class="w-11 h-6 bg-[#3a3a3c] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                        </label>
+                    </div>
+
+                    <div id="saveBodyCompCard" onclick="saveBodyCompMeasurement()"
+                        class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up border-emerald-500/30 hover:border-emerald-500/50 hidden">
+                        <div class="w-12 h-12 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 flex-shrink-0 text-xl font-bold">
+                            💾
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-white">Guardar Medición Corporal</h3>
+                        </div>
+                        <svg class="w-5 h-5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
+                    </div>
+                </div>
                 </div>
 
                 <!-- TABLA HISTORIAL DE MEDICIONES CORPORALES (PLEGABLE) -->
@@ -636,10 +695,9 @@
                             </div>
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <h3 class="font-medium text-white text-base">Historial de Mediciones Corporales</h3>
-                                    <span id="bodyCompCountBadge" class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2.5 py-0.5 rounded-full font-bold">0 registros</span>
+                                    <h3 class="font-medium text-white text-base">Mediciones Corporales</h3>
+                                    <span id="bodyCompCountBadge" class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2.5 py-0.5 rounded-full font-bold">0</span>
                                 </div>
-                                <p class="text-xs text-white/60">Haz clic para desplegar u ocultar los registros anteriores</p>
                             </div>
                         </div>
                         <div id="bodyCompToggleChevron" class="w-8 h-8 rounded-full bg-[#2c2c2e] group-hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 group-hover:text-white transition-all duration-300 transform rotate-0">
@@ -655,9 +713,9 @@
                                 <thead class="sticky top-0 bg-[#1c1c1e] z-10">
                                     <tr class="text-[10px] uppercase font-bold text-white/50 border-b border-[#3a3a3c]">
                                         <th class="py-2 px-1">Fecha</th>
-                                        <th class="py-2 px-1 text-center">Peso</th>
+                                        <th class="py-2 px-1 text-center">Peso(kg)</th>
                                         <th class="py-2 px-1 text-center">% Grasa</th>
-                                        <th class="py-2 px-1 text-center">Masa Magra</th>
+                                        <th class="py-2 px-1 text-center">Músculo(kg)</th>
                                         <th class="py-2 px-1 text-center">% Agua</th>
                                         <th class="py-2 px-1 text-right">Acción</th>
                                     </tr>
@@ -670,62 +728,73 @@
                     </div>
                 </div>
 
-            <div class="space-y-4 pt-2">
-
-
-                <div onclick="exportData()"
-                    class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up"
-                    style="animation-delay: 0.1s">
-                    <div
-                        class="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-white flex-shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            <!-- DESPLEGABLE GESTIÓN DE DATOS -->
+            <div class="premium-card p-5 animate-fade-in-up mt-4">
+                <div onclick="toggleDataManagementAccordion()" class="flex items-center justify-between cursor-pointer group select-none">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-blue-500/20 border border-blue-500/30 flex items-center justify-center text-blue-400 font-bold text-lg">
+                            💾
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-white text-base">Gestión de Datos</h3>
+                        </div>
+                    </div>
+                    <div id="dataToggleChevron" class="w-8 h-8 rounded-full bg-[#2c2c2e] group-hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 group-hover:text-white transition-all duration-300 transform rotate-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                         </svg>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-medium text-white">Exportar todo</h3>
-                        <p class="text-xs text-white">Backup completo (Historial + Alimentos + Recetas)</p>
-                    </div>
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
                 </div>
 
-                <div onclick="document.getElementById('importFile').click()"
-                    class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up"
-                    style="animation-delay: 0.2s">
-                    <div
-                        class="w-12 h-12 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-white flex-shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                <div id="dataManagementContainer" class="hidden mt-4 pt-4 border-t border-[#2c2c2e] space-y-3">
+                    <div onclick="exportData()"
+                        class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer">
+                        <div class="w-12 h-12 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center text-white flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-white">Exportar todo</h3>
+                            <p class="text-xs text-white">Backup completo (Historial + Alimentos + Recetas)</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-medium text-white">Importar copia</h3>
-                        <p class="text-xs text-white">Restaurar datos desde archivo</p>
-                    </div>
-                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                    </svg>
-                </div>
-                <input type="file" id="importFile" accept=".json" class="hidden" onchange="handleImport(this)">
 
-                <div onclick="resetApp()"
-                    class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up"
-                    style="animation-delay: 0.3s">
-                    <div
-                        class="w-12 h-12 rounded-full bg-fat/20 border border-fat/30 flex items-center justify-center text-white flex-shrink-0">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                            </path>
+                    <div onclick="document.getElementById('importFile').click()"
+                        class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer">
+                        <div class="w-12 h-12 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-white flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-white">Importar copia</h3>
+                            <p class="text-xs text-white">Restaurar datos desde archivo</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
-                    <div class="flex-1">
-                        <h3 class="font-medium text-fat">Borrar todo</h3>
-                        <p class="text-xs text-white/60">Factory Reset</p>
+                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="handleImport(this)">
+
+                    <div onclick="resetApp()"
+                        class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer">
+                        <div class="w-12 h-12 rounded-full bg-fat/20 border border-fat/30 flex items-center justify-center text-white flex-shrink-0">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                </path>
+                            </svg>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="font-medium text-fat">Borrar todo</h3>
+                            <p class="text-xs text-white/60">Factory Reset</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1828,15 +1897,19 @@
             weightKg: 80,
             fatPct: 15,
             ffmKg: 33.0,
-            waterPct: 58.5,
+            waterPct: 58.0,
             protRatioFFM: 2.0,
-            fatRatioWeight: 1.0
+            fatRatioWeight: 1.0,
+            isFFMNutritionActive: false,
+            isMaxDeficitActive: false
         };
         let userGarmin = { ...DEFAULT_GARMIN };
         let bodyCompLog = [];
+        let bodyCompTimeframe = 'all';
         let chartInstanceBodyComp = null;
         let chartInstanceProtFFM = null;
         let chartInstanceCarbWater = null;
+        let chartInstanceDeficitFFM = null;
 
         function getGarminCalculatedTargets() {
             const w = parseFloat(userGarmin.weightKg) || 80;
@@ -1865,7 +1938,7 @@
                 fatPct: fatPct,
                 ffm: theoreticalFFM,
                 ffmManual: parseFloat(userGarmin.ffmKg) || theoreticalFFM,
-                waterPct: userGarmin.waterPct || 58.5,
+                waterPct: userGarmin.waterPct || 58.0,
                 yesterdayKcal: yKcal,
                 deficitKcal: defKcal,
                 protRatioFFM: prFFM,
@@ -1895,7 +1968,9 @@
                         ffmKg: parseFloat(parsed.ffmKg) || DEFAULT_GARMIN.ffmKg,
                         waterPct: parseFloat(parsed.waterPct) || DEFAULT_GARMIN.waterPct,
                         protRatioFFM: parseFloat(parsed.protRatioFFM) || DEFAULT_GARMIN.protRatioFFM,
-                        fatRatioWeight: parseFloat(parsed.fatRatioWeight) || DEFAULT_GARMIN.fatRatioWeight
+                        fatRatioWeight: parseFloat(parsed.fatRatioWeight) || DEFAULT_GARMIN.fatRatioWeight,
+                        isFFMNutritionActive: Boolean(parsed.isFFMNutritionActive),
+                        isMaxDeficitActive: Boolean(parsed.isMaxDeficitActive)
                     };
                 } catch (e) {
                     console.error("Error cargando Garmin:", e);
@@ -1925,7 +2000,7 @@
             localStorage.setItem('macroCalculatorBodyCompLog', JSON.stringify(bodyCompLog));
         }
 
-        function saveBodyCompMeasurement() {
+        function saveBodyCompMeasurement(silent = false) {
             const todayStr = new Date().toISOString().split('T')[0];
             const weight = parseFloat(userGarmin.weightKg) || 80;
             const fatPct = parseFloat(userGarmin.fatPct) || 15;
@@ -1945,12 +2020,33 @@
             saveBodyCompLog();
             renderBodyCompTable();
             updateBodyCompCharts();
-            showToast("💾 Medición corporal guardada");
+
+            const card = document.getElementById('saveBodyCompCard');
+            if (card) card.classList.add('hidden');
+
+            if (!silent) {
+                showToast("💾 Medición corporal guardada");
+            }
         }
 
         function toggleBodyCompHistory() {
             const container = document.getElementById('bodyCompHistoryContainer');
             const chevron = document.getElementById('bodyCompToggleChevron');
+            if (!container || !chevron) return;
+
+            const isHidden = container.classList.contains('hidden');
+            if (isHidden) {
+                container.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+            } else {
+                container.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
+        function toggleDataManagementAccordion() {
+            const container = document.getElementById('dataManagementContainer');
+            const chevron = document.getElementById('dataToggleChevron');
             if (!container || !chevron) return;
 
             const isHidden = container.classList.contains('hidden');
@@ -1971,7 +2067,7 @@
             const badge = document.getElementById('bodyCompCountBadge');
             if (badge) {
                 const count = bodyCompLog ? bodyCompLog.length : 0;
-                badge.textContent = `${count} ${count === 1 ? 'registro' : 'registros'}`;
+                badge.textContent = count;
             }
 
             if (!bodyCompLog || bodyCompLog.length === 0) {
@@ -1982,20 +2078,19 @@
             const sorted = [...bodyCompLog].sort((a, b) => b.date.localeCompare(a.date));
 
             sorted.forEach(item => {
+                const shortDate = item.date && item.date.length >= 10 ? item.date.slice(2) : item.date;
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-[#3a3a3c]/30 transition-colors";
+                tr.className = "hover:bg-[#3a3a3c]/50 transition-colors cursor-pointer";
+                tr.onclick = () => editBodyCompEntry(item.date);
                 tr.innerHTML = `
-                    <td class="py-2.5 px-1 font-mono font-medium text-white">${item.date}</td>
-                    <td class="py-2.5 px-1 text-center text-white/90 font-mono">${item.weight} kg</td>
-                    <td class="py-2.5 px-1 text-center text-red-400 font-mono">${item.fatPct}%</td>
-                    <td class="py-2.5 px-1 text-center text-emerald-400 font-mono">${item.ffmKg} kg</td>
-                    <td class="py-2.5 px-1 text-center text-cyan-400 font-mono">${item.waterPct}%</td>
+                    <td class="py-2.5 px-1 font-mono font-medium text-white text-xs whitespace-nowrap">${shortDate}</td>
+                    <td class="py-2.5 px-1 text-center text-white/90 font-mono">${item.weight}</td>
+                    <td class="py-2.5 px-1 text-center text-red-400 font-mono">${item.fatPct}</td>
+                    <td class="py-2.5 px-1 text-center text-emerald-400 font-mono">${item.ffmKg}</td>
+                    <td class="py-2.5 px-1 text-center text-cyan-400 font-mono">${item.waterPct}</td>
                     <td class="py-2.5 px-1 text-right">
                         <div class="flex items-center justify-end gap-1">
-                            <button onclick="editBodyCompEntry('${item.date}')" class="p-1.5 rounded bg-blue-500/20 text-blue-400 hover:bg-blue-500/40 active:scale-95 transition-all text-xs" title="Editar">
-                                ✏️
-                            </button>
-                            <button onclick="deleteBodyCompEntry('${item.date}')" class="p-1.5 rounded bg-red-500/20 text-red-400 hover:bg-red-500/40 active:scale-95 transition-all text-xs" title="Eliminar">
+                            <button onclick="event.stopPropagation(); deleteBodyCompEntry('${item.date}')" class="p-1.5 rounded bg-red-500/20 text-red-400 hover:bg-red-500/40 active:scale-95 transition-all text-xs" title="Eliminar">
                                 🗑️
                             </button>
                         </div>
@@ -2009,27 +2104,33 @@
             const entry = bodyCompLog.find(e => e.date === dateStr);
             if (!entry) return;
 
-            const newWeight = prompt(`Modificar Peso (kg) para el ${dateStr}:`, entry.weight);
+            const newDate = prompt(`Modificar Fecha (YYYY-MM-DD):`, entry.date);
+            if (newDate === null) return;
+            const validDate = newDate.trim() ? newDate.trim() : entry.date;
+
+            const newWeight = prompt(`Modificar Peso (kg) para el ${validDate}:`, entry.weight);
             if (newWeight === null) return;
 
-            const newFat = prompt(`Modificar % Grasa para el ${dateStr}:`, entry.fatPct);
+            const newFat = prompt(`Modificar % Grasa para el ${validDate}:`, entry.fatPct);
             if (newFat === null) return;
 
-            const newFFM = prompt(`Modificar Masa Magra (kg) para el ${dateStr}:`, entry.ffmKg);
+            const newFFM = prompt(`Modificar Músculo (kg) para el ${validDate}:`, entry.ffmKg);
             if (newFFM === null) return;
 
-            const newWater = prompt(`Modificar % Agua para el ${dateStr}:`, entry.waterPct);
+            const newWater = prompt(`Modificar % Agua para el ${validDate}:`, entry.waterPct);
             if (newWater === null) return;
 
+            entry.date = validDate;
             entry.weight = parseFloat(newWeight) || entry.weight;
             entry.fatPct = parseFloat(newFat) || entry.fatPct;
             entry.ffmKg = parseFloat(newFFM) || entry.ffmKg;
             entry.waterPct = parseFloat(newWater) || entry.waterPct;
 
+            bodyCompLog.sort((a, b) => a.date.localeCompare(b.date));
             saveBodyCompLog();
             renderBodyCompTable();
             updateBodyCompCharts();
-            showToast(`Medición del ${dateStr} actualizada`);
+            showToast(`Medición del ${validDate} actualizada`);
         }
 
         function deleteBodyCompEntry(dateStr) {
@@ -2044,6 +2145,53 @@
 
 
 
+        function resetGarminDeficit() {
+            userGarmin.deficitKcal = 0;
+            const defEl = document.getElementById('garminDeficitInput');
+            if (defEl) defEl.value = 0;
+            saveGarmin();
+            updateGarminValueLabels();
+            renderGarminSummaryText();
+            applyFilter();
+        }
+
+        function updateGarminValueLabels() {
+            const kcalVal = parseFloat(document.getElementById('garminKcalInput')?.value || 2000);
+            const defEl = document.getElementById('garminDeficitInput');
+            const defValRaw = defEl ? parseFloat(defEl.value) : 0;
+            const defVal = isNaN(defValRaw) ? 0 : defValRaw;
+            const weightVal = parseFloat(document.getElementById('garminWeightInput')?.value || 80);
+            const fatPctVal = parseFloat(document.getElementById('garminFatPctInput')?.value || 15);
+            const ffmVal = parseFloat(document.getElementById('garminFFMInput')?.value || 33);
+            const waterVal = parseFloat(document.getElementById('garminWaterPctInput')?.value || 58);
+            const protFFMVal = parseFloat(document.getElementById('garminProtFFMInput')?.value || 2);
+            const fatWVal = parseFloat(document.getElementById('garminFatWeightInput')?.value || 1);
+
+            const kcalLabel = document.getElementById('garminKcalVal');
+            if (kcalLabel) kcalLabel.textContent = `${kcalVal} kcal`;
+
+            const defLabel = document.getElementById('garminDeficitVal');
+            if (defLabel) defLabel.textContent = `${defVal > 0 ? '+' : ''}${defVal} kcal`;
+
+            const weightLabel = document.getElementById('garminWeightVal');
+            if (weightLabel) weightLabel.textContent = `${weightVal.toFixed(1)} kg`;
+
+            const fatPctLabel = document.getElementById('garminFatPctVal');
+            if (fatPctLabel) fatPctLabel.textContent = `${fatPctVal.toFixed(1)}%`;
+
+            const ffmLabel = document.getElementById('garminFFMVal');
+            if (ffmLabel) ffmLabel.textContent = `${ffmVal.toFixed(1)} kg`;
+
+            const waterLabel = document.getElementById('garminWaterPctVal');
+            if (waterLabel) waterLabel.textContent = `${waterVal.toFixed(1)}%`;
+
+            const protFFMLabel = document.getElementById('garminProtFFMVal');
+            if (protFFMLabel) protFFMLabel.textContent = `${protFFMVal.toFixed(1)} g/kg`;
+
+            const fatWLabel = document.getElementById('garminFatWeightVal');
+            if (fatWLabel) fatWLabel.textContent = `${fatWVal.toFixed(1)} g/kg`;
+        }
+
         function updateGarminUI() {
             const kcalEl = document.getElementById('garminKcalInput');
             const defEl = document.getElementById('garminDeficitInput');
@@ -2055,14 +2203,15 @@
             const fatWEl = document.getElementById('garminFatWeightInput');
 
             if (kcalEl) kcalEl.value = userGarmin.yesterdayKcal;
-            if (defEl) defEl.value = userGarmin.deficitKcal || 0;
+            if (defEl) defEl.value = (userGarmin.deficitKcal !== undefined && userGarmin.deficitKcal !== null) ? userGarmin.deficitKcal : 0;
             if (weightEl) weightEl.value = userGarmin.weightKg;
             if (fatPctEl) fatPctEl.value = userGarmin.fatPct;
             if (ffmEl) ffmEl.value = (userGarmin.ffmKg === 68.0 || !userGarmin.ffmKg) ? 33.0 : userGarmin.ffmKg;
-            if (waterEl) waterEl.value = userGarmin.waterPct || 58.5;
+            if (waterEl) waterEl.value = userGarmin.waterPct || 58.0;
             if (protFFMEl) protFFMEl.value = userGarmin.protRatioFFM;
             if (fatWEl) fatWEl.value = userGarmin.fatRatioWeight;
 
+            updateGarminValueLabels();
             renderGarminSummaryText();
             renderBodyCompTable();
             updateBodyCompCharts();
@@ -2072,9 +2221,9 @@
             bodyComp: {
                 icon: "📈",
                 title: "Evolución Corporal",
-                subtitle: "Masa Magra (kg) vs Masa Grasa (kg) vs % Agua",
+                subtitle: "Masa Magra (kg) vs Masa Grasa (kg) vs Masa de Agua (kg)",
                 purpose: "Evalúa la calidad real de tu recomposición corporal o cambio de peso a lo largo del tiempo.",
-                howTo: "• Masa Magra (Verde): Representa tejido muscular y masa libre de grasa. Debe subir o mantenerse.\n• Masa Grasa (Rojo): Representa la cantidad total de grasa en kg. Debe bajar si tu objetivo es definir.\n• % Agua (Azul): Muestra la hidratación corporal. Caídas bruscas son pérdida de agua/glucógeno, no grasa.",
+                howTo: "• Masa Magra (Verde): Representa tejido muscular y masa libre de grasa. Debe subir o mantenerse.\n• Masa Grasa (Rojo): Representa la cantidad total de grasa en kg. Debe bajar si tu objetivo es definir.\n• Masa de Agua (Azul): Muestra la masa total de agua corporal en kg. Caídas bruscas son pérdida de agua/glucógeno, no grasa.",
                 conclusiones: "✔ Éxito Total: Si la curva verde sube o se mantiene mientras la curva roja baja.\n⚠️ Alerta: Si bajas peso pero la curva verde cae rápido, estás perdiendo músculo (ajusta tu déficit calórico o aumenta la proteína)."
             },
             protFFM: {
@@ -2087,11 +2236,35 @@
             },
             carbWater: {
                 icon: "🍞",
-                title: "Carbohidratos vs Agua & Masa Magra",
-                subtitle: "Carbohidratos (g) vs % Agua & Masa Magra (kg)",
+                title: "Carbohidratos vs Masa de Agua & Magra",
+                subtitle: "Efecto del glucógeno muscular sobre la hidratación y volumen",
                 purpose: "Demuestra la correlación entre la ingesta de carbohidratos, el almacenamiento de glucógeno y el agua corporal.",
-                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• % Agua (Azul) y Masa Magra (Verde): El glucógeno muscular arrastra unos 3-4g de agua por cada gramo cargado.",
-                conclusiones: "✔ Efecto Tanque Lleno: Un pico en la ingesta de carbohidratos provocará una subida temporal de % agua y masa magra (hidratación muscular).\n⚠️ Bajadas de Peso Engañosas: Reducir carbohidratos vacía el agua corporal rápidamente en 1-2 días; no confundas esa bajada inicial con pérdida de grasa real."
+                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• Masa de Agua (Azul) y Masa Magra (Verde): El glucógeno muscular arrastra unos 3-4g de agua por cada gramo cargado.",
+                conclusiones: "✔ Efecto Tanque Lleno: Un pico en la ingesta de carbohidratos provocará una subida temporal de agua corporal (kg) y masa magra (hidratación muscular).\n⚠️ Bajadas de Peso Engañosas: Reducir carbohidratos vacía el agua corporal rápidamente en 1-2 días; no confundas esa bajada inicial con pérdida de grasa real."
+            },
+            deficitFFM: {
+                icon: "🔥",
+                title: "Déficit Real vs Masa Magra",
+                subtitle: "Correlación entre el balance calórico diario y la conservación muscular",
+                purpose: "Evalúa cómo afecta el déficit o superávit calórico real diario (Ingesta Real - Gasto Referencia) a la conservación o pérdida de masa magra muscular.",
+                howTo: "• Déficit Real (Naranja/Rojo): Balance calórico diario (Kcal ingesta menos Gasto Referencia). Valores negativos representan déficit (ej. -500 kcal).\n• Masa Magra (Verde): Registro de masa libre de grasa en kg.",
+                conclusiones: "✔ Déficit Sostenible: Un déficit calórico moderado manteniendo suficiente proteína preserva la masa magra.\n⚠️ Riesgo Catabólico: Déficits excesivamente agresivos o prolongados sin proteína adecuada aumentan el riesgo de perder masa magra."
+            },
+            ocrHelp: {
+                icon: "📷",
+                title: "Importación OCR de Capturas Garmin",
+                subtitle: "Escaneo y lectura automática de capturas de Garmin Connect",
+                purpose: "Permite importar al instante tu peso, % de grasa, masa magra y agua corporal directamente desde una captura de pantalla de la app Garmin Connect.",
+                howTo: "1. Captura la pantalla de Composición Corporal en Garmin Connect.\n2. Haz clic en el botón OCR para seleccionar una imagen o pega directamente con Ctrl+V.\n3. Los deslizadores (Peso, % Grasa, Masa Magra, % Agua) se ajustarán solos automáticamente.",
+                conclusiones: "✔ Automatización rápida: Evita teclear decimal a decimal cada mañana.\n✔ Precisión: Extrae directamente la información leída por el motor de visión."
+            },
+            ffmNutritionHelp: {
+                icon: "⚡",
+                title: "Set Fat-Free Mass Based Nutrition",
+                subtitle: "Nutrición basada en la Masa Magra o Masa Libre de Grasa (FFM)",
+                purpose: "Ajusta automáticamente la ingesta objetivo a 2.4g de Proteína y 1.0g de Grasa por cada kg de Masa Magra (FFM), destinando el margen calórico restante a carbohidratos.",
+                howTo: "• Proteína (2.4 g/kg FFM): Basado en Helms et al. (2014) y Morton et al. (2018), durante déficits o alto entrenamiento de fuerza/CrossFit, el requerimiento óptimo para mitigar el catabolismo escala sobre la FFM (2.3–3.1 g/kg FFM).\n• Grasa (1.0 g/kg FFM): Basado en Iraki et al. (2019) y Slater & Phillips (2011), 1.0 g/kg FFM asegura la producción de hormonas esteroideas (testosterona) y la absorción de vitaminas liposolubles sin comprometer el cupo glucídico.\n• Priorización Carbohidratos: Al asegurar proteína y grasa sobre la masa magra activa, el resto del presupuesto calórico maximiza la recarga de glucógeno para rendimiento en WODs.",
+                conclusiones: "✔ Preservación de la Masa Magra: Maximiza la retención de tejido activo durante fases de definición o alto gasto.\n✔ Salud Endocrina: Mantiene el perfil hormonal estable mediante grasas esenciales adecuadas.\n✔ Rendimiento en Alta Intensidad: Optimiza la disponibilidad de glucógeno muscular."
             }
         };
 
@@ -2113,41 +2286,75 @@
             document.getElementById('chartHelpModal').classList.add('hidden');
         }
 
-        function applySportsPreset() {
-            userGarmin.protRatioFFM = 2.4;
-            userGarmin.fatRatioWeight = 1.0;
+        function onFFMNutritionToggleChange(enable) {
+            if (enable) {
+                userGarmin.protRatioFFM = 2.4;
+                userGarmin.fatRatioWeight = 1.0;
+                userGarmin.isFFMNutritionActive = true;
+                showToast("Set Fat-Free Mass Based Nutrition Activado (2.4g Prot / 1.0g Grasa FFM)");
+            } else {
+                userGarmin.isFFMNutritionActive = false;
+                showToast("Set Fat-Free Mass Based Nutrition Desactivado");
+            }
             saveGarmin();
             updateGarminUI();
             applyFilter();
-            showToast("Preset WOD Aplicado (2.4g Prot / 1.0g Grasa FFM)");
         }
 
-        function applyMaxDeficit() {
-            const t = getGarminCalculatedTargets();
-            const minTargetKcal = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
-            const maxDef = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcal));
-            userGarmin.deficitKcal = -maxDef;
+        function onMaxDeficitToggleChange(enable) {
+            if (enable) {
+                const t = getGarminCalculatedTargets();
+                const minTargetKcal = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
+                const maxDef = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcal));
+                userGarmin.deficitKcal = -maxDef;
+                userGarmin.isMaxDeficitActive = true;
+                showToast(`Set Déficit Máximo Activado (-${maxDef} kcal)`);
+            } else {
+                userGarmin.deficitKcal = 0;
+                userGarmin.isMaxDeficitActive = false;
+                showToast("Set Déficit Máximo Desactivado (0 kcal)");
+            }
             saveGarmin();
             updateGarminUI();
             applyFilter();
-            showToast(`Déficit Óptimo Aplicado (-${maxDef} kcal)`);
         }
 
         function renderGarminSummaryText() {
             const t = getGarminCalculatedTargets();
 
-            const ffmEl = document.getElementById('garminFFMText');
-            if (ffmEl) ffmEl.textContent = `${t.ffm.toFixed(1)} kg`;
+            const calcFFMValEl = document.getElementById('garminCalcFFMVal');
+            const calcFFMInputEl = document.getElementById('garminCalcFFMInput');
+            if (calcFFMValEl) calcFFMValEl.textContent = `${t.ffm.toFixed(1)} kg`;
+            if (calcFFMInputEl) calcFFMInputEl.value = t.ffm.toFixed(1);
 
             const carbTextEl = document.getElementById('garminCarbCalcText');
             if (carbTextEl) carbTextEl.textContent = `${t.c.toFixed(1)}g`;
 
-            // Cálculo del Déficit Máximo Recomendado (manteniendo Carbs >= 2.5 g/kg FFM)
+            // 1. Sincronizar Interruptor FFM Nutrition (se desactiva si está fuera del rango óptimo)
+            const isOptimalFFM = (t.protRatioFFM >= 2.3 && t.protRatioFFM <= 2.6 && t.fatRatioWeight >= 0.9 && t.fatRatioWeight <= 1.1);
+            if (!isOptimalFFM) {
+                userGarmin.isFFMNutritionActive = false;
+            }
+            const ffmToggle = document.getElementById('ffmNutritionToggle');
+            if (ffmToggle) {
+                ffmToggle.checked = Boolean(userGarmin.isFFMNutritionActive);
+            }
+
+            // 2. Cálculo del Déficit Máximo Recomendado y Sincronización de Interruptor
             const minTargetKcalForSafeCarbs = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
             const maxSafeDeficit = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcalForSafeCarbs));
-            const maxDefSubEl = document.getElementById('maxDeficitSubtitleText');
-            if (maxDefSubEl) {
-                maxDefSubEl.textContent = `Aplica un déficit seguro recomendado (-${maxSafeDeficit} kcal)`;
+            const maxDefTitleEl = document.getElementById('maxDeficitTitleText');
+            if (maxDefTitleEl) {
+                maxDefTitleEl.textContent = `Set Déficit Máximo (-${maxSafeDeficit} kcal)`;
+            }
+
+            const maxDefToggle = document.getElementById('maxDeficitToggle');
+            if (maxDefToggle) {
+                // Se desactiva si el valor ajustado es menor que el deficit maximo recomendado o ha variado del déficit óptimo fijado
+                if (maxSafeDeficit === 0 || userGarmin.deficitKcal !== -maxSafeDeficit || userGarmin.deficitKcal < -maxSafeDeficit) {
+                    userGarmin.isMaxDeficitActive = false;
+                }
+                maxDefToggle.checked = Boolean(userGarmin.isMaxDeficitActive);
             }
 
             // Cálculos Fisiológicos Científicos
@@ -2169,16 +2376,31 @@
 
             const el = document.getElementById('garminTargetSummaryText');
             if (el) {
-                let deficitInfo = t.deficitKcal !== 0 ? ` &bull; Ajuste: <strong class="${t.deficitKcal < 0 ? 'text-emerald-400' : 'text-amber-400'}">${t.deficitKcal > 0 ? '+' : ''}${t.deficitKcal} kcal</strong>` : '';
+                const deficitText = t.deficitKcal !== 0 ? `${t.deficitKcal > 0 ? '+' : ''}${t.deficitKcal} kcal` : '0 kcal';
+                const deficitClass = t.deficitKcal < 0 ? 'text-emerald-400 font-bold' : (t.deficitKcal > 0 ? 'text-amber-400 font-bold' : 'text-kcal font-bold');
+
                 el.innerHTML = `
-                    <div class="grid grid-cols-4 gap-1 text-[11px] font-mono mt-1">
-                        <span class="text-prot font-bold">P: ${t.p.toFixed(1)}g</span>
-                        <span class="text-carb font-bold">C: ${t.c.toFixed(1)}g</span>
-                        <span class="text-fat font-bold">G: ${t.f.toFixed(1)}g</span>
-                        <span class="text-kcal font-bold">${t.k} kcal</span>
-                    </div>
-                    <div class="mt-1.5 text-[10px] text-white/60 font-mono">
-                        Distribución: <strong class="text-prot">${protPct}% P</strong> &bull; <strong class="text-carb">${carbPct}% C</strong> &bull; <strong class="text-fat">${fatPct}% G</strong> ${deficitInfo}
+                    <div class="grid grid-cols-4 gap-2 my-1 text-center">
+                        <div class="bg-prot-soft rounded-xl p-2 flex flex-col items-center justify-center">
+                            <div class="text-[10px] text-prot font-bold uppercase">PROT</div>
+                            <div class="text-xs font-bold text-white mt-0.5">${t.p.toFixed(1)}g</div>
+                            <div class="text-[10px] text-prot font-bold mt-0.5">${protPct}%</div>
+                        </div>
+                        <div class="bg-carb-soft rounded-xl p-2 flex flex-col items-center justify-center">
+                            <div class="text-[10px] text-carb font-bold uppercase">CARB</div>
+                            <div class="text-xs font-bold text-white mt-0.5">${t.c.toFixed(1)}g</div>
+                            <div class="text-[10px] text-carb font-bold mt-0.5">${carbPct}%</div>
+                        </div>
+                        <div class="bg-fat-soft rounded-xl p-2 flex flex-col items-center justify-center">
+                            <div class="text-[10px] text-fat font-bold uppercase">GRAS</div>
+                            <div class="text-xs font-bold text-white mt-0.5">${t.f.toFixed(1)}g</div>
+                            <div class="text-[10px] text-fat font-bold mt-0.5">${fatPct}%</div>
+                        </div>
+                        <div class="bg-kcal-soft rounded-xl p-2 flex flex-col items-center justify-center">
+                            <div class="text-[10px] text-kcal font-bold uppercase">KCAL</div>
+                            <div class="text-xs font-bold text-white mt-0.5">${t.k}</div>
+                            <div class="text-[10px] ${deficitClass} mt-0.5">${deficitText}</div>
+                        </div>
                     </div>
                     ${statusBadge}
                     ${carbWarning}
@@ -2193,9 +2415,19 @@
             applyFilter();
         }
 
-        function onGarminChange() {
+        function onGarminChange(isManual = false) {
+            if (isManual) {
+                const card = document.getElementById('saveBodyCompCard');
+                if (card) card.classList.remove('hidden');
+            }
             const kcalVal = parseFloat(document.getElementById('garminKcalInput').value);
-            const defVal = parseFloat(document.getElementById('garminDeficitInput').value);
+            let defVal = parseFloat(document.getElementById('garminDeficitInput').value);
+            if (isNaN(defVal)) defVal = 0;
+            if (Math.abs(defVal) <= 15) {
+                defVal = 0;
+                document.getElementById('garminDeficitInput').value = 0;
+            }
+
             const weightVal = parseFloat(document.getElementById('garminWeightInput').value);
             const fatPctVal = parseFloat(document.getElementById('garminFatPctInput').value);
             const ffmVal = parseFloat(document.getElementById('garminFFMInput').value);
@@ -2204,15 +2436,24 @@
             const fatWVal = parseFloat(document.getElementById('garminFatWeightInput').value);
 
             userGarmin.yesterdayKcal = isNaN(kcalVal) ? 2000 : kcalVal;
-            userGarmin.deficitKcal = isNaN(defVal) ? 0 : defVal;
+            userGarmin.deficitKcal = defVal;
             userGarmin.weightKg = isNaN(weightVal) ? 80 : weightVal;
             userGarmin.fatPct = isNaN(fatPctVal) ? 15 : fatPctVal;
             userGarmin.ffmKg = isNaN(ffmVal) ? 33.0 : ffmVal;
-            userGarmin.waterPct = isNaN(waterVal) ? 58.5 : waterVal;
+            userGarmin.waterPct = isNaN(waterVal) ? 58.0 : waterVal;
             userGarmin.protRatioFFM = isNaN(protFFMVal) ? 2.0 : protFFMVal;
             userGarmin.fatRatioWeight = isNaN(fatWVal) ? 1.0 : fatWVal;
 
+            // Desactivar interruptor de déficit máximo si el usuario mueve manualmente el slider fuera del valor máximo recomendado
+            const tTemp = getGarminCalculatedTargets();
+            const minTargetKcalTemp = (tTemp.p * 4) + (tTemp.f * 9) + (tTemp.ffm * 2.5 * 4);
+            const maxDefTemp = Math.max(0, Math.round(tTemp.yesterdayKcal - minTargetKcalTemp));
+            if (userGarmin.isMaxDeficitActive && (defVal !== -maxDefTemp || defVal < -maxDefTemp)) {
+                userGarmin.isMaxDeficitActive = false;
+            }
+
             saveGarmin();
+            updateGarminValueLabels();
             renderGarminSummaryText();
             applyFilter();
         }
@@ -2251,14 +2492,159 @@
             }
         }
 
+        async function handleGarminOcrImage(input) {
+            const file = input.files && input.files[0];
+            if (!file) return;
+
+            showLoadingToast("⏳ Analizando captura Garmin con OCR... 0%");
+
+            try {
+                if (typeof Tesseract === 'undefined') {
+                    showToast("❌ Librería OCR no disponible");
+                    input.value = '';
+                    return;
+                }
+
+                const result = await Tesseract.recognize(file, 'spa', {
+                    logger: m => {
+                        if (m.status === 'recognizing text') {
+                            const pct = Math.round((m.progress || 0) * 100);
+                            showLoadingToast(`⏳ Analizando captura Garmin... ${pct}%`);
+                        }
+                    }
+                });
+
+                const text = result && result.data && result.data.text ? result.data.text : '';
+
+                if (!text || text.trim().length === 0) {
+                    showToast("⚠️ No se pudo leer texto en la imagen");
+                    input.value = '';
+                    return;
+                }
+
+                // Extracción Regex adaptada a Garmin Connect
+                let weight = null;
+                const weightMatch = text.match(/Peso\s*[\:\s]?\s*(\d+[\.\,]\d+)/i) || text.match(/(\d+[\.\,]\d+)\s*kg/i);
+                if (weightMatch) {
+                    weight = parseFloat(weightMatch[1].replace(',', '.'));
+                }
+
+                let fatPct = null;
+                const fatMatch = text.match(/Grasa\s*(?:corporal)?\s*[\:\s]?\s*(\d+[\.\,]\d+)/i) || text.match(/(\d+[\.\,]\d+)\s*%/i);
+                if (fatMatch) {
+                    fatPct = parseFloat(fatMatch[1].replace(',', '.'));
+                }
+
+                let ffm = null;
+                const ffmMatch = text.match(/Masa\s*(?:muscular|magra)\s*(?:esquelética)?\s*[\:\s]?\s*(\d+[\.\,]\d+)/i);
+                if (ffmMatch) {
+                    ffm = parseFloat(ffmMatch[1].replace(',', '.'));
+                }
+
+                let waterPct = null;
+                const waterMatch = text.match(/Agua\s*(?:corporal)?\s*[\:\s]?\s*(\d+[\.\,]\d+)/i);
+                if (waterMatch) {
+                    waterPct = parseFloat(waterMatch[1].replace(',', '.'));
+                }
+
+                let updatedCount = 0;
+                let summaryParts = [];
+
+                if (weight !== null && !isNaN(weight) && weight >= 45 && weight <= 120) {
+                    document.getElementById('garminWeightInput').value = weight;
+                    summaryParts.push(`Peso: ${weight}kg`);
+                    updatedCount++;
+                }
+
+                if (fatPct !== null && !isNaN(fatPct) && fatPct >= 0 && fatPct <= 50) {
+                    document.getElementById('garminFatPctInput').value = fatPct;
+                    summaryParts.push(`Grasa: ${fatPct}%`);
+                    updatedCount++;
+                }
+
+                if (ffm !== null && !isNaN(ffm) && ffm >= 15 && ffm <= 40) {
+                    document.getElementById('garminFFMInput').value = ffm;
+                    summaryParts.push(`Magra: ${ffm}kg`);
+                    updatedCount++;
+                }
+
+                if (waterPct !== null && !isNaN(waterPct) && waterPct >= 0 && waterPct <= 70) {
+                    document.getElementById('garminWaterPctInput').value = waterPct;
+                    summaryParts.push(`Agua: ${waterPct}%`);
+                    updatedCount++;
+                }
+
+                if (updatedCount > 0) {
+                    onGarminChange();
+                    saveBodyCompMeasurement(true);
+                    showToast(`✅ Leído y guardado en historial: ${summaryParts.join(' | ')}`, 4000);
+                } else {
+                    showToast("⚠️ No se identificaron métricas de Garmin en la captura");
+                }
+
+            } catch (err) {
+                console.error("Error OCR Garmin:", err);
+                showToast("❌ Error al procesar la imagen con OCR");
+            } finally {
+                input.value = '';
+            }
+        }
+
+        // Soporte de pegado desde el portapapeles (Ctrl+V)
+        window.addEventListener('paste', e => {
+            const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+            for (let item of items) {
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    const input = document.getElementById('garminOcrFileInput');
+                    if (input) {
+                        const dataTransfer = new DataTransfer();
+                        dataTransfer.items.add(blob);
+                        input.files = dataTransfer.files;
+                        handleGarminOcrImage(input);
+                        break;
+                    }
+                }
+            }
+        });
+
+        function setBodyCompTimeframe(tf) {
+            bodyCompTimeframe = tf;
+            const tfs = ['1m', '3m', '6m', '1y', 'all'];
+            tfs.forEach(t => {
+                const btn = document.getElementById(`btnTimeframe${t}`);
+                if (btn) {
+                    if (t === tf) {
+                        btn.className = "px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0a84ff] text-white border border-[#0a84ff]/50 shadow-sm whitespace-nowrap";
+                    } else {
+                        btn.className = "px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap";
+                    }
+                }
+            });
+            updateBodyCompCharts();
+        }
+
         function updateBodyCompCharts() {
             const ctx1 = document.getElementById('chartBodyComp');
             const ctx2 = document.getElementById('chartProtFFM');
             const ctx3 = document.getElementById('chartCarbWater');
+            const ctx4 = document.getElementById('chartDeficitFFM');
 
-            if (!ctx1 || !ctx2 || !ctx3) return;
+            if (!ctx1 || !ctx2 || !ctx3 || !ctx4) return;
 
-            const sortedLogs = [...bodyCompLog].sort((a, b) => a.date.localeCompare(b.date));
+            let sortedLogs = [...bodyCompLog].sort((a, b) => a.date.localeCompare(b.date));
+
+            if (sortedLogs.length && bodyCompTimeframe !== 'all') {
+                const now = new Date();
+                let cutoffDate = new Date();
+                if (bodyCompTimeframe === '1m') cutoffDate.setMonth(now.getMonth() - 1);
+                else if (bodyCompTimeframe === '3m') cutoffDate.setMonth(now.getMonth() - 3);
+                else if (bodyCompTimeframe === '6m') cutoffDate.setMonth(now.getMonth() - 6);
+                else if (bodyCompTimeframe === '1y') cutoffDate.setFullYear(now.getFullYear() - 1);
+
+                const cutoffStr = cutoffDate.toISOString().split('T')[0];
+                sortedLogs = sortedLogs.filter(l => l.date >= cutoffStr);
+            }
             if (!sortedLogs.length) {
                 // Si no hay historial guardado todavía, usamos el valor actual como punto inicial
                 const t = getGarminCalculatedTargets();
@@ -2272,10 +2658,40 @@
                 });
             }
 
-            const labels = sortedLogs.map(l => l.date);
+            const labels = sortedLogs.map(l => {
+                if (!l.date) return '';
+                const parts = l.date.split('-');
+                if (parts.length === 3) return `${parts[2]}/${parts[1]}`;
+                return l.date;
+            });
             const ffmData = sortedLogs.map(l => l.ffmKg);
             const fatKgData = sortedLogs.map(l => parseFloat((l.weight * (l.fatPct / 100)).toFixed(1)));
-            const waterData = sortedLogs.map(l => l.waterPct);
+            const waterKgData = sortedLogs.map(l => parseFloat((l.weight * (l.waterPct / 100)).toFixed(1)));
+
+            // Valores de ejes Y (+1 máx y -1 mín) para Masa Magra y Masa de Agua
+            const ffmMax = Math.max(...ffmData);
+            const ffmMin = Math.min(...ffmData);
+            const ffmYMax = parseFloat((ffmMax + 1).toFixed(1));
+            const ffmYMin = parseFloat((ffmMin - 1).toFixed(1));
+
+            const waterKgMax = Math.max(...waterKgData);
+            const waterKgMin = Math.min(...waterKgData);
+            const waterKgYMax = parseFloat((waterKgMax + 1).toFixed(1));
+            const waterKgYMin = parseFloat((waterKgMin - 1).toFixed(1));
+
+            const xAxisConfig = {
+                ticks: {
+                    color: '#8e8e93',
+                    font: { size: 9 },
+                    callback: function(val, index, ticks) {
+                        if (index === 0 || index === ticks.length - 1) {
+                            return this.getLabelForValue(val);
+                        }
+                        return '';
+                    }
+                },
+                grid: { color: '#2c2c2e' }
+            };
 
             // Mapeo con la ingesta real del historial de alimentos
             const protEatenData = sortedLogs.map(l => {
@@ -2292,6 +2708,14 @@
                 return Math.round(sum);
             });
 
+            const realDeficitData = sortedLogs.map(l => {
+                const logsOnDate = globalLog.filter(item => item.date === l.date);
+                let eaten = 0;
+                logsOnDate.forEach(i => eaten += (i.kcal || 0));
+                const refKcal = parseFloat(userGarmin.yesterdayKcal) || 2000;
+                return Math.round(eaten - refKcal);
+            });
+
             const createColoredLegend = (chart) => {
                 return chart.data.datasets.map((ds, i) => ({
                     text: ds.label,
@@ -2305,24 +2729,25 @@
                 }));
             };
 
-            // 1. Gráfico de Evolución Corporal (Masa Magra vs Grasas vs Agua)
+            // 1. Gráfico de Evolución Corporal (Masa Magra vs Masa Grasa vs Masa de Agua)
             if (chartInstanceBodyComp) chartInstanceBodyComp.destroy();
             chartInstanceBodyComp = new Chart(ctx1, {
                 type: 'line',
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' },
                         { label: 'Masa Grasa (kg)', data: fatKgData, borderColor: '#ff3b30', backgroundColor: 'rgba(255, 59, 48, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
-                        { label: '% Agua (%)', data: waterData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' }
+                        { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
-                        x: { ticks: { color: '#8e8e93', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y: { position: 'left', max: 45, ticks: { color: '#34c759', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        x: xAxisConfig,
+                        y: { position: 'left', ticks: { color: '#ff3b30', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
+                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } },
+                        y2: { position: 'right', min: waterKgYMin, max: waterKgYMax, ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
                         legend: {
@@ -2352,9 +2777,9 @@
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
-                        x: { ticks: { color: '#8e8e93', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
+                        x: xAxisConfig,
                         y: { position: 'left', ticks: { color: '#af52de', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', max: 45, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
                         legend: {
@@ -2370,7 +2795,7 @@
                 }
             });
 
-            // 3. Gráfico Carbohidratos vs % Agua & Masa Magra
+            // 3. Gráfico Carbohidratos vs Masa de Agua & Masa Magra
             if (chartInstanceCarbWater) chartInstanceCarbWater.destroy();
             chartInstanceCarbWater = new Chart(ctx3, {
                 type: 'line',
@@ -2378,17 +2803,49 @@
                     labels,
                     datasets: [
                         { label: 'Carbohidratos (g)', data: carbEatenData, borderColor: '#ff9500', backgroundColor: 'rgba(255, 149, 0, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
-                        { label: '% Agua (%)', data: waterData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' },
+                        { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' },
                         { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' }
                     ]
                 },
                 options: {
                     responsive: true, maintainAspectRatio: false,
                     scales: {
-                        x: { ticks: { color: '#8e8e93', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
+                        x: xAxisConfig,
                         y: { position: 'left', ticks: { color: '#ff9500', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', max: 45, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } },
-                        y2: { position: 'right', ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } },
+                        y2: { position: 'right', min: waterKgYMin, max: waterKgYMax, ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                boxWidth: 0,
+                                boxHeight: 0,
+                                padding: 12,
+                                font: { size: 10, weight: 'bold' },
+                                generateLabels: createColoredLegend
+                            }
+                        }
+                    }
+                }
+            });
+
+            // 4. Gráfico Déficit Real vs Masa Magra
+            if (chartInstanceDeficitFFM) chartInstanceDeficitFFM.destroy();
+            chartInstanceDeficitFFM = new Chart(ctx4, {
+                type: 'line',
+                data: {
+                    labels,
+                    datasets: [
+                        { label: 'Déficit Real (kcal)', data: realDeficitData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' }
+                    ]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        x: xAxisConfig,
+                        y: { position: 'left', ticks: { color: '#ff453a', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
+                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
                         legend: {
@@ -2413,14 +2870,16 @@
                     const last = sortedLogs[sortedLogs.length - 1];
                     const prev = sortedLogs[sortedLogs.length - 2];
                     const diffFFM = last.ffmKg - prev.ffmKg;
-                    const diffWater = last.waterPct - prev.waterPct;
+                    const lastWaterKg = last.weight * (last.waterPct / 100);
+                    const prevWaterKg = prev.weight * (prev.waterPct / 100);
+                    const diffWaterKg = lastWaterKg - prevWaterKg;
 
-                    if (diffFFM < 0 && diffWater < -0.3) {
-                        diagTextEl.innerHTML = `💧 <strong>Vaciado de Líquidos / Glucógeno:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) en paralelo con tu % de Agua (${diffWater.toFixed(1)}%). <em>No es pérdida muscular real</em>, sino menor hidratación o vaciado de glucógeno.`;
-                    } else if (diffFFM < 0 && diffWater >= -0.3) {
+                    if (diffFFM < 0 && diffWaterKg < -0.2) {
+                        diagTextEl.innerHTML = `💧 <strong>Vaciado de Líquidos / Glucógeno:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) en paralelo con tu Masa de Agua (-${Math.abs(diffWaterKg).toFixed(1)} kg). <em>No es pérdida muscular real</em>, sino menor hidratación o vaciado de glucógeno.`;
+                    } else if (diffFFM < 0 && diffWaterKg >= -0.2) {
                         diagTextEl.innerHTML = `⚠️ <strong>Posible Pérdida Muscular Real:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) manteniendo los niveles de agua. Se recomienda revisar la Proteína FFM (aumentar a 2.4 g/kg) o suavizar el déficit.`;
                     } else if (diffFFM > 0) {
-                        diagTextEl.innerHTML = `🟢 <strong>Progreso Limpio:</strong> Tu Masa Magra subió (+${diffFFM.toFixed(1)} kg) con un % de Agua de ${last.waterPct}%. ¡Excelente preservación/ganancia muscular!`;
+                        diagTextEl.innerHTML = `🟢 <strong>Progreso Limpio:</strong> Tu Masa Magra subió (+${diffFFM.toFixed(1)} kg) con una Masa de Agua de ${lastWaterKg.toFixed(1)} kg (${last.waterPct}%). ¡Excelente preservación/ganancia muscular!`;
                     } else {
                         diagTextEl.innerHTML = `⚖️ <strong>Masa Magra Estante:</strong> Tu composición muscular se mantiene perfectamente estable entre mediciones (${last.ffmKg.toFixed(1)} kg).`;
                     }
@@ -3971,16 +4430,51 @@
             });
         }
 
-        function showToast(message) {
+        let toastTimeout = null;
+
+        function showToast(message, duration = 3000) {
+            if (toastTimeout) clearTimeout(toastTimeout);
             const toast = document.getElementById('toast');
             const msg = document.getElementById('toastMsg');
+            const icon = toast.querySelector('svg');
+            
+            if (icon) {
+                icon.className = "w-5 h-5 text-accent flex-shrink-0";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>`;
+            }
+
             msg.textContent = message;
             toast.classList.remove('opacity-0', 'translate-y-[-20px]');
             toast.classList.add('opacity-100', 'translate-y-0');
-            setTimeout(() => {
-                toast.classList.remove('opacity-100', 'translate-y-0');
-                toast.classList.add('opacity-0', 'translate-y-[-20px]');
-            }, 2500);
+
+            if (duration > 0) {
+                toastTimeout = setTimeout(() => {
+                    hideToast();
+                }, duration);
+            }
+        }
+
+        function showLoadingToast(message) {
+            if (toastTimeout) clearTimeout(toastTimeout);
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            const icon = toast.querySelector('svg');
+
+            if (icon) {
+                icon.className = "w-5 h-5 text-[#0a84ff] animate-spin flex-shrink-0";
+                icon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>`;
+            }
+
+            msg.textContent = message;
+            toast.classList.remove('opacity-0', 'translate-y-[-20px]');
+            toast.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        function hideToast() {
+            if (toastTimeout) clearTimeout(toastTimeout);
+            const toast = document.getElementById('toast');
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'translate-y-[-20px]');
         }
     </script>
     <div id="toast"
