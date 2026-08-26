@@ -23,22 +23,49 @@
   * **Set Fat-Free Mass Based Nutrition (Preset Científico):** Interruptor inteligente basado en literatura científica (*Helms et al., Morton et al.*) que fija 2.4g Proteína y 1.0g Grasa por kg de FFM activa.
   * **Set Déficit Máximo:** Interruptor que aplica el máximo déficit calórico seguro recomendado manteniendo la glucemia y glucógeno adecuados.
   * **Panel Resumen de Macros:** 4 cuadrados de datos independientes (`PROT`, `CARB`, `GRAS`, `KCAL`) con desglose de gramos, calorías y porcentajes de distribución en tiempo real.
-* **Correlaciones & Composición Corporal (4 Gráficos Avanzados):**
-  * **Carbohidratos vs Agua & Magra (kg):** Relación entre ingesta de hidratos, recarga de glucógeno y volumen de agua corporal.
-  * **Peso vs Masa Magra & Grasa (kg):** Evolución del peso corporal desglosado en kg de masa magra y kg de grasa.
-  * **Composición Corporal (% Grasa vs % Agua):** Tendencia de porcentajes corporales a lo largo del tiempo.
-  * **Déficit Real vs Masa Magra:** Comparativa entre el balance calórico diario real y la conservación de la masa muscular.
-  * **Filtros Temporales:** Visualización ajustable por `1 Mes`, `3 Meses`, `6 Meses`, `1 Año` o `Todo`.
-  * **Eje X Limpio:** Muestra la fecha más antigua a la izquierda y la más reciente a la derecha para un análisis despejado.
-  * **Modales de Ayuda e Interpretación (❓):** Guías explicativas y evidencia científica integrada para cada métrica y gráfico.
-* **Gestión de Recetas:**
-  * **Creación:** Permite crear recetas personalizadas agrupando alimentos desde el historial.
-  * **Uso y Desglose:** Las recetas guardadas calculan automáticamente la suma de macros y permiten ver sus ingredientes originales.
-* **Base de Datos Híbrida:**
-  * Listado predefinido de alimentos comunes + Alimentos personalizados.
-  * **Búsqueda Online:** Integración con la API de *OpenFoodFacts*.
-  * **Escáner de Códigos de Barras:** Utilidad integrada con la cámara del dispositivo.
-* **Privacidad y Backup Completo:** Exportación e importación en formato `.json` de todo el historial, recetas y mediciones corporales.
+* **Modelo Biofísico de Corrección SMM (Báscula Bioimpedancia):**
+  * **Aislamiento del 27% Seco:** Aisla la matriz proteica contráctil pura libre de agua (`SMM_seca = SMM × 0.27`).
+  * **Normalización Hídrica por Mediana:** Normaliza las lecturas frente a la mediana hídrica histórica del propio usuario (`%TBW_ref`) neutralizando las fluctuaciones por sudoración o glucógeno.
+  * **Filtro de Tendencia EMA (α = 0.3):** Aplica una Media Móvil Exponencial sobre la masa seca normalizada para filtrar la variabilidad bioeléctrica diaria y observar cambios hipertróficos/proteicos reales a medio plazo.
+* **Correlaciones & Composición Corporal (5 Gráficos Avanzados con Semáforos Inteligentes):**
+  * **WEIGHT VS FAT VS MUSCLE:** Foto panorámica de recomposición corporal (Peso Total vs Masa Grasa kg vs Masa Muscular Seca EMA).
+  * **PROTEIN VS MUSCLE:** Ingesta de proteína (g) vs Masa Muscular Seca EMA (kg).
+  * **CARBS VS WATER & MUSCLE:** Carbohidratos (g) vs Masa de Agua (kg) & Masa Seca.
+  * **DEFICIT REAL VS MUSCLE:** Balance calórico diario (kcal) vs Masa Muscular Seca EMA (kg).
+  * **IMPACTO ACTIVIDAD:** Respuesta de WOD, MTB y Descanso evaluadas contra la tendencia seca EMA.
+  * **Semáforos Fisiológicos Coherentes:** Badges informativos con r de Pearson calibrados por especialidad (`Recomposición Limpia`, `Protección Proteica`, `Carbo-Hidratación Limpia`, `Conservación Magra`).
+  * **Modales de Ayuda e Interpretación (❓):** Incluyen en cada gráfica la fórmula del algoritmo, ejemplo numérico de utilidad y guía de interpretación de curvas.
+
+---
+
+## Modelo Biofísico de Corrección SMM & Tendencia Muscular Real (EMA)
+
+Para eliminar las distorsiones ocasionadas por el estado de hidratación y la depleción de glucógeno en básculas de bioimpedancia (ej. Garmin Index S2), **NutriApp** aplica un modelo biofísico de corrección hídrica en 3 pasos:
+
+### 1. Aislamiento de la Masa Muscular Seca (27%)
+El tejido muscular magro vivo contiene un ~73% de agua. Se aisla la matriz proteica contráctil pura libre de agua:
+$$\text{SMM}_{\text{seca}} = \text{SMM} \times 0.27$$
+
+### 2. Normalización Hídrica por Mediana (%TBW_ref)
+Para evitar que la sudoración o depleción tras entrenamientos altere engañosamente la lectura de la báscula, la masa muscular se normaliza respecto a la **mediana hídrica histórica del propio usuario** ($\%\text{TBW}_{\text{ref}}$):
+$$\text{SMM}_{\text{norm}} = \text{SMM} \times \left( \frac{\%\text{TBW}_{\text{ref}}}{\%\text{TBW}} \right)$$
+$$\text{SMM}_{\text{seca\_norm}} = \text{SMM}_{\text{norm}} \times 0.27$$
+
+### 3. Filtro de Fluctuación Bioeléctrica (Suavizado EMA α = 0.3)
+Se aplica una Media Móvil Exponencial (EMA) sobre la masa seca normalizada para aislar la tendencia hipertrófica/protectora real frente al ruido eléctrico diario:
+$$\text{EMA}_{t} = 0.3 \times \text{SMM}_{\text{seca\_norm}, t} + 0.7 \times \text{EMA}_{t-1}$$
+
+---
+
+### 💡 Ejemplo Práctico de Utilidad Real
+
+| Fecha | Evento | Peso | % Agua | SMM Garmin (Bruto) | SMM Seca EMA (NutriApp) | Diagnóstico |
+| :--- | :--- | :---: | :---: | :---: | :---: | :--- |
+| **Día 1** | Descanso | 85.0 kg | 55.7% | 33.9 kg | **9.15 kg** | Estado basal hídrico normal. |
+| **Día 2** | WOD 1 | 83.7 kg | 55.6% | 33.6 kg | **9.13 kg** | Perdió -1.3 kg de peso/agua. La EMA mantiene la masa seca. |
+| **Día 3** | WOD 2 | 83.2 kg | 55.7% | 33.4 kg | **9.10 kg** | **Garmin marca -0.5 kg de músculo por deshidratación**. NutriApp demuestra que tu tejido contráctil está **100% intacto a 9.1 kg**. |
+
+> **Resultado:** La báscula Garmin da una falsa alarma de pérdida de -0.5 kg de músculo en 48h por menor volumen hídrico. El modelo biofísico de NutriApp demuestra que el peso perdido (-1.8 kg) fue exclusivamente vaciado de agua y glucógeno, manteniendo la masa muscular contráctil intocada.
 
 ---
 

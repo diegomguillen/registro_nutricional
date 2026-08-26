@@ -421,6 +421,22 @@
                     </div>
                 </div>
 
+                <!-- Tarjeta 1: Peso vs Masa Grasa vs Masa Muscular Seca -->
+                <div class="premium-card p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-xs font-bold text-white uppercase tracking-wider">WEIGHT VS FAT VS MUSCLE</h4>
+                        <div class="flex items-center gap-2">
+                            <div id="badgeWeightFatMuscle" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r) entre Grasa y Músculo Seco"></div>
+                            <button onclick="openChartHelpModal('weightFatMuscle')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                                ❓
+                            </button>
+                        </div>
+                    </div>
+                    <div class="h-44 w-full relative">
+                        <canvas id="chartWeightFatMuscle"></canvas>
+                    </div>
+                </div>
+
                 <!-- Tarjeta 2: Proteína Real vs Masa Magra -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
@@ -2148,6 +2164,7 @@
         let userGarmin = { ...DEFAULT_GARMIN };
         let bodyCompLog = [];
         let bodyCompTimeframe = 'all';
+        let chartInstanceWeightFatMuscle = null;
         let chartInstanceProtFFM = null;
         let chartInstanceCarbWater = null;
         let chartInstanceDeficitFFM = null;
@@ -2507,45 +2524,53 @@
         }
 
         const CHART_HELP_DATA = {
+            weightFatMuscle: {
+                icon: "⚖️",
+                title: "Peso vs Masa Grasa vs Masa Muscular Seca (EMA)",
+                subtitle: "Evolución global de composición corporal",
+                purpose: "Muestra la foto global de tu recomposición corporal comparando el peso total de la báscula, la masa grasa en kg y tu tendencia proteica seca.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\n1. Aislamiento 27% Seco: SMM_seca = SMM × 0.27\n2. Normalización %TBW_ref: SMM_norm = SMM × (%TBW_ref / %TBW)\n3. Filtro EMA (α=0.3): EMA_t = 0.3 × SMM_seca_norm + 0.7 × EMA_t-1\n\n💡 EJEMPLO DE UTILIDAD REAL:\nTras 2 WODs pierdes -1.8 kg y tu báscula Garmin marca engañosamente -0.5 kg de músculo por menor agua. El algoritmo neutraliza la deshidratación y demuestra que tu masa muscular seca real sigue intocada a 9.10 kg.",
+                howTo: "• Peso Total (Gris Claro): Peso bruto en la báscula.\n• Masa Grasa (Rojo): Kilos totales de grasa corporal (Peso × %Grasa / 100).\n• Masa Muscular Seca EMA (Verde Neón): Tendencia proteica contráctil pura sin fluctuaciones de agua.\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Gris baja + Rojo baja + Verde Neón PLANA: Definición Magra Impecable. El peso que estás perdiendo es 100% grasa y agua sin sacrificar masa muscular.\n🟢 Gris sube + Rojo plana + Verde Neón SUBE: Volumen Magro Limpio. Ganancia muscular real con mínima acumulación de grasa.\n⚠️ Gris baja + Rojo plana + Verde Neón CAE: Pérdida muscular rápida. Revisa tu proteína y calorías.",
+                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Recomposición Limpia (r ≤ -0.35): Quemando grasa mientras proteges o ganas tejido muscular seco.\n🔵 Tendencia Paralela (r ≥ +0.35): El peso y la grasa caen en paralelo con variaciones de agua (vaciado conjunto natural).\n🟡 Estable / Neutro: Sin sesgo trófico o cambios neutros."
+            },
             bodyComp: {
                 icon: "📈",
-                title: "Evolución Corporal",
+                title: "Evolución Corporal Global",
                 subtitle: "Masa Magra (kg) vs Masa Grasa (kg) vs Masa de Agua (kg)",
-                purpose: "Evalúa la calidad real de tu recomposición corporal o cambio de peso a lo largo del tiempo.",
-                howTo: "• Masa Magra (Verde): Representa tejido muscular y masa libre de grasa. Debe subir o mantenerse.\n• Masa Grasa (Rojo): Representa la cantidad total de grasa en kg. Debe bajar si tu objetivo es definir.\n• Masa de Agua (Azul): Muestra la masa total de agua corporal en kg.\n• Indicador r (Músculo vs Grasa): 🟢 Negativo (r < -0.4) indica excelente recomposición (ganas/mantienes músculo perdiendo grasa). 🔴 Positivo (r > +0.4) indica que ambas suben o bajan juntas (volumen o catabolismo).",
-                conclusiones: "✔ Éxito Total: Si la curva verde sube o se mantiene mientras la curva roja baja.\n✔ Indicador r: Un circulito verde con r negativo refleja una recomposición corporal limpia en el filtro de tiempo elegido.\n⚠️ Alerta: Si bajas peso pero la curva verde cae rápido, estás perdiendo músculo."
+                purpose: "Evalúa la calidad real de tu recomposición corporal a lo largo del tiempo, diferenciando entre cambios de grasa y masa magra.",
+                howTo: "• Masa Magra (Verde): Tejido muscular libre de grasa. Debe mantenerse o subir en volumen/recomposición.\n• Masa Grasa (Rojo): Masa total de tejido graso en kg. Debe descender si buscas definición.\n• Masa de Agua (Azul): Masa total hídrica corporal en kg.\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Verde sube / Rojo baja (Cruzadas): Recomposición corporal impecable (ganas músculo perdiendo grasa).\n⚖️ Verde plana / Rojo baja: Definición magra limpia (preservas 100% el músculo mientras pierdes grasa).\n⚠️ Verde cae / Rojo cae (Paralelo): Perdiendo peso demasiado rápido por catabolismo o déficit excesivo. Eleva la proteína o reduce el déficit.",
+                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Recomposición Limpia (r < -0.40): Quemando grasa sin sacrificar tejido muscular.\n🔴 Catabolismo / Volumen Conjunto (r > +0.40): Ambas variables se mueven en la misma dirección.\n⚠️ Alerta Trófica: Si la curva verde cae rápido en paralelo a la roja, eleva proteína o reduce déficit."
             },
             protFFM: {
                 icon: "🥩",
-                title: "Proteína Real vs Masa Magra",
-                subtitle: "Proteína Ingerida (g) vs Masa Magra (kg)",
-                purpose: "Analiza el impacto directo de tu ingesta diaria de proteína sobre la retención o ganancias de masa muscular.",
-                howTo: "• Proteína Real (Púrpura): Ingesta diaria de proteína registrada en tu dieta.\n• Masa Magra (Verde): Tu masa libre de grasa medida en la báscula.\n• Indicador r (Proteína vs Músculo): 🟢 r ≥ +0.70 (Fuerte) confirma matemáticamente que a mayor consumo de proteína, mejor proteges o ganas masa magra.",
-                conclusiones: "✔ En Déficit: Mantener una ingesta alta (picos altos púrpuras) es la clave principal para evitar que la curva verde caiga.\n✔ Indicador r: Un circulito verde (r alto positivo) es la prueba de que tu ingesta proteica responde eficazmente protegiendo tu musculatura."
+                title: "Proteína Real vs Masa Muscular Seca Real (EMA)",
+                subtitle: "Proteína Ingerida (g) vs Tendencia Muscular Seca Corregida (kg)",
+                purpose: "Analiza el impacto de tu ingesta de proteína registrada sobre la preservación de la matriz proteica contráctil pura (27% seco normalizado con EMA).\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\n1. Aislamiento 27% Seco: SMM_seca = SMM × 0.27\n2. Normalización %TBW_ref: SMM_norm = SMM × (%TBW_ref / %TBW)\n3. Filtro EMA (α=0.3): EMA_t = 0.3 × SMM_seca_norm + 0.7 × EMA_t-1\n\n💡 EJEMPLO DE UTILIDAD REAL:\nUn día con menor consumo de proteína deshidrata el músculo haciendo caer la lectura de Garmin. El algoritmo normaliza frente a tu mediana hídrica y demuestra que tu masa contráctil se mantiene estable.",
+                howTo: "• Proteína Real (Púrpura): Ingesta diaria de proteína consumida en tu dieta.\n• Masa Muscular Seca EMA (Verde Neón): Masa proteica pura sin agua, normalizada frente a tu mediana de %TBW y suavizada con EMA (α=0.3).\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Púrpura cae (día puntual) + Verde Neón PLANA: Protección Magra Exitosa. Aunque un día bajes la proteína o estés en déficit, tu masa seca se mantiene estable.\n🔴 Púrpura baja (sostenido semanas) + Verde Neón CAE: Déficit proteico real. Tu cuerpo está degradando proteína muscular para reparar tejidos.\n🟢 Púrpura alta + Verde Neón SUBE: Estímulo anabólico hipertrófico efectivo.",
+                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Protección Proteica (r ≥ +0.30): Ingesta proteica elevada que protege tu masa muscular seca.\n🔴 Baja Proteína (r ≤ -0.30): Ingesta de proteína insuficiente para la recuperación muscular.\n🟡 Ingesta Neutra: Masa seca estable sin sensibilidad evidente a la proteína."
             },
             carbWater: {
                 icon: "🍞",
-                title: "Carbohidratos vs Masa de Agua & Magra",
-                subtitle: "Efecto del glucógeno muscular sobre la hidratación y volumen",
-                purpose: "Demuestra la correlación entre la ingesta de carbohidratos, el almacenamiento de glucógeno y el agua corporal.",
-                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• Masa de Agua (Azul) y Masa Magra (Verde): El glucógeno muscular arrastra unos 3-4g de agua por cada gramo cargado.\n• Indicador r (Carbohidratos vs Agua): 🟢 r ≥ +0.70 demuestra cuantitativamente que los aumentos de agua/peso coinciden con días de recarga de glucógeno.",
-                conclusiones: "✔ Efecto Tanque Lleno: Un pico en la ingesta de carbohidratos provocará una subida temporal de agua corporal (kg) y masa magra (hidratación muscular).\n✔ Indicador r: Una correlación alta verde confirma que las subidas tras comer carbohidratos son solo agua retenida en el músculo y no grasa."
+                title: "Carbohidratos vs Masa de Agua & Masa Seca",
+                subtitle: "Efecto del glucógeno sobre el agua corporal y volumen muscular",
+                purpose: "Demuestra la correlación directa entre la ingesta de carbohidratos, la recarga/vaciado de glucógeno y la masa de agua corporal.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\nSepara el volumen de agua de la masa proteica seca (27% SMM). Cada gramo de glucógeno arrastra 3-4g de agua, cambiando el volumen en báscula sin alterar el tejido muscular seco real.\n\n💡 EJEMPLO DE UTILIDAD REAL:\nTras una carga de hidratos ganas +1.2 kg en báscula. El algoritmo confirma que el 100% de la subida es masa de agua (línea azul) y que tu masa seca permanece plana en verde neón.",
+                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• Masa de Agua (Azul): Litros/kg de agua corporal total.\n• Masa Muscular Seca EMA (Verde Neón): Masa contráctil filtrada de oscilaciones hídricas.\n\n📊 INTERPRETACIÓN DE CURVAS:\n💧 Naranja cae + Azul cae (Verde Neón PLANA): Vaciado de Glucógeno Limpio. La pérdida de peso en la báscula es 100% agua y glucógeno gastado (3-4g agua por gramo de hidrato). Tu músculo seco está intocado.\n🍞 Naranja sube + Azul sube (Verde Neón PLANA): Efecto Tanque Lleno. Subida de peso por supercompensación de glucógeno e hidratación miocelular, NO ganancia de grasa.",
+                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Carbo-Hidratación Limpia (r ≥ +0.35): Los cambios hídricos en la báscula están justificados por la carga de glucógeno (3-4g agua/g hidrato), aislados del músculo seco.\n🟡 Sin Sesgo Hídrico: Las variaciones de agua no están condicionadas por los hidratos."
             },
             deficitFFM: {
                 icon: "🔥",
-                title: "Déficit Real vs Masa Magra",
-                subtitle: "Correlación entre el balance calórico diario y la conservación muscular",
-                purpose: "Evalúa cómo afecta el déficit o superávit calórico real diario (Ingesta Real - Gasto Referencia) a la conservación o pérdida de masa magra muscular.",
-                howTo: "• Déficit Real (Naranja/Rojo): Balance calórico diario (Kcal ingesta menos Gasto Referencia). Valores negativos representan déficit.\n• Masa Magra (Verde): Registro de masa libre de grasa en kg.\n• Indicador r (Déficit vs Músculo): 🔴 r negativo fuerte (ej. r = -0.70) alerta de que a mayor déficit mayor pérdida muscular. 🟢 r cercano a 0 o positivo indica buena conservación muscular.",
-                conclusiones: "✔ Déficit Sostenible: Un déficit calórico moderado manteniendo suficiente proteína preserva la masa magra.\n⚠️ Riesgo Catabólico: Si el circulito marca r en rojo, tu déficit está destruyendo masa magra; conviene elevar calorías o subir la proteína."
+                title: "Déficit Real vs Masa Muscular Seca Real (EMA)",
+                subtitle: "Correlación entre el balance calórico diario y el tejido muscular seco",
+                purpose: "Evalúa si tu déficit o superávit calórico diario (Ingesta Real - Gasto Referencia) afecta a la proteína contráctil muscular real.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\n1. Aislamiento 27% Seco: SMM_seca = SMM × 0.27\n2. Normalización %TBW_ref: SMM_norm = SMM × (%TBW_ref / %TBW)\n3. Filtro EMA (α=0.3): EMA_t = 0.3 × SMM_seca_norm + 0.7 × EMA_t-1\n\n💡 EJEMPLO DE UTILIDAD REAL:\nUn déficit de -1250 kcal vacía el glucógeno y provoca una caída de peso rápida. El algoritmo verifica que tu matriz proteica no sufre catabolismo y se mantiene en la línea verde.",
+                howTo: "• Déficit Real (Rojo): Balance calórico diario en Kcal. Valores negativos (-500, -1000 kcal) representan déficit.\n• Masa Muscular Seca EMA (Verde Neón): Masa proteica seca con zoom dinámico de alta resolución.\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Rojo cae muy negativo (-800 kcal) + Verde Neón PLANA: Déficit Perfecto y Sostenible. Tu nutrición preserva el 100% del tejido magro. Estás perdiendo exclusivamente grasa y líquido.\n⚠️ Rojo cae muy negativo + Verde Neón CAE (a lo largo de semanas): Alerta Catabólica. El déficit es excesivo. Conviene moderar el déficit o subir la proteína FFM a 2.4 g/kg.",
+                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Conservación Magra (r ≤ +0.30): Tu déficit calórico es seguro y sostenible; la masa muscular seca está 100% protegida.\n🟡 Sensibilidad al Déficit (r ≥ +0.65): En déficits muy severos la masa seca muestra cierta sensibilidad; modera el déficit o eleva la proteína a 2.4 g/kg."
             },
             actImpactHelp: {
                 icon: "🏃",
-                title: "Impacto del Entrenamiento Anterior (Ayer -> Hoy)",
-                subtitle: "Efecto de WOD, MTB o Descanso sobre tu Masa Magra a la mañana siguiente",
-                purpose: "Demuestra la correlación directa entre el tipo de entrenamiento realizado y los cambios/conservación de Masa Magra a lo largo del tiempo.",
-                howTo: "• 🏋️ WOD (CrossFit): Provoca respuesta de reparación e hipertrofia/inflamación (subida de FFM muscular).\n• 🚴 MTB (Resistencia): Sesiones largas vacían glucógeno y pueden catabolizar si no se reponen hidratos.\n• 🛋️ Descanso: Refleja tu estado muscular basal y súper-compensación libre de inflamación agudas.\n• Indicador r (Actividad vs Masa Magra): 🟢 r ≥ +0.60 (Fuerte) confirma que la frecuencia de tus entrenamientos de alta intensidad (WOD) impulsa directamente tu masa muscular.",
-                conclusiones: "✔ Indicador r: Un valor positivo verde confirma que el entrenamiento de fuerza/WOD está protegiendo o ganando masa magra a lo largo de las semanas.\n✔ Contexto inmediato: Te indica si las salidas de MTB están afectando tu masa magra si no compensas con suficiente nutrición.\n✔ Estrategia nutricional: Te permite ajustar carbohidratos tras MTB y proteína tras WOD."
+                title: "Impacto del Entrenamiento (WOD, MTB, Descanso)",
+                subtitle: "Efecto de cada disciplina sobre tu Masa Muscular Seca (EMA)",
+                purpose: "Evalúa el impacto trófico a medio/largo plazo de WOD, MTB o Descanso eliminando el sesgo de sudoración post-entreno.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\nCalcula la correlación entre cada tipo de sesión y la SMM seca normalizada. La corrección hídrica elimina las bajadas artificiales de masa magra tras sesiones intensas de sudoración en MTB.",
+                howTo: "• 🏋️ WOD (CrossFit): Impulso de reparación tisular e hipertrofia magra.\n• 🚴 MTB (Resistencia): Vaciado de glucógeno. El filtro biofísico elimina el falso catabolismo provocado por la sudoración.\n• 🛋️ Descanso: Refleja la supercompensación y recuperación muscular basal.\n\n📊 INTERPRETACIÓN DE BARRAS:\n🟢 Barra Verde (r > +0.30): La disciplina impulsa directamente la conservación o ganancia de masa seca.\n🔴 Barra Roja (r < -0.30): Tendencia a menor masa seca en días de esa actividad.\n⚠️ Nota con pocos datos (< 7 días): El primer día de descanso se compara con los días de entrenamiento iniciales. Al acumular semanas de registro, las barras reflejarán el comportamiento real a medio plazo.",
+                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Barra Verde (r ≥ +0.30): Disciplina estimuladora/protectora de masa seca.\n🔴 Barra Roja (r ≤ -0.30): Tendencia a menor masa seca en días de esa actividad (se estabiliza tras acumular varias semanas)."
             },
             ocrHelp: {
                 icon: "📷",
@@ -3422,7 +3447,50 @@
             return parseFloat((numerator / denominator).toFixed(2));
         }
 
-        function renderCorrelationBadge(elementId, rValue) {
+        function calculateMedian(arr) {
+            const valid = (arr || []).filter(v => typeof v === 'number' && !isNaN(v) && v > 0);
+            if (!valid.length) return 56.0;
+            const sorted = [...valid].sort((a, b) => a - b);
+            const mid = Math.floor(sorted.length / 2);
+            if (sorted.length % 2 !== 0) return sorted[mid];
+            return (sorted[mid - 1] + sorted[mid]) / 2;
+        }
+
+        function processSmmBiophysicalModel(sortedLogs) {
+            if (!sortedLogs || !sortedLogs.length) {
+                return { tbwRef: 56.0, smmNormData: [], smmSecaNormData: [], smmSecaEmaData: [] };
+            }
+            // Mediana hídrica %TBW_ref de todo el historial guardado
+            const allWaterPcts = bodyCompLog.map(l => l.waterPct).filter(w => typeof w === 'number' && !isNaN(w) && w > 0);
+            const tbwRef = calculateMedian(allWaterPcts);
+
+            const smmNormData = [];
+            const smmSecaNormData = [];
+            sortedLogs.forEach(l => {
+                const rawSmm = l.ffmKg || 33.0;
+                const waterPct = (typeof l.waterPct === 'number' && !isNaN(l.waterPct) && l.waterPct > 0) ? l.waterPct : tbwRef;
+                const norm = rawSmm * (tbwRef / waterPct);
+                const secaNorm = norm * 0.27;
+                smmNormData.push(parseFloat(norm.toFixed(2)));
+                smmSecaNormData.push(parseFloat(secaNorm.toFixed(2)));
+            });
+
+            const alpha = 0.3;
+            const smmSecaEmaData = [];
+            let prevEma = null;
+            smmSecaNormData.forEach((val, idx) => {
+                if (idx === 0 || prevEma === null) {
+                    prevEma = val;
+                } else {
+                    prevEma = (alpha * val) + ((1 - alpha) * prevEma);
+                }
+                smmSecaEmaData.push(parseFloat(prevEma.toFixed(2)));
+            });
+
+            return { tbwRef, smmNormData, smmSecaNormData, smmSecaEmaData };
+        }
+
+        function renderCorrelationBadge(elementId, rValue, type = 'general') {
             const badgeEl = document.getElementById(elementId);
             if (!badgeEl) return;
 
@@ -3437,26 +3505,85 @@
             let label = "Moderada";
             const absR = Math.abs(rValue);
 
-            if (absR >= 0.7) {
-                dotColorClass = rValue > 0 ? "bg-emerald-400" : "bg-red-500";
-                textColorClass = rValue > 0 ? "text-emerald-400" : "text-red-400";
-                label = "Fuerte";
-            } else if (absR >= 0.4) {
-                dotColorClass = "bg-yellow-400";
-                textColorClass = "text-yellow-400";
-                label = "Moderada";
+            if (type === 'recomp') {
+                // WEIGHT VS FAT VS MUSCLE (Masa Grasa vs Músculo Seco)
+                if (rValue <= -0.35) {
+                    dotColorClass = "bg-emerald-400";
+                    textColorClass = "text-emerald-400";
+                    label = "Recomposición Limpia";
+                } else if (rValue >= 0.35) {
+                    dotColorClass = "bg-cyan-400";
+                    textColorClass = "text-cyan-400";
+                    label = "Tendencia Paralela";
+                } else {
+                    dotColorClass = "bg-yellow-400";
+                    textColorClass = "text-yellow-400";
+                    label = "Estable / Neutro";
+                }
+            } else if (type === 'protein') {
+                // PROTEIN VS MUSCLE (Proteína vs Músculo Seco)
+                if (rValue >= 0.30) {
+                    dotColorClass = "bg-emerald-400";
+                    textColorClass = "text-emerald-400";
+                    label = "Protección Proteica";
+                } else if (rValue <= -0.30) {
+                    dotColorClass = "bg-red-500";
+                    textColorClass = "text-red-400";
+                    label = "Baja Proteína";
+                } else {
+                    dotColorClass = "bg-yellow-400";
+                    textColorClass = "text-yellow-400";
+                    label = "Ingesta Neutra";
+                }
+            } else if (type === 'carbs') {
+                // CARBS VS WATER & MUSCLE (Carbohidratos vs Agua)
+                if (rValue >= 0.35) {
+                    dotColorClass = "bg-emerald-400";
+                    textColorClass = "text-emerald-400";
+                    label = "Carbo-Hidratación Limpia";
+                } else {
+                    dotColorClass = "bg-yellow-400";
+                    textColorClass = "text-yellow-400";
+                    label = "Sin Sesgo Hídrico";
+                }
+            } else if (type === 'deficit') {
+                // DEFICIT REAL VS MUSCLE (Déficit Kcal vs Músculo Seco)
+                if (rValue <= 0.30) {
+                    dotColorClass = "bg-emerald-400";
+                    textColorClass = "text-emerald-400";
+                    label = "Conservación Magra";
+                } else if (rValue >= 0.65) {
+                    dotColorClass = "bg-amber-400";
+                    textColorClass = "text-amber-400";
+                    label = "Sensibilidad al Déficit";
+                } else {
+                    dotColorClass = "bg-yellow-400";
+                    textColorClass = "text-yellow-400";
+                    label = "Déficit Moderado";
+                }
             } else {
-                dotColorClass = "bg-gray-400";
-                textColorClass = "text-gray-400";
-                label = "Débil";
+                if (absR >= 0.7) {
+                    dotColorClass = rValue > 0 ? "bg-emerald-400" : "bg-red-500";
+                    textColorClass = rValue > 0 ? "text-emerald-400" : "text-red-400";
+                    label = "Fuerte";
+                } else if (absR >= 0.4) {
+                    dotColorClass = "bg-yellow-400";
+                    textColorClass = "text-yellow-400";
+                    label = "Moderada";
+                } else {
+                    dotColorClass = "bg-gray-400";
+                    textColorClass = "text-gray-400";
+                    label = "Débil";
+                }
             }
 
             const sign = rValue > 0 ? '+' : '';
             badgeEl.innerHTML = `<span class="w-2 h-2 rounded-full ${dotColorClass} inline-block animate-pulse"></span><span class="font-mono ${textColorClass} font-bold text-[11px]">r = ${sign}${rValue}</span> <span class="text-white/60 text-[10px]">(${label})</span>`;
-            badgeEl.title = `Correlación de Pearson r = ${sign}${rValue}. Indica la relación entre ambas variables en el periodo de tiempo filtrado.`;
+            badgeEl.title = `Correlación de Pearson r = ${sign}${rValue}. Indica la relación entre ambas variables en el periodo filtrado.`;
         }
 
         function updateBodyCompCharts() {
+            const ctx1 = document.getElementById('chartWeightFatMuscle');
             const ctx2 = document.getElementById('chartProtFFM');
             const ctx3 = document.getElementById('chartCarbWater');
             const ctx4 = document.getElementById('chartDeficitFFM');
@@ -3495,9 +3622,13 @@
                 if (parts.length === 3) return `${parts[2]}/${parts[1]}`;
                 return l.date;
             });
+            const weightData = sortedLogs.map(l => l.weight);
             const ffmData = sortedLogs.map(l => l.ffmKg);
             const fatKgData = sortedLogs.map(l => parseFloat((l.weight * (l.fatPct / 100)).toFixed(1)));
             const waterKgData = sortedLogs.map(l => parseFloat((l.weight * (l.waterPct / 100)).toFixed(1)));
+
+            // Procesar modelo biofísico de corrección (mediana de %TBW_ref, aislamiento del 27% seco y EMA α=0.3)
+            const { tbwRef, smmNormData, smmSecaNormData, smmSecaEmaData } = processSmmBiophysicalModel(sortedLogs);
 
             // Mapeo con la ingesta real del historial de alimentos
             const protEatenData = sortedLogs.map(l => {
@@ -3522,17 +3653,30 @@
                 return Math.round(eaten - refKcal);
             });
 
-            // Actualizar Badges de Correlación para el Filtro Seleccionado
-            const rProt = calculatePearsonR(protEatenData, ffmData);
-            renderCorrelationBadge('badgeProtFFM', rProt);
+            // Actualizar Badges de Correlación evaluados respecto a SMM_seca_norm_EMA con etiquetas fisiológicas
+            const rFatMuscle = calculatePearsonR(fatKgData, smmSecaEmaData);
+            renderCorrelationBadge('badgeWeightFatMuscle', rFatMuscle, 'recomp');
+
+            const rProt = calculatePearsonR(protEatenData, smmSecaEmaData);
+            renderCorrelationBadge('badgeProtFFM', rProt, 'protein');
 
             const rCarb = calculatePearsonR(carbEatenData, waterKgData);
-            renderCorrelationBadge('badgeCarbWater', rCarb);
+            renderCorrelationBadge('badgeCarbWater', rCarb, 'carbs');
 
-            const rDeficit = calculatePearsonR(realDeficitData, ffmData);
-            renderCorrelationBadge('badgeDeficitFFM', rDeficit);
+            const rDeficit = calculatePearsonR(realDeficitData, smmSecaEmaData);
+            renderCorrelationBadge('badgeDeficitFFM', rDeficit, 'deficit');
 
-            // Valores de ejes Y (+1 máx y -1 mín) para Masa Magra y Masa de Agua
+            // Valores de ejes Y (+1 máx y -1 mín) para Peso, Masa Magra Bruta, Grasa y Agua
+            const weightMax = Math.max(...weightData);
+            const weightMin = Math.min(...weightData);
+            const weightYMax = parseFloat((weightMax + 1).toFixed(1));
+            const weightYMin = parseFloat((weightMin - 1).toFixed(1));
+
+            const fatKgMax = Math.max(...fatKgData);
+            const fatKgMin = Math.min(...fatKgData);
+            const fatKgYMax = parseFloat((fatKgMax + 0.5).toFixed(1));
+            const fatKgYMin = parseFloat(Math.max(0, fatKgMin - 0.5).toFixed(1));
+
             const ffmMax = Math.max(...ffmData);
             const ffmMin = Math.min(...ffmData);
             const ffmYMax = parseFloat((ffmMax + 1).toFixed(1));
@@ -3542,6 +3686,12 @@
             const waterKgMin = Math.min(...waterKgData);
             const waterKgYMax = parseFloat((waterKgMax + 1).toFixed(1));
             const waterKgYMin = parseFloat((waterKgMin - 1).toFixed(1));
+
+            // Eje Y derecho dinámico de alta resolución exclusivo para Masa Muscular Seca EMA (kg)
+            const smmSecaEmaMax = Math.max(...smmSecaEmaData);
+            const smmSecaEmaMin = Math.min(...smmSecaEmaData);
+            const smmSecaYMax = parseFloat((smmSecaEmaMax + 0.5).toFixed(1));
+            const smmSecaYMin = parseFloat(Math.max(0, smmSecaEmaMin - 0.5).toFixed(1));
 
             const xAxisConfig = {
                 ticks: {
@@ -3570,7 +3720,43 @@
                 }));
             };
 
-            // 2. Gráfico Proteína vs Masa Magra
+            // 1. Gráfico Peso vs Masa Grasa vs Masa Muscular Seca (EMA)
+            if (chartInstanceWeightFatMuscle) chartInstanceWeightFatMuscle.destroy();
+            if (ctx1) {
+                chartInstanceWeightFatMuscle = new Chart(ctx1, {
+                    type: 'line',
+                    data: {
+                        labels,
+                        datasets: [
+                            { label: 'Peso Total (kg)', data: weightData, borderColor: '#e5e5ea', backgroundColor: 'rgba(229, 229, 234, 0.05)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                            { label: 'Masa Grasa (kg)', data: fatKgData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'yFat' },
+                            { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
+                        ]
+                    },
+                    options: {
+                        responsive: true, maintainAspectRatio: false,
+                        scales: {
+                            x: xAxisConfig,
+                            y: { position: 'left', min: weightYMin, max: weightYMax, ticks: { color: '#e5e5ea', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
+                            yFat: { position: 'right', min: fatKgYMin, max: fatKgYMax, ticks: { color: '#ff453a', font: { size: 9 } }, grid: { drawOnChartArea: false } },
+                            ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    boxWidth: 0,
+                                    boxHeight: 0,
+                                    padding: 12,
+                                    font: { size: 10, weight: 'bold' },
+                                    generateLabels: createColoredLegend
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // 2. Gráfico Proteína vs Masa Muscular Seca Real (EMA)
             if (chartInstanceProtFFM) chartInstanceProtFFM.destroy();
             chartInstanceProtFFM = new Chart(ctx2, {
                 type: 'line',
@@ -3578,7 +3764,7 @@
                     labels,
                     datasets: [
                         { label: 'Proteína Real (g)', data: protEatenData, borderColor: '#af52de', backgroundColor: 'rgba(175, 82, 222, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' }
+                        { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
                 },
                 options: {
@@ -3586,7 +3772,7 @@
                     scales: {
                         x: xAxisConfig,
                         y: { position: 'left', ticks: { color: '#af52de', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
                         legend: {
@@ -3602,7 +3788,7 @@
                 }
             });
 
-            // 3. Gráfico Carbohidratos vs Masa de Agua & Masa Magra
+            // 3. Gráfico Carbohidratos vs Masa de Agua & Masa Seca EMA
             if (chartInstanceCarbWater) chartInstanceCarbWater.destroy();
             chartInstanceCarbWater = new Chart(ctx3, {
                 type: 'line',
@@ -3611,7 +3797,7 @@
                     datasets: [
                         { label: 'Carbohidratos (g)', data: carbEatenData, borderColor: '#ff9500', backgroundColor: 'rgba(255, 149, 0, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
                         { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' },
-                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' }
+                        { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
                 },
                 options: {
@@ -3619,7 +3805,7 @@
                     scales: {
                         x: xAxisConfig,
                         y: { position: 'left', ticks: { color: '#ff9500', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } },
+                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } },
                         y2: { position: 'right', min: waterKgYMin, max: waterKgYMax, ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
@@ -3636,7 +3822,7 @@
                 }
             });
 
-            // 4. Gráfico Déficit Real vs Masa Magra
+            // 4. Gráfico Déficit Real vs Masa Muscular Seca Real (EMA)
             if (chartInstanceDeficitFFM) chartInstanceDeficitFFM.destroy();
             chartInstanceDeficitFFM = new Chart(ctx4, {
                 type: 'line',
@@ -3644,7 +3830,7 @@
                     labels,
                     datasets: [
                         { label: 'Déficit Real (kcal)', data: realDeficitData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa Magra (kg)', data: ffmData, borderColor: '#34c759', backgroundColor: 'rgba(52, 199, 89, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y1' }
+                        { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
                 },
                 options: {
@@ -3652,7 +3838,7 @@
                     scales: {
                         x: xAxisConfig,
                         y: { position: 'left', ticks: { color: '#ff453a', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        y1: { position: 'right', min: ffmYMin, max: ffmYMax, ticks: { color: '#34c759', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
                         legend: {
@@ -3668,19 +3854,18 @@
                 }
             });
 
-            // 4. Gráfico Impacto Actividad: Correlación de Pearson por disciplina contra Masa Magra
+            // 5. Gráfico Impacto Actividad: Correlación de Pearson por disciplina contra Masa Muscular Seca EMA
             const ctxAct = document.getElementById('chartActivityImpact');
             if (ctxAct) {
                 if (chartInstanceActivityImpact) chartInstanceActivityImpact.destroy();
 
-                const ffmSeries = sortedLogs.map(l => l.ffmKg);
                 const isWod = sortedLogs.map(l => l.activityType === 'wod' ? 1 : 0);
                 const isMtb = sortedLogs.map(l => l.activityType === 'mtb' ? 1 : 0);
                 const isRest = sortedLogs.map(l => (!l.activityType || l.activityType === 'rest') ? 1 : 0);
 
-                const rWod = calculatePearsonR(isWod, ffmSeries);
-                const rMtb = calculatePearsonR(isMtb, ffmSeries);
-                const rRest = calculatePearsonR(isRest, ffmSeries);
+                const rWod = calculatePearsonR(isWod, smmSecaEmaData);
+                const rMtb = calculatePearsonR(isMtb, smmSecaEmaData);
+                const rRest = calculatePearsonR(isRest, smmSecaEmaData);
 
                 const getBarColor = (rVal) => {
                     if (rVal === null || rVal === undefined || isNaN(rVal)) return 'rgba(142, 142, 147, 0.6)';
@@ -3699,7 +3884,7 @@
                         labels: ['🏋️ WOD', '🚴 MTB', '🛋️ Descanso'],
                         datasets: [
                             {
-                                label: 'Correlación con Masa Magra (r)',
+                                label: 'Correlación con Masa Seca Real (r)',
                                 data: [valWod, valMtb, valRest],
                                 backgroundColor: [getBarColor(rWod), getBarColor(rMtb), getBarColor(rRest)],
                                 borderRadius: 6,
@@ -3741,28 +3926,31 @@
                 });
             }
 
-            // Diagnóstico Fisiológico de Líquidos
+            // Diagnóstico Fisiológico de Líquidos y Tendencia Proteica Seca
             const diagTextEl = document.getElementById('bodyCompDiagnosisText');
             if (diagTextEl) {
                 if (sortedLogs.length < 2) {
-                    diagTextEl.innerHTML = `Guarda al menos 2 mediciones en días distintos para obtener un diagnóstico fisiológico de fluidos y preservación muscular.`;
+                    diagTextEl.innerHTML = `Guarda al menos 2 mediciones en días distintos para obtener un diagnóstico fisiológico de fluidos y tendencia muscular seca.`;
                 } else {
                     const last = sortedLogs[sortedLogs.length - 1];
                     const prev = sortedLogs[sortedLogs.length - 2];
-                    const diffFFM = last.ffmKg - prev.ffmKg;
+                    const lastEma = smmSecaEmaData[smmSecaEmaData.length - 1];
+                    const prevEma = smmSecaEmaData[smmSecaEmaData.length - 2];
+                    const diffEma = lastEma - prevEma;
+                    const diffRawFFM = last.ffmKg - prev.ffmKg;
                     const lastWaterKg = last.weight * (last.waterPct / 100);
                     const prevWaterKg = prev.weight * (prev.waterPct / 100);
                     const diffWaterKg = lastWaterKg - prevWaterKg;
 
                     let baseDiag = "";
-                    if (diffFFM < 0 && diffWaterKg < -0.2) {
-                        baseDiag = `💧 <strong>Vaciado de Líquidos / Glucógeno:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) en paralelo con tu Masa de Agua (-${Math.abs(diffWaterKg).toFixed(1)} kg). <em>No es pérdida muscular real</em>, sino menor hidratación o vaciado de glucógeno.`;
-                    } else if (diffFFM < 0 && diffWaterKg >= -0.2) {
-                        baseDiag = `⚠️ <strong>Posible Pérdida Muscular Real:</strong> Tu Masa Magra bajó (-${Math.abs(diffFFM).toFixed(1)} kg) manteniendo los niveles de agua. Se recomienda revisar la Proteína FFM (aumentar a 2.4 g/kg) o suavizar el déficit.`;
-                    } else if (diffFFM > 0) {
-                        baseDiag = `🟢 <strong>Progreso Limpio:</strong> Tu Masa Magra subió (+${diffFFM.toFixed(1)} kg) con una Masa de Agua de ${lastWaterKg.toFixed(1)} kg (${last.waterPct}%). ¡Excelente preservación/ganancia muscular!`;
+                    if (diffRawFFM < 0 && diffWaterKg < -0.2 && diffEma >= -0.05) {
+                        baseDiag = `💧 <strong>Vaciado de Líquidos / Glucógeno:</strong> Tu Masa Magra bruta de Garmin bajó (-${Math.abs(diffRawFFM).toFixed(1)} kg) por menor agua (-${Math.abs(diffWaterKg).toFixed(1)} kg). Sin embargo, tu <strong>Tendencia Muscular Seca Real (EMA) se mantiene estable (${lastEma.toFixed(2)} kg)</strong>. <em>No hay pérdida proteica contráctil real</em>.`;
+                    } else if (diffEma < -0.1) {
+                        baseDiag = `⚠️ <strong>Pérdida Proteica Seca Detectada:</strong> Tu Masa Muscular Seca (EMA) muestra una ligera tendencia a la baja (-${Math.abs(diffEma).toFixed(2)} kg, actual: ${lastEma.toFixed(2)} kg). Se recomienda revisar la Proteína FFM (aumentar a 2.4 g/kg) o suavizar el déficit.`;
+                    } else if (diffEma > 0.05) {
+                        baseDiag = `🟢 <strong>Hipertrofia / Progreso Magro Real:</strong> Tu Masa Muscular Seca (EMA) subió (+${diffEma.toFixed(2)} kg, actual: ${lastEma.toFixed(2)} kg) con un %TBW del ${last.waterPct}% (Mediana hídrica: ${tbwRef.toFixed(1)}%). ¡Excelente ganancia/preservación muscular!`;
                     } else {
-                        baseDiag = `⚖️ <strong>Masa Magra Estable:</strong> Tu composición muscular se mantiene perfectamente estable entre mediciones (${last.ffmKg.toFixed(1)} kg).`;
+                        baseDiag = `⚖️ <strong>Tendencia Muscular Estable:</strong> Tu Masa Muscular Seca Normalizada (EMA) se mantiene sólida (${lastEma.toFixed(2)} kg seco / ${last.ffmKg.toFixed(1)} kg bruto Garmin).`;
                     }
 
                     if (last.activityType === 'wod') {
