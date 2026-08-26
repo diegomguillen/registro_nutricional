@@ -923,20 +923,6 @@
                     </svg></button>
             </div>
 
-            <!-- ACCESO DIRECTO AL RECOMENDADOR / ASISTENTE DE MENÚ INTELIGENTE -->
-            <div onclick="document.getElementById('foodModal').classList.add('hidden'); openSmartMealBuilder();" class="mb-4 p-3 bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-500/40 hover:border-purple-400 rounded-xl flex items-center justify-between cursor-pointer transition-all active:scale-98 shadow-md">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 font-bold text-base flex-shrink-0">
-                        💡
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold text-white leading-tight">Asistente de Menú & Porciones</div>
-                        <div class="text-[10px] text-white/60">Calcula tus raciones automáticamente</div>
-                    </div>
-                </div>
-                <span class="text-[11px] bg-purple-600 hover:bg-purple-500 text-white font-bold px-2.5 py-1 rounded-lg flex-shrink-0 shadow-sm">Abrir 💡</span>
-            </div>
-
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-white uppercase mb-1.5">Fecha</label>
@@ -1182,6 +1168,7 @@
                     </div>
                 </div>
                 <div id="modalTargetDiff" class="mb-4"></div>
+                <div id="modalQualityScore" class="mb-4"></div>
                 <div class="h-40 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
                 <div class="border-t border-[#2c2c2e] pt-4">
                     <h4 class="text-xs font-medium text-white uppercase mb-2">Elementos (Desglose)</h4>
@@ -1271,26 +1258,34 @@
             <!-- Scrollable Content -->
             <div class="overflow-y-auto space-y-4 py-3 pr-1 text-xs no-scrollbar flex-1">
                 
-                <!-- PASO 0: Ingesta & Contexto Deportivo -->
+                <!-- PASO 0: Ingesta & Contexto Deportivo (Sliders) -->
                 <div class="bg-[#2c2c2e]/60 rounded-xl p-3 border border-[#3a3a3c] space-y-3">
-                    <!-- Tipo de Ingesta -->
-                    <div>
-                        <label class="block text-[10px] font-bold text-white/60 uppercase tracking-wider mb-1.5">1. Tipo de Ingesta</label>
-                        <div class="grid grid-cols-4 gap-1.5" id="smbMealTypeGroup">
-                            <button type="button" onclick="setSmbMealType('desayuno')" id="smbBtn_desayuno" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">☕ Desayuno</button>
-                            <button type="button" onclick="setSmbMealType('tentempie')" id="smbBtn_tentempie" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🍎 Snack</button>
-                            <button type="button" onclick="setSmbMealType('comida')" id="smbBtn_comida" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🍚 Comida</button>
-                            <button type="button" onclick="setSmbMealType('cena')" id="smbBtn_cena" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🌙 Cena</button>
+                    <!-- Tipo de Ingesta Slider -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-[10px] font-bold text-purple-300 uppercase tracking-wider">1. Tipo de Ingesta</label>
+                            <span id="smbMealTypeVal" class="text-xs font-mono font-bold text-purple-300">☕ Desayuno</span>
+                        </div>
+                        <input type="range" id="smbMealTypeSlider" min="0" max="3" step="1" value="0" class="w-full accent-purple-500 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg border border-[#3a3a3c]" oninput="onSmbMealTypeSliderChange(this.value)">
+                        <div class="flex justify-between text-[10px] text-white/60 px-0.5 font-medium select-none">
+                            <span class="cursor-pointer hover:text-white" onclick="setSmbMealType('desayuno')">☕ Desayuno</span>
+                            <span class="cursor-pointer hover:text-white text-center" onclick="setSmbMealType('tentempie')">🍎 Snack</span>
+                            <span class="cursor-pointer hover:text-white text-center" onclick="setSmbMealType('comida')">🍚 Comida</span>
+                            <span class="cursor-pointer hover:text-white text-right" onclick="setSmbMealType('cena')">🌙 Cena</span>
                         </div>
                     </div>
 
-                    <!-- Momento Deportivo -->
-                    <div>
-                        <label class="block text-[10px] font-bold text-white/60 uppercase tracking-wider mb-1.5">2. Momento Deportivo</label>
-                        <div class="grid grid-cols-3 gap-1.5" id="smbTimingGroup">
-                            <button type="button" onclick="setSmbTiming('normal')" id="smbTimingBtn_normal" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🛋️ Normal</button>
-                            <button type="button" onclick="setSmbTiming('pre')" id="smbTimingBtn_pre" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">⚡ Pre-WOD</button>
-                            <button type="button" onclick="setSmbTiming('post')" id="smbTimingBtn_post" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🏋️ Post-WOD (70/30)</button>
+                    <!-- Momento Deportivo Slider -->
+                    <div class="space-y-1.5 pt-1 border-t border-[#3a3a3c]/60">
+                        <div class="flex justify-between items-center">
+                            <label class="block text-[10px] font-bold text-purple-300 uppercase tracking-wider">2. Momento Deportivo</label>
+                            <span id="smbTimingVal" class="text-xs font-mono font-bold text-purple-300">🛋️ Normal</span>
+                        </div>
+                        <input type="range" id="smbTimingSlider" min="0" max="2" step="1" value="0" class="w-full accent-purple-500 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg border border-[#3a3a3c]" oninput="onSmbTimingSliderChange(this.value)">
+                        <div class="flex justify-between text-[10px] text-white/60 px-0.5 font-medium select-none">
+                            <span class="cursor-pointer hover:text-white" onclick="setSmbTiming('normal')">🛋️ Normal</span>
+                            <span class="cursor-pointer hover:text-white text-center" onclick="setSmbTiming('pre')">⚡ Pre-WOD</span>
+                            <span class="cursor-pointer hover:text-white text-right" onclick="setSmbTiming('post')">🏋️ Post-WOD</span>
                         </div>
                     </div>
 
@@ -1369,7 +1364,7 @@
                 <div class="bg-[#2c2c2e] rounded-xl p-3 border border-[#3a3a3c] space-y-3">
                     <div class="flex justify-between items-center">
                         <label class="text-[11px] font-bold text-carb uppercase flex items-center gap-1">🍞 Fuentes de Carbohidratos</label>
-                        <span id="smbCarbModeBadge" class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-bold">Recomendado máximo 30% fruta</span>
+                        <span id="smbCarbModeBadge" class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-bold">Recom. Max 30%</span>
                     </div>
 
                     <!-- Sub-paso Fruta (si aplica post-wod) -->
@@ -1427,8 +1422,11 @@
 
             <!-- Modal Footer -->
             <div class="pt-3 border-t border-[#2c2c2e] flex flex-col gap-2 flex-shrink-0">
-                <button onclick="saveSmartMealToLog()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-98 transition-all text-sm">
-                    <span>➕</span> Añadir este menú al Diario de Hoy
+                <button onclick="saveSmartMealToLog()" class="w-full bg-accent/20 text-white font-medium py-3.5 rounded-xl shadow-lg border border-accent/40 active:scale-95 transition-transform flex justify-center items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                    </svg>
+                    Añadir al Diario
                 </button>
             </div>
         </div>
@@ -1653,17 +1651,17 @@
             </div>
 
             <!-- ACCESO DIRECTO AL RECOMENDADOR / ASISTENTE DE MENÚ EN PANTALLA CATEGORÍAS -->
-            <div onclick="document.getElementById('categoryModal').classList.add('hidden'); openSmartMealBuilder();" class="mb-4 p-3 bg-gradient-to-r from-purple-900/50 to-blue-900/50 border border-purple-500/50 hover:border-purple-400 rounded-xl flex items-center justify-between cursor-pointer transition-all active:scale-98 shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-full bg-purple-500/30 border border-purple-400/50 flex items-center justify-center text-purple-300 font-bold text-lg flex-shrink-0">
-                        💡
-                    </div>
-                    <div>
-                        <div class="text-xs font-bold text-white leading-tight">Asistente de Menú & Porciones</div>
-                        <div class="text-[10px] text-white/70">Calcula tus raciones automáticamente</div>
-                    </div>
+            <div onclick="document.getElementById('categoryModal').classList.add('hidden'); openSmartMealBuilder();" class="action-card premium-card p-3.5 mb-4 flex items-center gap-3 cursor-pointer border-purple-500/40 hover:border-purple-500/60 bg-gradient-to-r from-purple-900/20 to-[#1c1c1e]">
+                <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 font-bold text-lg flex-shrink-0">
+                    💡
                 </div>
-                <span class="text-[11px] bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg flex-shrink-0 shadow-md">Abrir 💡</span>
+                <div class="flex-1">
+                    <h3 class="font-medium text-white text-sm leading-tight">Asistente de Menú & Porciones</h3>
+                    <p class="text-[11px] text-white/50">Calcula tus raciones automáticamente</p>
+                </div>
+                <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
             </div>
 
             <div id="categoryGrid" class="grid grid-cols-3 gap-3"></div>
@@ -1833,9 +1831,10 @@
         if ('serviceWorker' in navigator) { window.addEventListener('load', () => { navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW Fail', err)); }); }
 
         // --- GESTIÓN DE MODALES DE REGISTRO ---
-        function openFoodModal() {
+        function openFoodModal(famKey = null) {
             document.getElementById('scannerSection').classList.add('hidden');
             document.getElementById('foodSelectionControls').classList.remove('hidden'); // Mostrar selects
+            populateSelect(famKey);
             document.getElementById('foodModal').classList.remove('hidden');
         }
         function openRecipeLogModal() {
@@ -1956,19 +1955,21 @@
             const dateInput = document.getElementById('foodDate');
             if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
 
-            openFoodModal();
+            const food = foodData.find(f => f.id == foodId);
+            const famKey = food ? (food.fam || (food.id >= 1000 ? 'OTHER' : null)) : null;
+
+            openFoodModal(famKey);
 
             // Seleccionar ID exacto
             const select = document.getElementById('foodSelect');
-            select.value = foodId;
+            if (select) select.value = foodId;
 
             // Ajustar cantidad por defecto según unidad
-            const food = foodData.find(f => f.id == foodId);
             if (food) {
                 const amountInput = document.getElementById('amountInput');
                 const amountDisplay = document.getElementById('amountDisplay');
                 const defaultAmount = (food.unit === 'u' || food.unit === 'ud' || food.unit === 'u.') ? 1 : 100;
-                amountInput.value = defaultAmount;
+                if (amountInput) amountInput.value = defaultAmount;
                 if (amountDisplay) amountDisplay.textContent = defaultAmount;
             }
 
@@ -2888,8 +2889,8 @@
 
         // --- MÓDULO ASISTENTE DE MENÚ & PORCIONES INTELIGENTE ---
         let smbState = {
-            mealType: 'cena', // desayuno, tentempie, comida, cena
-            timing: 'post',   // normal, pre, post
+            mealType: 'desayuno', // desayuno, tentempie, comida, cena
+            timing: 'normal',   // normal, pre, post
             budgetPct: 100,   // 10 - 100
             selectedProtId: null,
             selectedFruitId: null,
@@ -2918,8 +2919,8 @@
             smbState.isManualEdited = { prot: true, fruit: true, starch: true, fat: true };
             
             populateSmbDropdowns();
-            setSmbMealType(smbState.mealType || 'cena', false);
-            setSmbTiming(smbState.timing || 'post', false);
+            setSmbMealType('desayuno', false);
+            setSmbTiming('normal', false);
             
             modal.classList.remove('hidden');
             updateSmartMealBuilderUI();
@@ -2968,19 +2969,29 @@
             }
         }
 
+        function onSmbMealTypeSliderChange(val) {
+            const idx = parseInt(val, 10) || 0;
+            const types = ['desayuno', 'tentempie', 'comida', 'cena'];
+            const type = types[idx] || 'cena';
+            setSmbMealType(type, true);
+        }
+
         function setSmbMealType(type, triggerUpdate = true) {
             smbState.mealType = type;
             const types = ['desayuno', 'tentempie', 'comida', 'cena'];
-            types.forEach(t => {
-                const btn = document.getElementById(`smbBtn_${t}`);
-                if (btn) {
-                    if (t === type) {
-                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-purple-600 text-white border-purple-500 shadow-sm";
-                    } else {
-                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-[#1c1c1e] text-white/60 hover:text-white border-[#3a3a3c]";
-                    }
-                }
-            });
+            const labels = {
+                'desayuno': '☕ Desayuno',
+                'tentempie': '🍎 Snack',
+                'comida': '🍚 Comida',
+                'cena': '🌙 Cena'
+            };
+            const idx = types.indexOf(type);
+
+            const slider = document.getElementById('smbMealTypeSlider');
+            if (slider && idx >= 0) slider.value = idx;
+
+            const valLabel = document.getElementById('smbMealTypeVal');
+            if (valLabel) valLabel.textContent = labels[type] || '🌙 Cena';
 
             if (type === 'cena') setSmbBudgetPct(100, false);
             else if (type === 'comida') setSmbBudgetPct(50, false);
@@ -2990,19 +3001,28 @@
             if (triggerUpdate) updateSmartMealBuilderUI();
         }
 
+        function onSmbTimingSliderChange(val) {
+            const idx = parseInt(val, 10) || 0;
+            const timings = ['normal', 'pre', 'post'];
+            const timing = timings[idx] || 'post';
+            setSmbTiming(timing, true);
+        }
+
         function setSmbTiming(timing, triggerUpdate = true) {
             smbState.timing = timing;
             const timings = ['normal', 'pre', 'post'];
-            timings.forEach(t => {
-                const btn = document.getElementById(`smbTimingBtn_${t}`);
-                if (btn) {
-                    if (t === timing) {
-                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-purple-600 text-white border-purple-500 shadow-sm";
-                    } else {
-                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-[#1c1c1e] text-white/60 hover:text-white border-[#3a3a3c]";
-                    }
-                }
-            });
+            const labels = {
+                'normal': '🛋️ Normal',
+                'pre': '⚡ Pre-WOD',
+                'post': '🏋️ Post-WOD (70/30)'
+            };
+            const idx = timings.indexOf(timing);
+
+            const slider = document.getElementById('smbTimingSlider');
+            if (slider && idx >= 0) slider.value = idx;
+
+            const valLabel = document.getElementById('smbTimingVal');
+            if (valLabel) valLabel.textContent = labels[timing] || '🏋️ Post-WOD (70/30)';
 
             if (triggerUpdate) updateSmartMealBuilderUI();
         }
@@ -3115,7 +3135,7 @@
 
             if (isPostWod) {
                 if (fruitContainer) fruitContainer.classList.remove('hidden');
-                if (carbBadge) carbBadge.textContent = "Recomendado máximo 30% fruta";
+                if (carbBadge) carbBadge.textContent = "Recom. Max 30%";
             } else {
                 if (fruitContainer) fruitContainer.classList.add('hidden');
                 if (carbBadge) carbBadge.textContent = smbState.timing === 'pre' ? "Pre-WOD (Almidón de energía)" : "Normal (Almidón / Carbs)";
@@ -4187,7 +4207,36 @@
                 const f = (food.f * factor).toFixed(1);
                 const k = Math.round(food.kcal * factor);
 
-                div.innerHTML = renderMacroFlex(p, c, f, k);
+                let qualityHtml = '';
+                const qP = food.qP || (food.p >= 10 ? 3 : (food.p >= 3 ? 2 : 1));
+                const qC = food.qC || (food.c >= 10 ? 2 : 1);
+                const qF = food.qF || (food.f >= 10 ? 2 : 1);
+
+                const badges = [];
+                if (food.p > 1.5) {
+                    if (qP === 3) badges.push('<span class="text-emerald-400 font-bold">🟢 Prot Completa</span>');
+                    else if (qP === 2) badges.push('<span class="text-amber-400 font-bold">🟡 Prot Vegetal</span>');
+                    else badges.push('<span class="text-orange-400 font-bold">🟠 Prot Secundaria</span>');
+                }
+                if (food.c > 1.5) {
+                    if (qC === 3) badges.push('<span class="text-emerald-400 font-bold">🟢 Carb Complejo / Fibra</span>');
+                    else if (qC === 2) badges.push('<span class="text-amber-400 font-bold">🟡 Carb Moderado</span>');
+                    else badges.push('<span class="text-red-400 font-bold">🔴 Carb Refinado</span>');
+                }
+                if (food.f > 1.5) {
+                    if (qF === 3) badges.push('<span class="text-emerald-400 font-bold">🟢 Grasa MUFA / Omega-3</span>');
+                    else if (qF === 2) badges.push('<span class="text-amber-400 font-bold">🟡 Grasa Natural</span>');
+                    else badges.push('<span class="text-red-400 font-bold">🔴 Grasa Procesada</span>');
+                }
+
+                if (badges.length > 0) {
+                    qualityHtml = `
+                        <div class="mt-2.5 pt-2 border-t border-[#3a3a3c] flex flex-wrap items-center justify-center gap-2 text-[10px]">
+                            ${badges.join('<span class="text-white/30">&bull;</span>')}
+                        </div>`;
+                }
+
+                div.innerHTML = renderMacroFlex(p, c, f, k) + qualityHtml;
             } else {
                 div.innerHTML = '';
             }
@@ -4629,36 +4678,40 @@
             });
             if(val && [...sel.options].some(o => o.value == val)) sel.value = val;
         }*/
-        function populateSelect() {
+        function populateSelect(famKey = null) {
             const sel = document.getElementById('foodSelect');
+            if (!sel) return;
             const currentVal = sel.value;
             sel.innerHTML = ''; // Limpiar
+
+            let filteredFoods = foodData;
+            if (famKey && famKey !== 'ALL') {
+                filteredFoods = foodData.filter(f => (f.fam === famKey) || (famKey === 'OTHER' && (!f.fam || f.id >= 1000)));
+                if (filteredFoods.length === 0) filteredFoods = foodData;
+            }
 
             // 1. Agrupar datos por Familia
             const groups = {};
 
-            // Ordenar alfabéticamente primero para que dentro de los grupos esté ordenado
-            [...foodData].sort((a, b) => a.name.localeCompare(b.name)).forEach(f => {
-                const famKey = f.fam || 'OTHER'; // Fallback por si falta la familia
-                if (!groups[famKey]) groups[famKey] = [];
-                groups[famKey].push(f);
+            [...filteredFoods].sort((a, b) => a.name.localeCompare(b.name)).forEach(f => {
+                const fKey = f.fam || 'OTHER';
+                if (!groups[fKey]) groups[fKey] = [];
+                groups[fKey].push(f);
             });
 
-            // 2. Definir el orden de visualización de las familias (opcional, para que Macros Puros salga 1º o último)
-            const order = ['PURE', 'PROTEIN', 'CARBS', 'LIPID', 'DAIRY', 'LEGUME', 'FRUIT', 'VEG'];
+            // 2. Definir el orden de visualización de las familias
+            const order = ['PURE', 'PROTEIN', 'CARBS', 'LIPID', 'DAIRY', 'LEGUME', 'FRUIT', 'VEG', 'OTHER'];
 
             // 3. Crear los <optgroup>
             order.forEach(key => {
                 if (groups[key]) {
-                    const meta = FOOD_STRUCTURE[key];
+                    const meta = FOOD_STRUCTURE[key] || { label: "Otros / Escaneados", icon: "📂" };
                     const groupEl = document.createElement('optgroup');
-                    // Usamos el icono y la etiqueta de la familia
                     groupEl.label = `${meta.icon} ${meta.label}`;
 
                     groups[key].forEach(f => {
                         const option = document.createElement('option');
                         option.value = f.id;
-                        // Mostramos: Icono Alimento + Nombre Alimento
                         const foodIcon = f.icon ? f.icon + " " : "";
                         option.text = `${foodIcon}${f.name}`;
                         groupEl.appendChild(option);
@@ -4666,19 +4719,6 @@
                     sel.appendChild(groupEl);
                 }
             });
-
-            // Añadir items sin familia (compatibilidad hacia atrás o busquedas web guardadas)
-            if (groups['OTHER']) {
-                const groupEl = document.createElement('optgroup');
-                groupEl.label = "📂 Otros / Escaneados";
-                groups['OTHER'].forEach(f => {
-                    const o = document.createElement('option');
-                    o.value = f.id;
-                    o.text = `${f.icon || '🌐'} ${f.name}`;
-                    groupEl.appendChild(o);
-                });
-                sel.appendChild(groupEl);
-            }
 
             // Restaurar selección previa si existe
             if (currentVal && [...sel.options].some(o => o.value == currentVal)) {
@@ -4922,11 +4962,10 @@
         }
 
         function getEmbeddedFallbackFoods() {
-            return [{"id":2,"name":"Aceite de Oliva (AOVE)","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"OIL","icon":"🫒"},{"id":3,"name":"Aguacate","p":2,"c":8.5,"f":15,"kcal":160,"unit":"g","fam":"LIPID","sub":"FRUIT_FAT","icon":"🥑"},{"id":4,"name":"Mix Frutos Secos","p":4.7,"c":9.4,"f":60,"kcal":615,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🌰"},{"id":5,"name":"Pollo/Pavo Magro (Pechuga)","p":23,"c":0,"f":1.5,"kcal":106,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🐓"},{"id":6,"name":"Carne Roja (Ternera)","p":20,"c":0,"f":10,"kcal":170,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🥩"},{"id":7,"name":"Queso Curado/Semicurado","p":25,"c":1,"f":33,"kcal":400,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":8,"name":"Leche Semidesnatada","p":3.1,"c":4.7,"f":1.6,"kcal":46,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":9,"name":"Yogur Natural / Kéfir","p":3.5,"c":4.5,"f":3,"kcal":60,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":10,"name":"Pescado Blanco (Merluza/Bacalao)","p":18,"c":0,"f":1.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":11,"name":"Pescado Azul (Salmón/Atún)","p":20,"c":0,"f":12,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🐟"},{"id":12,"name":"Huevo (Clase L ~60g)","p":7,"c":0.3,"f":5.8,"kcal":80,"unit":"u","fam":"PROTEIN","sub":"EGG","icon":"🥚"},{"id":13,"name":"Arroz / Cereales (Cocido)","p":2.3,"c":26,"f":0.3,"kcal":120,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🍚"},{"id":14,"name":"Pan Blanco / Integral","p":9,"c":50,"f":2,"kcal":260,"unit":"g","fam":"CARBS","sub":"BREAD","icon":"🥖"},{"id":15,"name":"Pasta Trigo (Cocido)","p":4.8,"c":28,"f":0.6,"kcal":140,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🌾"},{"id":16,"name":"Fruta Variada (Genérica)","p":0.5,"c":12,"f":0.2,"kcal":55,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍎"},{"id":17,"name":"Verdura Hoja / Calabacín","p":1.5,"c":3,"f":0.2,"kcal":25,"unit":"g","fam":"VEG","sub":"GREEN","icon":"🥬"},{"id":18,"name":"Garbanzo cocido (Bote)","p":5.4,"c":12,"f":2,"kcal":95,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":19,"name":"Proteína macro","p":100,"c":0,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"💪"},{"id":20,"name":"Carbohidrato macro","p":0,"c":100,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_CARB","icon":"⚡"},{"id":21,"name":"Mantecas","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"ANIMAL_FAT","icon":"🧈"},{"id":22,"name":"Ñoquis (Gnocchi)","p":3.5,"c":36,"f":0.5,"kcal":165,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":23,"name":"Patata / Batata (Cocido)","p":1.9,"c":19,"f":0.1,"kcal":84,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":24,"name":"Aceituna (ud 4gr)","p":0.03,"c":0,"f":0.6,"kcal":6,"unit":"u","fam":"LIPID","sub":"FRUIT_FAT","icon":"🫒"},{"id":25,"name":"Nuez (Grano)","p":15,"c":14,"f":65,"kcal":650,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🥜"},{"id":26,"name":"Tomate / Pimiento","p":1,"c":3.5,"f":0.2,"kcal":20,"unit":"g","fam":"VEG","sub":"COLOR","icon":"🍅"},{"id":28,"name":"Plátano / Banana","p":1.1,"c":23,"f":0.3,"kcal":90,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍌"},{"id":29,"name":"Jamón Serrano (Sin grasa)","p":30,"c":0,"f":8,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":30,"name":"Queso Fresco Batido / Skyr","p":8,"c":3.5,"f":0.1,"kcal":46,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":31,"name":"Legumbres Secas (Lenteja/Garbanzo)","p":22,"c":55,"f":1.5,"kcal":330,"unit":"g","fam":"LEGUME","sub":"DRY","icon":"🫘"},{"id":32,"name":"Cerdo Graso (Costilla/Secreto)","p":16,"c":0,"f":25,"kcal":290,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":33,"name":"Remolacha (Cruda)","p":1.6,"c":9.6,"f":0.2,"kcal":43,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍠"},{"id":34,"name":"Cerdo Magro (Lomo/Solomillo)","p":21,"c":0,"f":3.5,"kcal":120,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐗"},{"id":35,"name":"Tomate Cherry (Unidad)","p":0.12,"c":0.42,"f":0.02,"kcal":2.5,"unit":"u","fam":"VEG","sub":"COLOR","icon":"🍒"},{"id":36,"name":"Leche Desnatada","p":3.2,"c":4.8,"f":0.5,"kcal":37,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":37,"name":"Frutos Rojos / Sandía","p":0.6,"c":7,"f":0.2,"kcal":32,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍉"},{"id":38,"name":"Lata 56gr atún natural","p":23,"c":0,"f":0.7,"kcal":98,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":39,"name":"Lata 52gr atún aove","p":22,"c":0,"f":12,"kcal":196,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":40,"name":"Lata 65gr caballa al natural","p":23,"c":0,"f":3.3,"kcal":122,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":41,"name":"Lata 65gr sardinilla aove crf","p":12.09,"c":0,"f":18.85,"kcal":220,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":42,"name":"Pollo/Pavo Graso (Muslo/Ala)","p":17,"c":0,"f":14,"kcal":195,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🍗"},{"id":43,"name":"Queso Fresco (Burgos)","p":11,"c":4,"f":14,"kcal":185,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":44,"name":"Leche Entera","p":3.1,"c":4.7,"f":3.6,"kcal":64,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":45,"name":"Marisco Magro (Gamba/Langostino)","p":21,"c":0,"f":1,"kcal":93,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":46,"name":"Cefalópodos (Calamar/Sepia/Pulpo)","p":17,"c":0.5,"f":1.5,"kcal":82,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦑"},{"id":47,"name":"Moluscos (Mejillón/Almeja)","p":12,"c":3.5,"f":2.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦪"},{"id":48,"name":"Whey 80% Concentrado (WPC 80)","p":80,"c":8,"f":6,"kcal":406,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":49,"name":"Whey 90% Aislado (Iso/CFM)","p":90,"c":2,"f":1,"kcal":377,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":50,"name":"Caseína 78% Micelar","p":78,"c":6,"f":2,"kcal":354,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":51,"name":"Whey Hidrolizado (Hydro)","p":92,"c":1,"f":0.5,"kcal":376,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":52,"name":"Requesón (Cottage)","p":12,"c":3,"f":4,"kcal":96,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🥣"},{"id":53,"name":"Lenteja cocida (Bote)","p":6.6,"c":13,"f":0,"kcal":88,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":54,"name":"Alubia cocida (Bote)","p":5.3,"c":12,"f":0,"kcal":85,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":55,"name":"Patata cogelada airfryer","p":2.7,"c":24,"f":5.4,"kcal":161,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍟"}];
-        },{"id":3,"name":"Aguacate","p":2,"c":8.5,"f":15,"kcal":160,"unit":"g","fam":"LIPID","sub":"FRUIT_FAT","icon":"🥑"},{"id":4,"name":"Mix Frutos Secos","p":4.7,"c":9.4,"f":60,"kcal":615,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🌰"},{"id":5,"name":"Pollo/Pavo Magro (Pechuga)","p":23,"c":0,"f":1.5,"kcal":106,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🐓"},{"id":6,"name":"Carne Roja (Ternera)","p":20,"c":0,"f":10,"kcal":170,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🥩"},{"id":7,"name":"Queso Curado/Semicurado","p":25,"c":1,"f":33,"kcal":400,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":8,"name":"Leche Semidesnatada","p":3.1,"c":4.7,"f":1.6,"kcal":46,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":9,"name":"Yogur Natural / Kéfir","p":3.5,"c":4.5,"f":3,"kcal":60,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":10,"name":"Pescado Blanco (Merluza/Bacalao)","p":18,"c":0,"f":1.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":11,"name":"Pescado Azul (Salmón/Atún)","p":20,"c":0,"f":12,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🐟"},{"id":12,"name":"Huevo (Clase L ~60g)","p":7,"c":0.3,"f":5.8,"kcal":80,"unit":"u","fam":"PROTEIN","sub":"EGG","icon":"🥚"},{"id":13,"name":"Arroz / Cereales (Cocido)","p":2.3,"c":26,"f":0.3,"kcal":120,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🍚"},{"id":14,"name":"Pan Blanco / Integral","p":9,"c":50,"f":2,"kcal":260,"unit":"g","fam":"CARBS","sub":"BREAD","icon":"🥖"},{"id":15,"name":"Pasta Trigo (Cocido)","p":4.8,"c":28,"f":0.6,"kcal":140,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🌾"},{"id":16,"name":"Fruta Variada (Genérica)","p":0.5,"c":12,"f":0.2,"kcal":55,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍎"},{"id":17,"name":"Verdura Hoja / Calabacín","p":1.5,"c":3,"f":0.2,"kcal":25,"unit":"g","fam":"VEG","sub":"GREEN","icon":"🥬"},{"id":18,"name":"Garbanzo cocido (Bote)","p":5.4,"c":12,"f":2,"kcal":95,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":19,"name":"Proteína macro","p":100,"c":0,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"💪"},{"id":20,"name":"Carbohidrato macro","p":0,"c":100,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_CARB","icon":"⚡"},{"id":21,"name":"Mantecas","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"ANIMAL_FAT","icon":"🧈"},{"id":22,"name":"Ñoquis (Gnocchi)","p":3.5,"c":36,"f":0.5,"kcal":165,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":23,"name":"Patata / Batata (Cocido)","p":1.9,"c":19,"f":0.1,"kcal":84,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":24,"name":"Aceituna (ud 4gr)","p":0.03,"c":0,"f":0.6,"kcal":6,"unit":"u","fam":"LIPID","sub":"FRUIT_FAT","icon":"🫒"},{"id":25,"name":"Nuez (Grano)","p":15,"c":14,"f":65,"kcal":650,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🥜"},{"id":26,"name":"Tomate / Pimiento","p":1,"c":3.5,"f":0.2,"kcal":20,"unit":"g","fam":"VEG","sub":"COLOR","icon":"🍅"},{"id":28,"name":"Plátano / Banana","p":1.1,"c":23,"f":0.3,"kcal":90,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍌"},{"id":29,"name":"Jamón Serrano (Sin grasa)","p":30,"c":0,"f":8,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":30,"name":"Queso Fresco Batido / Skyr","p":8,"c":3.5,"f":0.1,"kcal":46,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":31,"name":"Legumbres Secas (Lenteja/Garbanzo)","p":22,"c":55,"f":1.5,"kcal":330,"unit":"g","fam":"LEGUME","sub":"DRY","icon":"🫘"},{"id":32,"name":"Cerdo Graso (Costilla/Secreto)","p":16,"c":0,"f":25,"kcal":290,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":33,"name":"Remolacha (Cruda)","p":1.6,"c":9.6,"f":0.2,"kcal":43,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍠"},{"id":34,"name":"Cerdo Magro (Lomo/Solomillo)","p":21,"c":0,"f":3.5,"kcal":120,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐗"},{"id":35,"name":"Tomate Cherry (Unidad)","p":0.12,"c":0.42,"f":0.02,"kcal":2.5,"unit":"u","fam":"VEG","sub":"COLOR","icon":"🍒"},{"id":36,"name":"Leche Desnatada","p":3.2,"c":4.8,"f":0.5,"kcal":37,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":37,"name":"Frutos Rojos / Sandía","p":0.6,"c":7,"f":0.2,"kcal":32,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍉"},{"id":38,"name":"Lata 56gr atún natural","p":23,"c":0,"f":0.7,"kcal":98,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":39,"name":"Lata 52gr atún aove","p":22,"c":0,"f":12,"kcal":196,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":40,"name":"Lata 65gr caballa al natural","p":23,"c":0,"f":3.3,"kcal":122,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":41,"name":"Lata 65gr sardinilla aove crf","p":12.09,"c":0,"f":18.85,"kcal":220,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":42,"name":"Pollo/Pavo Graso (Muslo/Ala)","p":17,"c":0,"f":14,"kcal":195,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🍗"},{"id":43,"name":"Queso Fresco (Burgos)","p":11,"c":4,"f":14,"kcal":185,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":44,"name":"Leche Entera","p":3.1,"c":4.7,"f":3.6,"kcal":64,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":45,"name":"Marisco Magro (Gamba/Langostino)","p":21,"c":0,"f":1,"kcal":93,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":46,"name":"Cefalópodos (Calamar/Sepia/Pulpo)","p":17,"c":0.5,"f":1.5,"kcal":82,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦑"},{"id":47,"name":"Moluscos (Mejillón/Almeja)","p":12,"c":3.5,"f":2.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦪"},{"id":48,"name":"Whey 80% Concentrado (WPC 80)","p":80,"c":8,"f":6,"kcal":406,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":49,"name":"Whey 90% Aislado (Iso/CFM)","p":90,"c":2,"f":1,"kcal":377,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":50,"name":"Caseína 78% Micelar","p":78,"c":6,"f":2,"kcal":354,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":51,"name":"Whey Hidrolizado (Hydro)","p":92,"c":1,"f":0.5,"kcal":376,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":52,"name":"Requesón (Cottage)","p":12,"c":3,"f":4,"kcal":96,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🥣"},{"id":53,"name":"Lenteja cocida (Bote)","p":6.6,"c":13,"f":0,"kcal":88,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":54,"name":"Alubia cocida (Bote)","p":5.3,"c":12,"f":0,"kcal":85,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":55,"name":"Patata cogelada airfryer","p":2.7,"c":24,"f":5.4,"kcal":161,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍟"}];
+            return [{"id":2,"name":"Aceite de Oliva (AOVE)","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"OIL","icon":"🫒","qP":1,"qC":1,"qF":3},{"id":3,"name":"Aguacate","p":2,"c":8.5,"f":15,"kcal":160,"unit":"g","fam":"LIPID","sub":"FRUIT_FAT","icon":"🥑","qP":1,"qC":1,"qF":3},{"id":4,"name":"Mix Frutos Secos","p":4.7,"c":9.4,"f":60,"kcal":615,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🌰","qP":2,"qC":1,"qF":3},{"id":5,"name":"Pollo/Pavo Magro (Pechuga)","p":23,"c":0,"f":1.5,"kcal":106,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🐓","qP":3,"qC":1,"qF":2},{"id":6,"name":"Carne Roja (Ternera)","p":20,"c":0,"f":10,"kcal":170,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🥩","qP":3,"qC":1,"qF":2},{"id":7,"name":"Queso Curado/Semicurado","p":25,"c":1,"f":33,"kcal":400,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀","qP":3,"qC":1,"qF":2},{"id":8,"name":"Leche Semidesnatada","p":3.1,"c":4.7,"f":1.6,"kcal":46,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛","qP":3,"qC":1,"qF":2},{"id":9,"name":"Yogur Natural / Kéfir","p":3.5,"c":4.5,"f":3,"kcal":60,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣","qP":3,"qC":1,"qF":2},{"id":10,"name":"Pescado Blanco (Merluza/Bacalao)","p":18,"c":0,"f":1.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐","qP":3,"qC":1,"qF":2},{"id":11,"name":"Pescado Azul (Salmón/Atún)","p":20,"c":0,"f":12,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🐟","qP":3,"qC":1,"qF":3},{"id":12,"name":"Huevo (Clase L ~60g)","p":7,"c":0.3,"f":5.8,"kcal":80,"unit":"u","fam":"PROTEIN","sub":"EGG","icon":"🥚","qP":3,"qC":1,"qF":2},{"id":13,"name":"Arroz / Cereales (Cocido)","p":2.3,"c":26,"f":0.3,"kcal":120,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🍚","qP":1,"qC":2,"qF":3},{"id":14,"name":"Pan Blanco / Integral","p":9,"c":50,"f":2,"kcal":260,"unit":"g","fam":"CARBS","sub":"BREAD","icon":"🥖","qP":1,"qC":2,"qF":2},{"id":15,"name":"Pasta Trigo (Cocido)","p":4.8,"c":28,"f":0.6,"kcal":140,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🌾","qP":1,"qC":2,"qF":3},{"id":16,"name":"Fruta Variada (Genérica)","p":0.5,"c":12,"f":0.2,"kcal":55,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍎","qP":1,"qC":3,"qF":3},{"id":17,"name":"Verdura Hoja / Calabacín","p":1.5,"c":3,"f":0.2,"kcal":25,"unit":"g","fam":"VEG","sub":"GREEN","icon":"🥬","qP":1,"qC":3,"qF":3},{"id":18,"name":"Garbanzo cocido (Bote)","p":5.4,"c":12,"f":2,"kcal":95,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫","qP":2,"qC":3,"qF":3},{"id":19,"name":"Proteína macro","p":100,"c":0,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"💪","qP":3,"qC":1,"qF":1},{"id":20,"name":"Carbohidrato macro","p":0,"c":100,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_CARB","icon":"⚡","qP":1,"qC":3,"qF":1},{"id":21,"name":"Mantecas","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"ANIMAL_FAT","icon":"🧈","qP":1,"qC":1,"qF":2},{"id":22,"name":"Ñoquis (Gnocchi)","p":3.5,"c":36,"f":0.5,"kcal":165,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔","qP":1,"qC":3,"qF":2},{"id":23,"name":"Patata / Batata (Cocido)","p":1.9,"c":19,"f":0.1,"kcal":84,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔","qP":1,"qC":3,"qF":3},{"id":24,"name":"Aceituna (ud 4gr)","p":0.03,"c":0,"f":0.6,"kcal":6,"unit":"u","fam":"LIPID","sub":"FRUIT_FAT","icon":"🫒","qP":1,"qC":1,"qF":3},{"id":25,"name":"Nuez (Grano)","p":15,"c":14,"f":65,"kcal":650,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🥜","qP":2,"qC":1,"qF":3},{"id":26,"name":"Tomate / Pimiento","p":1,"c":3.5,"f":0.2,"kcal":20,"unit":"g","fam":"VEG","sub":"COLOR","icon":"🍅","qP":1,"qC":3,"qF":3},{"id":28,"name":"Plátano / Banana","p":1.1,"c":23,"f":0.3,"kcal":90,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍌","qP":1,"qC":3,"qF":3},{"id":29,"name":"Jamón Serrano (Sin grasa)","p":30,"c":0,"f":8,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷","qP":3,"qC":1,"qF":2},{"id":30,"name":"Queso Fresco Batido / Skyr","p":8,"c":3.5,"f":0.1,"kcal":46,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣","qP":3,"qC":1,"qF":2},{"id":31,"name":"Legumbres Secas (Lenteja/Garbanzo)","p":22,"c":55,"f":1.5,"kcal":330,"unit":"g","fam":"LEGUME","sub":"DRY","icon":"🫘","qP":2,"qC":3,"qF":3},{"id":32,"name":"Cerdo Graso (Costilla/Secreto)","p":16,"c":0,"f":25,"kcal":290,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷","qP":3,"qC":1,"qF":2},{"id":33,"name":"Remolacha (Cruda)","p":1.6,"c":9.6,"f":0.2,"kcal":43,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍠","qP":1,"qC":3,"qF":3},{"id":34,"name":"Cerdo Magro (Lomo/Solomillo)","p":21,"c":0,"f":3.5,"kcal":120,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐗","qP":3,"qC":1,"qF":2},{"id":35,"name":"Tomate Cherry (Unidad)","p":0.12,"c":0.42,"f":0.02,"kcal":2.5,"unit":"u","fam":"VEG","sub":"COLOR","icon":"🍒","qP":1,"qC":3,"qF":3},{"id":36,"name":"Leche Desnatada","p":3.2,"c":4.8,"f":0.5,"kcal":37,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛","qP":3,"qC":1,"qF":2},{"id":37,"name":"Frutos Rojos / Sandía","p":0.6,"c":7,"f":0.2,"kcal":32,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍉","qP":1,"qC":3,"qF":3},{"id":38,"name":"Lata 56gr atún natural","p":23,"c":0,"f":0.7,"kcal":98,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":39,"name":"Lata 52gr atún aove","p":22,"c":0,"f":12,"kcal":196,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":40,"name":"Lata 65gr caballa al natural","p":23,"c":0,"f":3.3,"kcal":122,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":41,"name":"Lata 65gr sardinilla aove crf","p":12.09,"c":0,"f":18.85,"kcal":220,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":42,"name":"Pollo/Pavo Graso (Muslo/Ala)","p":17,"c":0,"f":14,"kcal":195,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🍗","qP":3,"qC":1,"qF":2},{"id":43,"name":"Queso Fresco (Burgos)","p":11,"c":4,"f":14,"kcal":185,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀","qP":3,"qC":1,"qF":2},{"id":44,"name":"Leche Entera","p":3.1,"c":4.7,"f":3.6,"kcal":64,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛","qP":3,"qC":1,"qF":2},{"id":45,"name":"Marisco Magro (Gamba/Langostino)","p":21,"c":0,"f":1,"kcal":93,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐","qP":3,"qC":1,"qF":2},{"id":46,"name":"Cefalópodos (Calamar/Sepia/Pulpo)","p":17,"c":0.5,"f":1.5,"kcal":82,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦑","qP":3,"qC":1,"qF":2},{"id":47,"name":"Moluscos (Mejillón/Almeja)","p":12,"c":3.5,"f":2.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦪","qP":3,"qC":1,"qF":2},{"id":48,"name":"Whey 80% Concentrado (WPC 80)","p":80,"c":8,"f":6,"kcal":406,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":49,"name":"Whey 90% Aislado (Iso/CFM)","p":90,"c":2,"f":1,"kcal":377,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":50,"name":"Caseína 78% Micelar","p":78,"c":6,"f":2,"kcal":354,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":51,"name":"Whey Hidrolizado (Hydro)","p":92,"c":1,"f":0.5,"kcal":376,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":52,"name":"Requesón (Cottage)","p":12,"c":3,"f":4,"kcal":96,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🥣","qP":3,"qC":1,"qF":2},{"id":53,"name":"Lenteja cocida (Bote)","p":6.6,"c":13,"f":0,"kcal":88,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫","qP":2,"qC":3,"qF":3},{"id":54,"name":"Alubia cocida (Bote)","p":5.3,"c":12,"f":0,"kcal":85,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫","qP":2,"qC":3,"qF":3},{"id":55,"name":"Patata cogelada airfryer","p":2.7,"c":24,"f":5.4,"kcal":161,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍟","qP":1,"qC":3,"qF":3}];
         }
 
-                async function initApp() {
+        async function initApp() {
             try {
                 let remoteFoods = [];
                 try {
@@ -5200,6 +5239,74 @@
                             <div class="flex flex-col items-center">
                                 <span class="text-[10px] text-kcal font-bold">KCAL</span>
                                 ${formatDiffBadge(k, targets.k, true)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Cálculo ponderado de Calidad Nutricional
+            let weightedP = 0, weightedC = 0, weightedF = 0;
+            let sumP = 0, sumC = 0, sumF = 0;
+
+            items.forEach(i => {
+                const food = foodData.find(f => f.id === i.foodId || f.name === i.foodName);
+                const qP = food?.qP || (i.p > 0 ? (i.type === 'food' ? 2 : 3) : 1);
+                const qC = food?.qC || (i.c > 0 ? 2 : 1);
+                const qF = food?.qF || (i.f > 0 ? 2 : 1);
+
+                if (i.p >= 1.0) { weightedP += i.p * qP; sumP += i.p; }
+                if (i.c >= 1.0) { weightedC += i.c * qC; sumC += i.c; }
+                if (i.f >= 1.0) { weightedF += i.f * qF; sumF += i.f; }
+            });
+
+            const scoreP = sumP > 0 ? (weightedP / sumP) : 0;
+            const scoreC = sumC > 0 ? (weightedC / sumC) : 0;
+            const scoreF = sumF > 0 ? (weightedF / sumF) : 0;
+
+            const formatQualityBadge = (score, type) => {
+                if (score === 0) return { badge: '<span class="text-white/40">--</span>', label: 'Trazas / Mínima' };
+                if (score >= 2.5) {
+                    if (type === 'p') return { badge: '<span class="text-emerald-400 font-bold">🟢 Alta</span>', label: 'Completa (Alto VB)' };
+                    if (type === 'c') return { badge: '<span class="text-emerald-400 font-bold">🟢 Alta</span>', label: 'Compleja / Fibra' };
+                    return { badge: '<span class="text-emerald-400 font-bold">🟢 Alta</span>', label: 'MUFA / Omega-3' };
+                } else if (score >= 1.8) {
+                    if (type === 'p') return { badge: '<span class="text-amber-400 font-bold">🟡 Media</span>', label: 'Vegetal / Mixta' };
+                    if (type === 'c') return { badge: '<span class="text-amber-400 font-bold">🟡 Media</span>', label: 'Moderada' };
+                    return { badge: '<span class="text-amber-400 font-bold">🟡 Media</span>', label: 'Saturada natural' };
+                } else {
+                    if (type === 'p') return { badge: '<span class="text-orange-400 font-bold">🟠 Básica</span>', label: 'Secundaria' };
+                    if (type === 'c') return { badge: '<span class="text-red-400 font-bold">🔴 Simple</span>', label: 'Refinada' };
+                    return { badge: '<span class="text-red-400 font-bold">🔴 Procesada</span>', label: 'Refinada' };
+                }
+            };
+
+            const pQ = formatQualityBadge(scoreP, 'p');
+            const cQ = formatQualityBadge(scoreC, 'c');
+            const fQ = formatQualityBadge(scoreF, 'f');
+
+            const qualityContainer = document.getElementById('modalQualityScore');
+            if (qualityContainer) {
+                qualityContainer.innerHTML = `
+                    <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 mb-2 space-y-2">
+                        <div class="text-[10px] font-bold text-white uppercase tracking-wider text-center opacity-70">
+                            🏆 Calidad Nutricional de la Selección
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-[#1c1c1e] p-2 rounded-lg border border-emerald-500/20">
+                                <div class="text-[9px] font-bold text-prot uppercase">Proteína</div>
+                                <div class="text-xs mt-0.5">${pQ.badge}</div>
+                                <div class="text-[9px] text-white/60 mt-0.5 leading-tight">${pQ.label}</div>
+                            </div>
+                            <div class="bg-[#1c1c1e] p-2 rounded-lg border border-amber-500/20">
+                                <div class="text-[9px] font-bold text-carb uppercase">Carbohidrato</div>
+                                <div class="text-xs mt-0.5">${cQ.badge}</div>
+                                <div class="text-[9px] text-white/60 mt-0.5 leading-tight">${cQ.label}</div>
+                            </div>
+                            <div class="bg-[#1c1c1e] p-2 rounded-lg border border-red-500/20">
+                                <div class="text-[9px] font-bold text-fat uppercase">Grasa</div>
+                                <div class="text-xs mt-0.5">${fQ.badge}</div>
+                                <div class="text-[9px] text-white/60 mt-0.5 leading-tight">${fQ.label}</div>
                             </div>
                         </div>
                     </div>
