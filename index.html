@@ -923,6 +923,20 @@
                     </svg></button>
             </div>
 
+            <!-- ACCESO DIRECTO AL RECOMENDADOR / ASISTENTE DE MENÚ INTELIGENTE -->
+            <div onclick="document.getElementById('foodModal').classList.add('hidden'); openSmartMealBuilder();" class="mb-4 p-3 bg-gradient-to-r from-purple-900/40 to-blue-900/40 border border-purple-500/40 hover:border-purple-400 rounded-xl flex items-center justify-between cursor-pointer transition-all active:scale-98 shadow-md">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 font-bold text-base flex-shrink-0">
+                        💡
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white leading-tight">Asistente de Menú & Porciones</div>
+                        <div class="text-[10px] text-white/60">Calcula tus raciones automáticamente</div>
+                    </div>
+                </div>
+                <span class="text-[11px] bg-purple-600 hover:bg-purple-500 text-white font-bold px-2.5 py-1 rounded-lg flex-shrink-0 shadow-sm">Abrir 💡</span>
+            </div>
+
             <div class="space-y-4">
                 <div>
                     <label class="block text-xs font-medium text-white uppercase mb-1.5">Fecha</label>
@@ -1235,6 +1249,191 @@
         </div>
     </div>
 
+    <!-- MODAL RECOMENDADOR / ASISTENTE DE MENÚ INTELIGENTE -->
+    <div id="smartMealBuilderModal" class="fixed inset-0 bg-black/80 hidden z-[95] flex items-center justify-center backdrop-blur-sm px-3 py-4">
+        <div class="bg-[#1c1c1e] w-full max-w-lg rounded-2xl p-4 sm:p-5 shadow-2xl border border-[#2c2c2e] animate-fade-in max-h-[92vh] flex flex-col">
+            <!-- Modal Header -->
+            <div class="flex justify-between items-center pb-3 border-b border-[#2c2c2e] flex-shrink-0">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-400 font-bold text-lg">
+                        💡
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-white leading-tight">Asistente de Menú & Porciones</h3>
+                        <p class="text-[11px] text-white/50">Construye tu plato ajustando gramos exactos en tiempo real</p>
+                    </div>
+                </div>
+                <button onclick="closeSmartMealBuilder()" class="w-8 h-8 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-sm font-bold transition-all">
+                    ✕
+                </button>
+            </div>
+
+            <!-- Scrollable Content -->
+            <div class="overflow-y-auto space-y-4 py-3 pr-1 text-xs no-scrollbar flex-1">
+                
+                <!-- PASO 0: Ingesta & Contexto Deportivo -->
+                <div class="bg-[#2c2c2e]/60 rounded-xl p-3 border border-[#3a3a3c] space-y-3">
+                    <!-- Tipo de Ingesta -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-white/60 uppercase tracking-wider mb-1.5">1. Tipo de Ingesta</label>
+                        <div class="grid grid-cols-4 gap-1.5" id="smbMealTypeGroup">
+                            <button type="button" onclick="setSmbMealType('desayuno')" id="smbBtn_desayuno" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">☕ Desayuno</button>
+                            <button type="button" onclick="setSmbMealType('tentempie')" id="smbBtn_tentempie" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🍎 Snack</button>
+                            <button type="button" onclick="setSmbMealType('comida')" id="smbBtn_comida" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🍚 Comida</button>
+                            <button type="button" onclick="setSmbMealType('cena')" id="smbBtn_cena" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🌙 Cena</button>
+                        </div>
+                    </div>
+
+                    <!-- Momento Deportivo -->
+                    <div>
+                        <label class="block text-[10px] font-bold text-white/60 uppercase tracking-wider mb-1.5">2. Momento Deportivo</label>
+                        <div class="grid grid-cols-3 gap-1.5" id="smbTimingGroup">
+                            <button type="button" onclick="setSmbTiming('normal')" id="smbTimingBtn_normal" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🛋️ Normal</button>
+                            <button type="button" onclick="setSmbTiming('pre')" id="smbTimingBtn_pre" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">⚡ Pre-WOD</button>
+                            <button type="button" onclick="setSmbTiming('post')" id="smbTimingBtn_post" class="py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center">🏋️ Post-WOD (70/30)</button>
+                        </div>
+                    </div>
+
+                    <!-- Deslizador de Presupuesto % Libre -->
+                    <div class="pt-1 border-t border-[#3a3a3c]">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="text-[10px] font-bold text-purple-300 uppercase">3. Presupuesto asignado a este plato</label>
+                            <span id="smbBudgetPctVal" class="text-xs font-mono font-bold text-purple-400">100%</span>
+                        </div>
+                        <input type="range" id="smbBudgetSlider" min="10" max="100" step="5" value="100" class="w-full accent-purple-400 h-2 bg-[#1c1c1e] rounded-lg cursor-pointer border border-[#3a3a3c]" oninput="onSmbBudgetSliderChange(this.value)">
+                        <div class="flex justify-between gap-1 mt-1.5">
+                            <button type="button" onclick="setSmbBudgetPct(25)" class="px-2 py-0.5 rounded bg-[#1c1c1e] text-[10px] font-mono text-white/70 hover:text-white border border-[#3a3a3c]">25%</button>
+                            <button type="button" onclick="setSmbBudgetPct(33)" class="px-2 py-0.5 rounded bg-[#1c1c1e] text-[10px] font-mono text-white/70 hover:text-white border border-[#3a3a3c]">33%</button>
+                            <button type="button" onclick="setSmbBudgetPct(50)" class="px-2 py-0.5 rounded bg-[#1c1c1e] text-[10px] font-mono text-white/70 hover:text-white border border-[#3a3a3c]">50%</button>
+                            <button type="button" onclick="setSmbBudgetPct(75)" class="px-2 py-0.5 rounded bg-[#1c1c1e] text-[10px] font-mono text-white/70 hover:text-white border border-[#3a3a3c]">75%</button>
+                            <button type="button" onclick="setSmbBudgetPct(100)" class="px-2 py-0.5 rounded bg-[#1c1c1e] text-[10px] font-mono text-white/70 hover:text-white border border-[#3a3a3c]">100%</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PANEL DUAL COMPARATIVO EN TIEMPO REAL -->
+                <div class="grid grid-cols-2 gap-2">
+                    <div class="bg-purple-950/30 border border-purple-500/40 rounded-xl p-2.5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[10px] font-bold text-purple-300 uppercase">🍽️ Esta Comida</span>
+                            <span id="smbCard1Pct" class="text-[10px] font-mono font-bold text-purple-400">(100%)</span>
+                        </div>
+                        <div id="smbCard1Macros" class="text-xs font-mono font-bold text-white space-y-0.5">
+                            <div class="flex justify-between"><span class="text-prot">PROT:</span> <span id="smbC1P">0g</span></div>
+                            <div class="flex justify-between"><span class="text-carb">CARB:</span> <span id="smbC1C">0g</span></div>
+                            <div class="flex justify-between"><span class="text-fat">GRAS:</span> <span id="smbC1F">0g</span></div>
+                            <div class="flex justify-between pt-1 border-t border-purple-500/20 text-purple-300"><span class="font-bold">KCAL:</span> <span id="smbC1Kcal">0</span></div>
+                        </div>
+                    </div>
+
+                    <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-2.5 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="text-[10px] font-bold text-white/70 uppercase">⏳ Quedará para el resto</span>
+                            <span id="smbCard2Pct" class="text-[10px] font-mono text-white/50">(0%)</span>
+                        </div>
+                        <div id="smbCard2Macros" class="text-xs font-mono font-bold text-white/80 space-y-0.5">
+                            <div class="flex justify-between"><span class="text-prot/70">PROT:</span> <span id="smbC2P">0g</span></div>
+                            <div class="flex justify-between"><span class="text-carb/70">CARB:</span> <span id="smbC2C">0g</span></div>
+                            <div class="flex justify-between"><span class="text-fat/70">GRAS:</span> <span id="smbC2F">0g</span></div>
+                            <div class="flex justify-between pt-1 border-t border-[#3a3a3c] text-white"><span class="font-bold">KCAL:</span> <span id="smbC2Kcal">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Banner de información sobre registros previos del día -->
+                <div id="smbLoggedNotice" class="text-[11px] bg-blue-500/10 text-blue-300 border border-blue-500/20 rounded-lg p-2 flex items-center gap-2">
+                    <span>ℹ️</span>
+                    <span id="smbLoggedNoticeText">Calculando raciones sobre tus macros restantes...</span>
+                </div>
+
+                <!-- PASO 1: SELECCIÓN DE PROTEÍNA -->
+                <div class="bg-[#2c2c2e] rounded-xl p-3 border border-[#3a3a3c] space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] font-bold text-prot uppercase flex items-center gap-1">🥩 Fuente Proteica</label>
+                        <span id="smbProtBadge" class="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold hidden">🟢 Proteína ya cubierta</span>
+                    </div>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <select id="smbProtSelect" class="flex-1 min-w-0 rounded-lg bg-[#1c1c1e] border border-[#3a3a3c] p-2 text-xs text-white focus:border-prot" onchange="onSmbIngredientChange('prot')">
+                            </select>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <input type="number" id="smbProtGrams" value="0" min="0" step="5" class="w-14 bg-[#1c1c1e] border border-[#3a3a3c] rounded p-1 text-center text-xs font-mono font-bold text-prot" oninput="onSmbManualGramsInput('prot')">
+                                <span id="smbProtUnitLabel" class="text-xs font-mono font-bold text-prot">g</span>
+                            </div>
+                        </div>
+                        <input type="range" id="smbProtSlider" min="0" max="350" step="5" value="0" class="w-full accent-blue-500 h-2 bg-[#1c1c1e] rounded-lg cursor-pointer border border-[#3a3a3c]" oninput="onSmbIngredientSliderInput('prot', this.value)">
+                    </div>
+                </div>
+
+                <!-- PASO 2: SELECCIÓN DE CARBOHIDRATOS -->
+                <div class="bg-[#2c2c2e] rounded-xl p-3 border border-[#3a3a3c] space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] font-bold text-carb uppercase flex items-center gap-1">🍞 Fuentes de Carbohidratos</label>
+                        <span id="smbCarbModeBadge" class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 rounded font-bold">Recomendado máximo 30% fruta</span>
+                    </div>
+
+                    <!-- Sub-paso Fruta (si aplica post-wod) -->
+                    <div id="smbFruitContainer" class="space-y-1.5">
+                        <label id="smbFruitLabel" class="block text-[10px] text-amber-300 font-bold">🍎 Fruta (30% glucógeno hepático)</label>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-2">
+                                <select id="smbFruitSelect" class="flex-1 min-w-0 rounded-lg bg-[#1c1c1e] border border-[#3a3a3c] p-2 text-xs text-white focus:border-carb" onchange="onSmbIngredientChange('fruit')">
+                                </select>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <input type="number" id="smbFruitGrams" value="0" min="0" step="5" class="w-14 bg-[#1c1c1e] border border-[#3a3a3c] rounded p-1 text-center text-xs font-mono font-bold text-amber-300" oninput="onSmbManualGramsInput('fruit')">
+                                    <span id="smbFruitUnitLabel" class="text-xs font-mono font-bold text-amber-300">g</span>
+                                </div>
+                            </div>
+                            <input type="range" id="smbFruitSlider" min="0" max="350" step="5" value="0" class="w-full accent-amber-400 h-2 bg-[#1c1c1e] rounded-lg cursor-pointer border border-[#3a3a3c]" oninput="onSmbIngredientSliderInput('fruit', this.value)">
+                        </div>
+                    </div>
+
+                    <!-- Sub-paso Almidón -->
+                    <div id="smbStarchContainer" class="space-y-1.5">
+                        <label id="smbStarchLabel" class="block text-[10px] text-carb font-bold">🥔 Almidón (70% glucógeno muscular)</label>
+                        <div class="space-y-1.5">
+                            <div class="flex items-center gap-2">
+                                <select id="smbStarchSelect" class="flex-1 min-w-0 rounded-lg bg-[#1c1c1e] border border-[#3a3a3c] p-2 text-xs text-white focus:border-carb" onchange="onSmbIngredientChange('starch')">
+                                </select>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <input type="number" id="smbStarchGrams" value="0" min="0" step="5" class="w-14 bg-[#1c1c1e] border border-[#3a3a3c] rounded p-1 text-center text-xs font-mono font-bold text-carb" oninput="onSmbManualGramsInput('starch')">
+                                    <span id="smbStarchUnitLabel" class="text-xs font-mono font-bold text-carb">g</span>
+                                </div>
+                            </div>
+                            <input type="range" id="smbStarchSlider" min="0" max="350" step="5" value="0" class="w-full accent-emerald-400 h-2 bg-[#1c1c1e] rounded-lg cursor-pointer border border-[#3a3a3c]" oninput="onSmbIngredientSliderInput('starch', this.value)">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PASO 3: SELECCIÓN DE GRASA (OPCIONAL) -->
+                <div class="bg-[#2c2c2e] rounded-xl p-3 border border-[#3a3a3c] space-y-2">
+                    <div class="flex justify-between items-center">
+                        <label class="text-[11px] font-bold text-fat uppercase flex items-center gap-1">🥑 Grasas Saludables / Complementos</label>
+                    </div>
+                    <div class="space-y-1.5">
+                        <div class="flex items-center gap-2">
+                            <select id="smbFatSelect" class="flex-1 min-w-0 rounded-lg bg-[#1c1c1e] border border-[#3a3a3c] p-2 text-xs text-white focus:border-fat" onchange="onSmbIngredientChange('fat')">
+                            </select>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <input type="number" id="smbFatGrams" value="0" min="0" step="1" class="w-14 bg-[#1c1c1e] border border-[#3a3a3c] rounded p-1 text-center text-xs font-mono font-bold text-fat" oninput="onSmbManualGramsInput('fat')">
+                                <span id="smbFatUnitLabel" class="text-xs font-mono font-bold text-fat">g</span>
+                            </div>
+                        </div>
+                        <input type="range" id="smbFatSlider" min="0" max="50" step="1" value="0" class="w-full accent-rose-500 h-2 bg-[#1c1c1e] rounded-lg cursor-pointer border border-[#3a3a3c]" oninput="onSmbIngredientSliderInput('fat', this.value)">
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="pt-3 border-t border-[#2c2c2e] flex flex-col gap-2 flex-shrink-0">
+                <button onclick="saveSmartMealToLog()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg flex items-center justify-center gap-2 active:scale-98 transition-all text-sm">
+                    <span>➕</span> Añadir este menú al Diario de Hoy
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Ayuda de Gráficos de Composición Corporal -->
     <div id="chartHelpModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4 animate-fade-in">
         <div class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto no-scrollbar relative">
@@ -1443,7 +1642,7 @@
         class="fixed inset-0 bg-black/80 hidden z-[70] flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div
             class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex justify-between items-center mb-3">
                 <h3 class="text-lg font-medium text-white">Categoría</h3>
                 <button onclick="document.getElementById('categoryModal').classList.add('hidden')"
                     class="text-white hover:text-white bg-[#2c2c2e] p-1 rounded-full"><svg class="w-6 h-6" fill="none"
@@ -1452,6 +1651,21 @@
                         </path>
                     </svg></button>
             </div>
+
+            <!-- ACCESO DIRECTO AL RECOMENDADOR / ASISTENTE DE MENÚ EN PANTALLA CATEGORÍAS -->
+            <div onclick="document.getElementById('categoryModal').classList.add('hidden'); openSmartMealBuilder();" class="mb-4 p-3 bg-gradient-to-r from-purple-900/50 to-blue-900/50 border border-purple-500/50 hover:border-purple-400 rounded-xl flex items-center justify-between cursor-pointer transition-all active:scale-98 shadow-lg">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-purple-500/30 border border-purple-400/50 flex items-center justify-center text-purple-300 font-bold text-lg flex-shrink-0">
+                        💡
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold text-white leading-tight">Asistente de Menú & Porciones</div>
+                        <div class="text-[10px] text-white/70">Calcula tus raciones automáticamente</div>
+                    </div>
+                </div>
+                <span class="text-[11px] bg-purple-600 hover:bg-purple-500 text-white font-bold px-3 py-1.5 rounded-lg flex-shrink-0 shadow-md">Abrir 💡</span>
+            </div>
+
             <div id="categoryGrid" class="grid grid-cols-3 gap-3"></div>
         </div>
     </div>
@@ -2669,6 +2883,461 @@
                 showToast("❌ Error al procesar la imagen con OCR");
             } finally {
                 input.value = '';
+            }
+        }
+
+        // --- MÓDULO ASISTENTE DE MENÚ & PORCIONES INTELIGENTE ---
+        let smbState = {
+            mealType: 'cena', // desayuno, tentempie, comida, cena
+            timing: 'post',   // normal, pre, post
+            budgetPct: 100,   // 10 - 100
+            selectedProtId: null,
+            selectedFruitId: null,
+            selectedStarchId: null,
+            selectedFatId: null,
+            protGrams: 0,
+            fruitGrams: 0,
+            starchGrams: 0,
+            fatGrams: 0,
+            isManualEdited: {
+                prot: false,
+                fruit: false,
+                starch: false,
+                fat: false
+            }
+        };
+
+        function openSmartMealBuilder() {
+            const modal = document.getElementById('smartMealBuilderModal');
+            if (!modal) return;
+
+            smbState.protGrams = 0;
+            smbState.fruitGrams = 0;
+            smbState.starchGrams = 0;
+            smbState.fatGrams = 0;
+            smbState.isManualEdited = { prot: true, fruit: true, starch: true, fat: true };
+            
+            populateSmbDropdowns();
+            setSmbMealType(smbState.mealType || 'cena', false);
+            setSmbTiming(smbState.timing || 'post', false);
+            
+            modal.classList.remove('hidden');
+            updateSmartMealBuilderUI();
+        }
+
+        function closeSmartMealBuilder() {
+            const modal = document.getElementById('smartMealBuilderModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function populateSmbDropdowns() {
+            const protSel = document.getElementById('smbProtSelect');
+            const fruitSel = document.getElementById('smbFruitSelect');
+            const starchSel = document.getElementById('smbStarchSelect');
+            const fatSel = document.getElementById('smbFatSelect');
+
+            if (!foodData || !foodData.length) return;
+
+            const proteins = foodData.filter(f => f.fam === 'PROTEIN' || f.fam === 'DAIRY' || (f.fam === 'PURE' && f.sub === 'P_PROT') || (f.p >= 10 && f.fam !== 'LIPID'));
+            const fruits = foodData.filter(f => f.fam === 'FRUIT');
+            const starches = foodData.filter(f => f.fam === 'CARBS' || f.fam === 'LEGUME' || f.sub === 'TUBER' || f.sub === 'PASTA_RICE' || f.sub === 'BREAD' || (f.fam === 'PURE' && f.sub === 'P_CARB'));
+            const fats = foodData.filter(f => f.fam === 'LIPID' || (f.fam === 'PURE' && f.sub === 'P_FAT') || (f.f >= 10 && f.fam !== 'PROTEIN' && f.fam !== 'CARBS'));
+
+            if (protSel) {
+                protSel.innerHTML = proteins.map(f => `<option value="${f.id}">${f.icon || '🥩'} ${f.name} (${f.p}g P/100g)</option>`).join('');
+                if (proteins.length && !smbState.selectedProtId) smbState.selectedProtId = proteins[0].id;
+                else if (smbState.selectedProtId) protSel.value = smbState.selectedProtId;
+            }
+
+            if (fruitSel) {
+                fruitSel.innerHTML = fruits.map(f => `<option value="${f.id}">${f.icon || '🍎'} ${f.name} (${f.c}g C/100g)</option>`).join('');
+                if (fruits.length && !smbState.selectedFruitId) smbState.selectedFruitId = fruits[0].id;
+                else if (smbState.selectedFruitId) fruitSel.value = smbState.selectedFruitId;
+            }
+
+            if (starchSel) {
+                starchSel.innerHTML = starches.map(f => `<option value="${f.id}">${f.icon || '🥔'} ${f.name} (${f.c}g C/100g)</option>`).join('');
+                if (starches.length && !smbState.selectedStarchId) smbState.selectedStarchId = starches[0].id;
+                else if (smbState.selectedStarchId) starchSel.value = smbState.selectedStarchId;
+            }
+
+            if (fatSel) {
+                fatSel.innerHTML = fats.map(f => `<option value="${f.id}">${f.icon || '🥑'} ${f.name} (${f.f}g G/100g)</option>`).join('');
+                if (fats.length && !smbState.selectedFatId) smbState.selectedFatId = fats[0].id;
+                else if (smbState.selectedFatId) fatSel.value = smbState.selectedFatId;
+            }
+        }
+
+        function setSmbMealType(type, triggerUpdate = true) {
+            smbState.mealType = type;
+            const types = ['desayuno', 'tentempie', 'comida', 'cena'];
+            types.forEach(t => {
+                const btn = document.getElementById(`smbBtn_${t}`);
+                if (btn) {
+                    if (t === type) {
+                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-purple-600 text-white border-purple-500 shadow-sm";
+                    } else {
+                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-[#1c1c1e] text-white/60 hover:text-white border-[#3a3a3c]";
+                    }
+                }
+            });
+
+            if (type === 'cena') setSmbBudgetPct(100, false);
+            else if (type === 'comida') setSmbBudgetPct(50, false);
+            else if (type === 'desayuno') setSmbBudgetPct(25, false);
+            else if (type === 'tentempie') setSmbBudgetPct(15, false);
+
+            if (triggerUpdate) updateSmartMealBuilderUI();
+        }
+
+        function setSmbTiming(timing, triggerUpdate = true) {
+            smbState.timing = timing;
+            const timings = ['normal', 'pre', 'post'];
+            timings.forEach(t => {
+                const btn = document.getElementById(`smbTimingBtn_${t}`);
+                if (btn) {
+                    if (t === timing) {
+                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-purple-600 text-white border-purple-500 shadow-sm";
+                    } else {
+                        btn.className = "py-1.5 px-2 rounded-lg font-bold text-[11px] border transition-all text-center bg-[#1c1c1e] text-white/60 hover:text-white border-[#3a3a3c]";
+                    }
+                }
+            });
+
+            if (triggerUpdate) updateSmartMealBuilderUI();
+        }
+
+        function onSmbBudgetSliderChange(val) {
+            smbState.budgetPct = parseInt(val, 10) || 100;
+            const label = document.getElementById('smbBudgetPctVal');
+            if (label) label.textContent = `${smbState.budgetPct}%`;
+            updateSmartMealBuilderUI();
+        }
+
+        function setSmbBudgetPct(pct, triggerUpdate = true) {
+            smbState.budgetPct = pct;
+            const slider = document.getElementById('smbBudgetSlider');
+            if (slider) slider.value = pct;
+            const label = document.getElementById('smbBudgetPctVal');
+            if (label) label.textContent = `${pct}%`;
+            if (triggerUpdate) updateSmartMealBuilderUI();
+        }
+
+        function onSmbIngredientChange(type) {
+            const cap = type.charAt(0).toUpperCase() + type.slice(1);
+            const selectEl = document.getElementById('smb' + cap + 'Select');
+            if (selectEl) {
+                const val = parseInt(selectEl.value, 10);
+                if (type === 'prot') smbState.selectedProtId = val;
+                else if (type === 'fruit') smbState.selectedFruitId = val;
+                else if (type === 'starch') smbState.selectedStarchId = val;
+                else if (type === 'fat') smbState.selectedFatId = val;
+            }
+
+            smbState.isManualEdited[type] = false;
+            updateSmartMealBuilderUI();
+        }
+
+        function onSmbIngredientSliderInput(type, val) {
+            const numVal = parseFloat(val) || 0;
+            smbState[type + 'Grams'] = numVal;
+            smbState.isManualEdited[type] = true;
+
+            const cap = type.charAt(0).toUpperCase() + type.slice(1);
+            const inputEl = document.getElementById('smb' + cap + 'Grams');
+            if (inputEl && document.activeElement !== inputEl) {
+                inputEl.value = numVal;
+            }
+
+            updateSmartMealBuilderUI(true);
+        }
+
+        function adjustSmbGrams(type, delta) {
+            const cap = type.charAt(0).toUpperCase() + type.slice(1);
+            const inputEl = document.getElementById('smb' + cap + 'Grams');
+            if (!inputEl) return;
+            let current = parseFloat(inputEl.value) || 0;
+            current = Math.max(0, current + delta);
+            inputEl.value = current;
+            smbState.isManualEdited[type] = true;
+            smbState[type + 'Grams'] = current;
+
+            updateSmartMealBuilderUI(true);
+        }
+
+        function onSmbManualGramsInput(type) {
+            const cap = type.charAt(0).toUpperCase() + type.slice(1);
+            const inputEl = document.getElementById('smb' + cap + 'Grams');
+            if (!inputEl) return;
+            let val = parseFloat(inputEl.value);
+            if (isNaN(val) || val < 0) val = 0;
+            smbState.isManualEdited[type] = true;
+            smbState[type + 'Grams'] = val;
+
+            updateSmartMealBuilderUI(true);
+        }
+
+        function updateSmartMealBuilderUI(isManualInput = false) {
+            const targets = getGarminCalculatedTargets();
+            const todayStr = new Date().toISOString().split('T')[0];
+            const todayLogs = globalLog.filter(l => l.date === todayStr);
+
+            let eatenP = 0, eatenC = 0, eatenF = 0;
+            todayLogs.forEach(l => {
+                eatenP += (l.p || 0);
+                eatenC += (l.c || 0);
+                eatenF += (l.f || 0);
+            });
+
+            const remPDay = Math.max(0, targets.p - eatenP);
+            const remCDay = Math.max(0, targets.c - eatenC);
+            const remFDay = Math.max(0, targets.f - eatenF);
+
+            const noticeTextEl = document.getElementById('smbLoggedNoticeText');
+            if (noticeTextEl) {
+                if (eatenP > 0 || eatenC > 0 || eatenF > 0) {
+                    noticeTextEl.textContent = `Registrado hoy previamente: ${eatenP.toFixed(0)}g P | ${eatenC.toFixed(0)}g C | ${eatenF.toFixed(0)}g G. Descontado de metas.`;
+                } else {
+                    noticeTextEl.textContent = `Calculando raciones sobre las metas del día: ${targets.p.toFixed(0)}g P | ${targets.c.toFixed(0)}g C | ${targets.f.toFixed(0)}g G.`;
+                }
+            }
+
+            const pctRatio = (smbState.budgetPct || 100) / 100;
+            const mealTargetP = remPDay * pctRatio;
+            const mealTargetC = remCDay * pctRatio;
+            const mealTargetF = remFDay * pctRatio;
+
+            const isPostWod = (smbState.timing === 'post');
+            const fruitContainer = document.getElementById('smbFruitContainer');
+            const carbBadge = document.getElementById('smbCarbModeBadge');
+            const fruitLabel = document.getElementById('smbFruitLabel');
+            const starchLabel = document.getElementById('smbStarchLabel');
+
+            if (isPostWod) {
+                if (fruitContainer) fruitContainer.classList.remove('hidden');
+                if (carbBadge) carbBadge.textContent = "Recomendado máximo 30% fruta";
+            } else {
+                if (fruitContainer) fruitContainer.classList.add('hidden');
+                if (carbBadge) carbBadge.textContent = smbState.timing === 'pre' ? "Pre-WOD (Almidón de energía)" : "Normal (Almidón / Carbs)";
+            }
+
+            const protFood = foodData.find(f => f.id === (smbState.selectedProtId || parseInt(document.getElementById('smbProtSelect')?.value, 10)));
+            const fruitFood = foodData.find(f => f.id === (smbState.selectedFruitId || parseInt(document.getElementById('smbFruitSelect')?.value, 10)));
+            const starchFood = foodData.find(f => f.id === (smbState.selectedStarchId || parseInt(document.getElementById('smbStarchSelect')?.value, 10)));
+            const fatFood = foodData.find(f => f.id === (smbState.selectedFatId || parseInt(document.getElementById('smbFatSelect')?.value, 10)));
+
+            if (!isManualInput) {
+                if (!smbState.isManualEdited.prot) {
+                    if (protFood && protFood.p > 0) {
+                        smbState.protGrams = (protFood.unit === 'u')
+                            ? Math.max(1, Math.round(mealTargetP / protFood.p))
+                            : Math.max(0, Math.round((mealTargetP / protFood.p) * 100));
+                    } else smbState.protGrams = 0;
+                }
+
+                if (isPostWod) {
+                    const fruitTargetC = mealTargetC * 0.30;
+                    const starchTargetC = mealTargetC * 0.70;
+
+                    if (!smbState.isManualEdited.fruit) {
+                        if (fruitFood && fruitFood.c > 0) {
+                            smbState.fruitGrams = (fruitFood.unit === 'u')
+                                ? Math.max(1, Math.round(fruitTargetC / fruitFood.c))
+                                : Math.max(0, Math.round((fruitTargetC / fruitFood.c) * 100));
+                        } else smbState.fruitGrams = 0;
+                    }
+
+                    if (!smbState.isManualEdited.starch) {
+                        if (starchFood && starchFood.c > 0) {
+                            smbState.starchGrams = (starchFood.unit === 'u')
+                                ? Math.max(1, Math.round(starchTargetC / starchFood.c))
+                                : Math.max(0, Math.round((starchTargetC / starchFood.c) * 100));
+                        } else smbState.starchGrams = 0;
+                    }
+                } else {
+                    smbState.fruitGrams = 0;
+                    if (!smbState.isManualEdited.starch) {
+                        if (starchFood && starchFood.c > 0) {
+                            smbState.starchGrams = (starchFood.unit === 'u')
+                                ? Math.max(1, Math.round(mealTargetC / starchFood.c))
+                                : Math.max(0, Math.round((mealTargetC / starchFood.c) * 100));
+                        } else smbState.starchGrams = 0;
+                    }
+                }
+
+                if (!smbState.isManualEdited.fat) {
+                    if (fatFood && fatFood.f > 0 && mealTargetF > 2) {
+                        smbState.fatGrams = (fatFood.unit === 'u')
+                            ? Math.max(1, Math.round(mealTargetF / fatFood.f))
+                            : Math.max(0, Math.round((mealTargetF / fatFood.f) * 100));
+                    } else smbState.fatGrams = 0;
+                }
+            }
+
+            const syncIngredientControl = (type, food, val) => {
+                const cap = type.charAt(0).toUpperCase() + type.slice(1);
+                const unit = (food && food.unit === 'u') ? 'u' : 'g';
+
+                const labelEl = document.getElementById(`smb${cap}UnitLabel`);
+                const sliderEl = document.getElementById(`smb${cap}Slider`);
+                const inputEl = document.getElementById(`smb${cap}Grams`);
+
+                if (labelEl) labelEl.textContent = unit;
+
+                if (sliderEl) {
+                    if (unit === 'u') {
+                        sliderEl.min = "0";
+                        sliderEl.max = "10";
+                        sliderEl.step = "0.5";
+                    } else {
+                        sliderEl.min = "0";
+                        if (type === 'fat') {
+                            sliderEl.max = "50";
+                            sliderEl.step = "1";
+                        } else {
+                            sliderEl.max = "350";
+                            sliderEl.step = "5";
+                        }
+                    }
+                    if (document.activeElement !== sliderEl) {
+                        sliderEl.value = val;
+                    }
+                }
+
+                if (inputEl) {
+                    if (unit === 'u') inputEl.step = "0.5";
+                    else if (type === 'fat') inputEl.step = "1";
+                    else inputEl.step = "5";
+
+                    if (document.activeElement !== inputEl) {
+                        inputEl.value = val;
+                    }
+                }
+            };
+
+            syncIngredientControl('prot', protFood, smbState.protGrams);
+            syncIngredientControl('fruit', fruitFood, smbState.fruitGrams);
+            syncIngredientControl('starch', starchFood, smbState.starchGrams);
+            syncIngredientControl('fat', fatFood, smbState.fatGrams);
+
+            // Cálculo dinámico de % de glucógeno muscular y hepático
+            const fruitC = (fruitFood && smbState.fruitGrams > 0) ? (fruitFood.c * (fruitFood.unit === 'u' ? smbState.fruitGrams : smbState.fruitGrams / 100)) : 0;
+            const starchC = (starchFood && smbState.starchGrams > 0) ? (starchFood.c * (starchFood.unit === 'u' ? smbState.starchGrams : smbState.starchGrams / 100)) : 0;
+            const totalCBoth = fruitC + starchC;
+
+            let fruitPct = isPostWod ? 30 : 0;
+            let starchPct = isPostWod ? 70 : 100;
+
+            if (totalCBoth > 0) {
+                fruitPct = Math.round((fruitC / totalCBoth) * 100);
+                starchPct = Math.round((starchC / totalCBoth) * 100);
+            }
+
+            if (fruitLabel) fruitLabel.textContent = `🍎 Fruta (${fruitPct}% glucógeno hepático)`;
+            if (starchLabel) {
+                if (isPostWod) {
+                    starchLabel.textContent = `🥔 Almidón (${starchPct}% glucógeno muscular)`;
+                } else {
+                    starchLabel.textContent = `🍞 Carbohidrato Principal (${starchPct}% glucógeno muscular)`;
+                }
+            }
+
+            const protBadge = document.getElementById('smbProtBadge');
+            if (protBadge) {
+                if (remPDay <= 3) protBadge.classList.remove('hidden');
+                else protBadge.classList.add('hidden');
+            }
+
+            let mealP = 0, mealC = 0, mealF = 0, mealKcal = 0;
+
+            const calcItemMacros = (food, amount) => {
+                if (!food || !amount || amount <= 0) return;
+                const mult = (food.unit === 'u') ? amount : (amount / 100);
+                mealP += (food.p || 0) * mult;
+                mealC += (food.c || 0) * mult;
+                mealF += (food.f || 0) * mult;
+                mealKcal += (food.kcal || 0) * mult;
+            };
+
+            calcItemMacros(protFood, smbState.protGrams);
+            calcItemMacros(starchFood, smbState.starchGrams);
+            if (isPostWod) calcItemMacros(fruitFood, smbState.fruitGrams);
+            calcItemMacros(fatFood, smbState.fatGrams);
+
+            const remPAfter = Math.max(0, remPDay - mealP);
+            const remCAfter = Math.max(0, remCDay - mealC);
+            const remFAfter = Math.max(0, remFDay - mealF);
+            const remKcalAfter = Math.max(0, (targets.k - (eatenP*4 + eatenC*4 + eatenF*9)) - mealKcal);
+
+            const c1Pct = document.getElementById('smbCard1Pct');
+            if (c1Pct) c1Pct.textContent = `(${smbState.budgetPct}%)`;
+
+            document.getElementById('smbC1P').textContent = `${mealP.toFixed(1)}g`;
+            document.getElementById('smbC1C').textContent = `${mealC.toFixed(1)}g`;
+            document.getElementById('smbC1F').textContent = `${mealF.toFixed(1)}g`;
+            document.getElementById('smbC1Kcal').textContent = `${Math.round(mealKcal)} kcal`;
+
+            const c2Pct = document.getElementById('smbCard2Pct');
+            if (c2Pct) c2Pct.textContent = `(${100 - smbState.budgetPct}%)`;
+
+            document.getElementById('smbC2P').textContent = `${remPAfter.toFixed(1)}g`;
+            document.getElementById('smbC2C').textContent = `${remCAfter.toFixed(1)}g`;
+            document.getElementById('smbC2F').textContent = `${remFAfter.toFixed(1)}g`;
+            document.getElementById('smbC2Kcal').textContent = `${Math.round(remKcalAfter)} kcal`;
+        }
+
+        function saveSmartMealToLog() {
+            const todayStr = new Date().toISOString().split('T')[0];
+            const isPostWod = (smbState.timing === 'post');
+
+            const protFood = foodData.find(f => f.id === (smbState.selectedProtId || parseInt(document.getElementById('smbProtSelect')?.value, 10)));
+            const fruitFood = foodData.find(f => f.id === (smbState.selectedFruitId || parseInt(document.getElementById('smbFruitSelect')?.value, 10)));
+            const starchFood = foodData.find(f => f.id === (smbState.selectedStarchId || parseInt(document.getElementById('smbStarchSelect')?.value, 10)));
+            const fatFood = foodData.find(f => f.id === (smbState.selectedFatId || parseInt(document.getElementById('smbFatSelect')?.value, 10)));
+
+            let itemsAdded = 0;
+
+            const addFoodToGlobalLog = (food, amount) => {
+                if (!food || !amount || amount <= 0) return;
+                const mult = (food.unit === 'u') ? amount : (amount / 100);
+                const itemP = parseFloat(((food.p || 0) * mult).toFixed(1));
+                const itemC = parseFloat(((food.c || 0) * mult).toFixed(1));
+                const itemF = parseFloat(((food.f || 0) * mult).toFixed(1));
+                const itemKcal = Math.round((food.kcal || 0) * mult);
+
+                const newLog = {
+                    id: Date.now() + Math.random(),
+                    date: todayStr,
+                    type: 'food',
+                    foodId: food.id,
+                    foodName: food.name,
+                    foodIcon: food.icon || '🔹',
+                    amount: amount,
+                    unit: food.unit || 'g',
+                    p: itemP,
+                    c: itemC,
+                    f: itemF,
+                    kcal: itemKcal
+                };
+
+                globalLog.push(newLog);
+                itemsAdded++;
+            };
+
+            addFoodToGlobalLog(protFood, smbState.protGrams);
+            addFoodToGlobalLog(starchFood, smbState.starchGrams);
+            if (isPostWod) addFoodToGlobalLog(fruitFood, smbState.fruitGrams);
+            addFoodToGlobalLog(fatFood, smbState.fatGrams);
+
+            if (itemsAdded > 0) {
+                saveData();
+                closeSmartMealBuilder();
+                applyFilter();
+                updateYesterdayBalanceCard();
+                updateComparisonCharts();
+                showToast(`✅ ${itemsAdded} alimentos del menú añadidos al diario de hoy`, 3500);
+            } else {
+                showToast("⚠️ Selecciona o indica gramos superiores a 0 para guardar", 3000);
             }
         }
 
@@ -4247,18 +4916,35 @@
         function saveRecipes() { localStorage.setItem('macroCalculatorRecipes', JSON.stringify(recipeData)); }
 
 
-        async function initApp() {
+        
+        function getEmbeddedFallbackStructure() {
+            return {"PROTEIN":{"label":"Carnes, Pescados y Huevos","icon":"🥩","subs":{"MEAT_RED":{"label":"Carnes Rojas/Procesados"},"MEAT_WHITE":{"label":"Aves y Magras"},"FISH_WHITE":{"label":"Pescado Blanco"},"FISH_BLUE":{"label":"Pescado Azul"},"EGG":{"label":"Huevos"}}},"DAIRY":{"label":"Lácteos y Derivados","icon":"🥛","subs":{"CHEESE":{"label":"Quesos"},"YOGURT":{"label":"Yogures / Kéfir"},"MILK":{"label":"Leche Líquida"}}},"CARBS":{"label":"Cereales y Tubérculos","icon":"🌾","subs":{"PASTA_RICE":{"label":"Pasta y Arroces"},"BREAD":{"label":"Panes y Masas"},"TUBER":{"label":"Patata y Batata"}}},"LEGUME":{"label":"Legumbres","icon":"🥘","subs":{"DRY":{"label":"Legumbre Seca"},"COOKED":{"label":"Cocida / Bote"}}},"VEG":{"label":"Verduras y Hortalizas","icon":"🥦","subs":{"GREEN":{"label":"Hoja y Verde"},"COLOR":{"label":"Frutos (Tomate/Pimiento)"}}},"FRUIT":{"label":"Frutas","icon":"🍎","subs":{"FRESH":{"label":"Fruta Fresca"}}},"LIPID":{"label":"Grasas/Frutos Secos","icon":"🥑","subs":{"OIL":{"label":"Aceites"},"NUT":{"label":"Frutos Secos"},"FRUIT_FAT":{"label":"Aguacate / Coco"},"ANIMAL_FAT":{"label":"Grasa Animal"}}},"PURE":{"label":"Macros Puros / Suplementos","icon":"🧪","subs":{"P_PROT":{"label":"Proteína Pura"},"P_CARB":{"label":"Carbohidrato Puro"},"P_FAT":{"label":"Grasa Pura"}}}};
+        }
+
+        function getEmbeddedFallbackFoods() {
+            return [{"id":2,"name":"Aceite de Oliva (AOVE)","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"OIL","icon":"🫒"},{"id":3,"name":"Aguacate","p":2,"c":8.5,"f":15,"kcal":160,"unit":"g","fam":"LIPID","sub":"FRUIT_FAT","icon":"🥑"},{"id":4,"name":"Mix Frutos Secos","p":4.7,"c":9.4,"f":60,"kcal":615,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🌰"},{"id":5,"name":"Pollo/Pavo Magro (Pechuga)","p":23,"c":0,"f":1.5,"kcal":106,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🐓"},{"id":6,"name":"Carne Roja (Ternera)","p":20,"c":0,"f":10,"kcal":170,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🥩"},{"id":7,"name":"Queso Curado/Semicurado","p":25,"c":1,"f":33,"kcal":400,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":8,"name":"Leche Semidesnatada","p":3.1,"c":4.7,"f":1.6,"kcal":46,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":9,"name":"Yogur Natural / Kéfir","p":3.5,"c":4.5,"f":3,"kcal":60,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":10,"name":"Pescado Blanco (Merluza/Bacalao)","p":18,"c":0,"f":1.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":11,"name":"Pescado Azul (Salmón/Atún)","p":20,"c":0,"f":12,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🐟"},{"id":12,"name":"Huevo (Clase L ~60g)","p":7,"c":0.3,"f":5.8,"kcal":80,"unit":"u","fam":"PROTEIN","sub":"EGG","icon":"🥚"},{"id":13,"name":"Arroz / Cereales (Cocido)","p":2.3,"c":26,"f":0.3,"kcal":120,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🍚"},{"id":14,"name":"Pan Blanco / Integral","p":9,"c":50,"f":2,"kcal":260,"unit":"g","fam":"CARBS","sub":"BREAD","icon":"🥖"},{"id":15,"name":"Pasta Trigo (Cocido)","p":4.8,"c":28,"f":0.6,"kcal":140,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🌾"},{"id":16,"name":"Fruta Variada (Genérica)","p":0.5,"c":12,"f":0.2,"kcal":55,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍎"},{"id":17,"name":"Verdura Hoja / Calabacín","p":1.5,"c":3,"f":0.2,"kcal":25,"unit":"g","fam":"VEG","sub":"GREEN","icon":"🥬"},{"id":18,"name":"Garbanzo cocido (Bote)","p":5.4,"c":12,"f":2,"kcal":95,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":19,"name":"Proteína macro","p":100,"c":0,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"💪"},{"id":20,"name":"Carbohidrato macro","p":0,"c":100,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_CARB","icon":"⚡"},{"id":21,"name":"Mantecas","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"ANIMAL_FAT","icon":"🧈"},{"id":22,"name":"Ñoquis (Gnocchi)","p":3.5,"c":36,"f":0.5,"kcal":165,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":23,"name":"Patata / Batata (Cocido)","p":1.9,"c":19,"f":0.1,"kcal":84,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":24,"name":"Aceituna (ud 4gr)","p":0.03,"c":0,"f":0.6,"kcal":6,"unit":"u","fam":"LIPID","sub":"FRUIT_FAT","icon":"🫒"},{"id":25,"name":"Nuez (Grano)","p":15,"c":14,"f":65,"kcal":650,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🥜"},{"id":26,"name":"Tomate / Pimiento","p":1,"c":3.5,"f":0.2,"kcal":20,"unit":"g","fam":"VEG","sub":"COLOR","icon":"🍅"},{"id":28,"name":"Plátano / Banana","p":1.1,"c":23,"f":0.3,"kcal":90,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍌"},{"id":29,"name":"Jamón Serrano (Sin grasa)","p":30,"c":0,"f":8,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":30,"name":"Queso Fresco Batido / Skyr","p":8,"c":3.5,"f":0.1,"kcal":46,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":31,"name":"Legumbres Secas (Lenteja/Garbanzo)","p":22,"c":55,"f":1.5,"kcal":330,"unit":"g","fam":"LEGUME","sub":"DRY","icon":"🫘"},{"id":32,"name":"Cerdo Graso (Costilla/Secreto)","p":16,"c":0,"f":25,"kcal":290,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":33,"name":"Remolacha (Cruda)","p":1.6,"c":9.6,"f":0.2,"kcal":43,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍠"},{"id":34,"name":"Cerdo Magro (Lomo/Solomillo)","p":21,"c":0,"f":3.5,"kcal":120,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐗"},{"id":35,"name":"Tomate Cherry (Unidad)","p":0.12,"c":0.42,"f":0.02,"kcal":2.5,"unit":"u","fam":"VEG","sub":"COLOR","icon":"🍒"},{"id":36,"name":"Leche Desnatada","p":3.2,"c":4.8,"f":0.5,"kcal":37,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":37,"name":"Frutos Rojos / Sandía","p":0.6,"c":7,"f":0.2,"kcal":32,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍉"},{"id":38,"name":"Lata 56gr atún natural","p":23,"c":0,"f":0.7,"kcal":98,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":39,"name":"Lata 52gr atún aove","p":22,"c":0,"f":12,"kcal":196,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":40,"name":"Lata 65gr caballa al natural","p":23,"c":0,"f":3.3,"kcal":122,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":41,"name":"Lata 65gr sardinilla aove crf","p":12.09,"c":0,"f":18.85,"kcal":220,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":42,"name":"Pollo/Pavo Graso (Muslo/Ala)","p":17,"c":0,"f":14,"kcal":195,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🍗"},{"id":43,"name":"Queso Fresco (Burgos)","p":11,"c":4,"f":14,"kcal":185,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":44,"name":"Leche Entera","p":3.1,"c":4.7,"f":3.6,"kcal":64,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":45,"name":"Marisco Magro (Gamba/Langostino)","p":21,"c":0,"f":1,"kcal":93,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":46,"name":"Cefalópodos (Calamar/Sepia/Pulpo)","p":17,"c":0.5,"f":1.5,"kcal":82,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦑"},{"id":47,"name":"Moluscos (Mejillón/Almeja)","p":12,"c":3.5,"f":2.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦪"},{"id":48,"name":"Whey 80% Concentrado (WPC 80)","p":80,"c":8,"f":6,"kcal":406,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":49,"name":"Whey 90% Aislado (Iso/CFM)","p":90,"c":2,"f":1,"kcal":377,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":50,"name":"Caseína 78% Micelar","p":78,"c":6,"f":2,"kcal":354,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":51,"name":"Whey Hidrolizado (Hydro)","p":92,"c":1,"f":0.5,"kcal":376,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":52,"name":"Requesón (Cottage)","p":12,"c":3,"f":4,"kcal":96,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🥣"},{"id":53,"name":"Lenteja cocida (Bote)","p":6.6,"c":13,"f":0,"kcal":88,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":54,"name":"Alubia cocida (Bote)","p":5.3,"c":12,"f":0,"kcal":85,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":55,"name":"Patata cogelada airfryer","p":2.7,"c":24,"f":5.4,"kcal":161,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍟"}];
+        },{"id":3,"name":"Aguacate","p":2,"c":8.5,"f":15,"kcal":160,"unit":"g","fam":"LIPID","sub":"FRUIT_FAT","icon":"🥑"},{"id":4,"name":"Mix Frutos Secos","p":4.7,"c":9.4,"f":60,"kcal":615,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🌰"},{"id":5,"name":"Pollo/Pavo Magro (Pechuga)","p":23,"c":0,"f":1.5,"kcal":106,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🐓"},{"id":6,"name":"Carne Roja (Ternera)","p":20,"c":0,"f":10,"kcal":170,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🥩"},{"id":7,"name":"Queso Curado/Semicurado","p":25,"c":1,"f":33,"kcal":400,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":8,"name":"Leche Semidesnatada","p":3.1,"c":4.7,"f":1.6,"kcal":46,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":9,"name":"Yogur Natural / Kéfir","p":3.5,"c":4.5,"f":3,"kcal":60,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":10,"name":"Pescado Blanco (Merluza/Bacalao)","p":18,"c":0,"f":1.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":11,"name":"Pescado Azul (Salmón/Atún)","p":20,"c":0,"f":12,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🐟"},{"id":12,"name":"Huevo (Clase L ~60g)","p":7,"c":0.3,"f":5.8,"kcal":80,"unit":"u","fam":"PROTEIN","sub":"EGG","icon":"🥚"},{"id":13,"name":"Arroz / Cereales (Cocido)","p":2.3,"c":26,"f":0.3,"kcal":120,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🍚"},{"id":14,"name":"Pan Blanco / Integral","p":9,"c":50,"f":2,"kcal":260,"unit":"g","fam":"CARBS","sub":"BREAD","icon":"🥖"},{"id":15,"name":"Pasta Trigo (Cocido)","p":4.8,"c":28,"f":0.6,"kcal":140,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🌾"},{"id":16,"name":"Fruta Variada (Genérica)","p":0.5,"c":12,"f":0.2,"kcal":55,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍎"},{"id":17,"name":"Verdura Hoja / Calabacín","p":1.5,"c":3,"f":0.2,"kcal":25,"unit":"g","fam":"VEG","sub":"GREEN","icon":"🥬"},{"id":18,"name":"Garbanzo cocido (Bote)","p":5.4,"c":12,"f":2,"kcal":95,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":19,"name":"Proteína macro","p":100,"c":0,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"💪"},{"id":20,"name":"Carbohidrato macro","p":0,"c":100,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_CARB","icon":"⚡"},{"id":21,"name":"Mantecas","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"ANIMAL_FAT","icon":"🧈"},{"id":22,"name":"Ñoquis (Gnocchi)","p":3.5,"c":36,"f":0.5,"kcal":165,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":23,"name":"Patata / Batata (Cocido)","p":1.9,"c":19,"f":0.1,"kcal":84,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔"},{"id":24,"name":"Aceituna (ud 4gr)","p":0.03,"c":0,"f":0.6,"kcal":6,"unit":"u","fam":"LIPID","sub":"FRUIT_FAT","icon":"🫒"},{"id":25,"name":"Nuez (Grano)","p":15,"c":14,"f":65,"kcal":650,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🥜"},{"id":26,"name":"Tomate / Pimiento","p":1,"c":3.5,"f":0.2,"kcal":20,"unit":"g","fam":"VEG","sub":"COLOR","icon":"🍅"},{"id":28,"name":"Plátano / Banana","p":1.1,"c":23,"f":0.3,"kcal":90,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍌"},{"id":29,"name":"Jamón Serrano (Sin grasa)","p":30,"c":0,"f":8,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":30,"name":"Queso Fresco Batido / Skyr","p":8,"c":3.5,"f":0.1,"kcal":46,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣"},{"id":31,"name":"Legumbres Secas (Lenteja/Garbanzo)","p":22,"c":55,"f":1.5,"kcal":330,"unit":"g","fam":"LEGUME","sub":"DRY","icon":"🫘"},{"id":32,"name":"Cerdo Graso (Costilla/Secreto)","p":16,"c":0,"f":25,"kcal":290,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷"},{"id":33,"name":"Remolacha (Cruda)","p":1.6,"c":9.6,"f":0.2,"kcal":43,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍠"},{"id":34,"name":"Cerdo Magro (Lomo/Solomillo)","p":21,"c":0,"f":3.5,"kcal":120,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐗"},{"id":35,"name":"Tomate Cherry (Unidad)","p":0.12,"c":0.42,"f":0.02,"kcal":2.5,"unit":"u","fam":"VEG","sub":"COLOR","icon":"🍒"},{"id":36,"name":"Leche Desnatada","p":3.2,"c":4.8,"f":0.5,"kcal":37,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":37,"name":"Frutos Rojos / Sandía","p":0.6,"c":7,"f":0.2,"kcal":32,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍉"},{"id":38,"name":"Lata 56gr atún natural","p":23,"c":0,"f":0.7,"kcal":98,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":39,"name":"Lata 52gr atún aove","p":22,"c":0,"f":12,"kcal":196,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":40,"name":"Lata 65gr caballa al natural","p":23,"c":0,"f":3.3,"kcal":122,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":41,"name":"Lata 65gr sardinilla aove crf","p":12.09,"c":0,"f":18.85,"kcal":220,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫"},{"id":42,"name":"Pollo/Pavo Graso (Muslo/Ala)","p":17,"c":0,"f":14,"kcal":195,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🍗"},{"id":43,"name":"Queso Fresco (Burgos)","p":11,"c":4,"f":14,"kcal":185,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀"},{"id":44,"name":"Leche Entera","p":3.1,"c":4.7,"f":3.6,"kcal":64,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛"},{"id":45,"name":"Marisco Magro (Gamba/Langostino)","p":21,"c":0,"f":1,"kcal":93,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐"},{"id":46,"name":"Cefalópodos (Calamar/Sepia/Pulpo)","p":17,"c":0.5,"f":1.5,"kcal":82,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦑"},{"id":47,"name":"Moluscos (Mejillón/Almeja)","p":12,"c":3.5,"f":2.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦪"},{"id":48,"name":"Whey 80% Concentrado (WPC 80)","p":80,"c":8,"f":6,"kcal":406,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":49,"name":"Whey 90% Aislado (Iso/CFM)","p":90,"c":2,"f":1,"kcal":377,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":50,"name":"Caseína 78% Micelar","p":78,"c":6,"f":2,"kcal":354,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":51,"name":"Whey Hidrolizado (Hydro)","p":92,"c":1,"f":0.5,"kcal":376,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤"},{"id":52,"name":"Requesón (Cottage)","p":12,"c":3,"f":4,"kcal":96,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🥣"},{"id":53,"name":"Lenteja cocida (Bote)","p":6.6,"c":13,"f":0,"kcal":88,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":54,"name":"Alubia cocida (Bote)","p":5.3,"c":12,"f":0,"kcal":85,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫"},{"id":55,"name":"Patata cogelada airfryer","p":2.7,"c":24,"f":5.4,"kcal":161,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍟"}];
+        }
+
+                async function initApp() {
             try {
-                // 1. Pedimos los archivos al servidor (GitHub Pages)
-                const [foodsRes, structRes] = await Promise.all([
-                    fetch('./foods.json'),
-                    fetch('./structure.json')
-                ]);
+                let remoteFoods = [];
+                try {
+                    // 1. Pedimos los archivos al servidor (GitHub Pages / HTTP)
+                    const [foodsRes, structRes] = await Promise.all([
+                        fetch('./foods.json'),
+                        fetch('./structure.json')
+                    ]);
 
-                if (!foodsRes.ok || !structRes.ok) throw new Error("No se pudieron cargar los archivos JSON");
+                    if (!foodsRes.ok || !structRes.ok) throw new Error("No se pudieron cargar los archivos JSON vía HTTP");
 
-                const remoteFoods = await foodsRes.json();
-                FOOD_STRUCTURE = await structRes.json();
+                    remoteFoods = await foodsRes.json();
+                    FOOD_STRUCTURE = await structRes.json();
+                } catch (e) {
+                    console.warn("Fetch de foods.json no disponible en entorno local file://. Usando base de datos embebida.", e);
+                    remoteFoods = getEmbeddedFallbackFoods();
+                    FOOD_STRUCTURE = getEmbeddedFallbackStructure();
+                }
 
                 // 2. Cargamos el historial y recetas del usuario (LocalStorage)
                 const historyData = localStorage.getItem('macroCalculatorData');
@@ -4561,13 +5247,16 @@
             items.forEach(i => {
                 const ck = selectedIds.has(i.id) ? 'checked' : '';
                 const isRecipe = i.type === 'recipe';
-                const icon = isRecipe ? '📖 ' : (i.foodIcon || '');
+                const icon = isRecipe ? '📖 ' : (i.foodIcon || '🔹 ');
+                const displayName = i.foodName || i.name || 'Alimento';
+                const displayAmount = i.amount !== undefined ? i.amount : (i.qty || 0);
+                const displayUnit = i.unit || '';
                 tb.innerHTML += `
                 <tr class="hover:bg-[#2c2c2e] group transition-colors">
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
                     <td class="px-4 py-3">
-                        <div class="font-medium text-white">${icon}${i.foodName}</div>
-                        <div class="text-xs text-white">${i.date} &bull; ${i.amount}${i.unit}</div>
+                        <div class="font-medium text-white">${icon}${displayName}</div>
+                        <div class="text-xs text-white">${i.date} &bull; ${displayAmount}${displayUnit}</div>
                     </td>
                     <td class="px-4 py-3 text-right font-medium text-white">${i.kcal}</td>
                     <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
