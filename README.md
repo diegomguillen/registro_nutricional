@@ -47,13 +47,13 @@ El tejido muscular magro vivo contiene un ~73% de agua. Se aisla la matriz prote
 $$\text{SMM}_{\text{seca}} = \text{SMM} \times 0.27$$
 
 ### 2. Normalización Hídrica por Mediana (%TBW_ref)
-Para evitar que la sudoración o depleción tras entrenamientos altere engañosamente la lectura de la báscula, la masa muscular se normaliza respecto a la **mediana hídrica histórica del propio usuario** ($\%\text{TBW}_{\text{ref}}$):
-$$\text{SMM}_{\text{norm}} = \text{SMM} \times \left( \frac{\%\text{TBW}_{\text{ref}}}{\%\text{TBW}} \right)$$
-$$\text{SMM}_{\text{seca\_norm}} = \text{SMM}_{\text{norm}} \times 0.27$$
+Para evitar que la sudoración o depleción tras entrenamientos altere engañosamente la lectura de la báscula, la masa muscular se normaliza respecto a la **mediana hídrica histórica del propio usuario** ($\\% \text{TBW}_{\text{ref}}$):
+$$\text{SMM}_{\text{norm}} = \text{SMM} \times \left( \frac{\\% \text{TBW}_{\text{ref}}}{\\% \text{TBW}} \right)$$
+$$\text{SMM}_{\text{seca,norm}} = \text{SMM}_{\text{norm}} \times 0.27$$
 
 ### 3. Filtro de Fluctuación Bioeléctrica (Suavizado EMA α = 0.3)
 Se aplica una Media Móvil Exponencial (EMA) sobre la masa seca normalizada para aislar la tendencia hipertrófica/protectora real frente al ruido eléctrico diario:
-$$\text{EMA}_{t} = 0.3 \times \text{SMM}_{\text{seca\_norm}, t} + 0.7 \times \text{EMA}_{t-1}$$
+$$\text{EMA}_{t} = 0.3 \times \text{SMM}_{\text{seca,norm}, t} + 0.7 \times \text{EMA}_{t-1}$$
 
 ---
 
