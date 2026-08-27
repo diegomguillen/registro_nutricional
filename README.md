@@ -17,8 +17,10 @@
 ## Características Principales
 
 * **Registro Diario (Alimentos y Recetas):** Interfaz unificada para registrar alimentos individuales (gramos/unidades) o recetas completas (unidades).
+* **Gestión de Días Libres / Incompletos:** Interruptor para marcar días con ingesta incompleta o cenas fuera (`Registro Incompleto`), aislándolos de las correlaciones de Pearson e imputando balance neutro para no falsear los semáforos ni crear déficits ficticios.
 * **Módulo Garmin & Nutrición FFM (Masa Magra):**
-  * **Deslizadores Interactivos:** Control directo del Gasto Calórico de referencia, Peso, % Grasa, Masa Magra Esquelética, Masa Magra FFM (solo lectura), % Agua, ratios de Proteína/Grasa por kg de FFM y Ajuste calórico diario.
+  * **Deslizadores Interactivos & Calibrador TDEE:** Control directo del Gasto Calórico de referencia, Peso, % Grasa, Masa Magra Esquelética, Masa Magra FFM (solo lectura), % Agua, ratios de Proteína/Grasa por kg de FFM y Ajuste calórico diario.
+  * **Calibrador de Gasto Real Garmin (Herramienta Consultiva):** Deducción metabólica termodinámica (TDEE Real) basada en la pérdida/ganancia de Masa Grasa EMA (1 kg grasa = 7,700 kcal). Excluye automáticamente días incompletos y permite aplicar la corrección sugerida al deslizador con un solo clic.
   * **Escáner OCR para Garmin Connect:** Lectura e importación automática de capturas de pantalla de la app Garmin Connect (mediante Tesseract.js) con soporte de pegado directo (`Ctrl+V`).
   * **Set Fat-Free Mass Based Nutrition (Preset Científico):** Interruptor inteligente basado en literatura científica (*Helms et al., Morton et al.*) que fija 2.4g Proteína y 1.0g Grasa por kg de FFM activa.
   * **Set Déficit Máximo:** Interruptor que aplica el máximo déficit calórico seguro recomendado manteniendo la glucemia y glucógeno adecuados.
@@ -27,6 +29,7 @@
   * **Aislamiento del 27% Seco:** Aisla la matriz proteica contráctil pura libre de agua (`SMM_seca = SMM × 0.27`).
   * **Normalización Hídrica por Mediana:** Normaliza las lecturas frente a la mediana hídrica histórica del propio usuario (`%TBW_ref`) neutralizando las fluctuaciones por sudoración o glucógeno.
   * **Filtro de Tendencia EMA (α = 0.3):** Aplica una Media Móvil Exponencial (EMA) sobre la masa seca normalizada y sobre la masa grasa corporal para aplanar artefactos hídricos/bioeléctricos diarios y observar tendencias reales a medio plazo.
+  * **Zona Muerta de Tolerancia (Deadband ±50g):** Toda variación de masa muscular seca inferior a 50 gramos (|Δ| < 0.05 kg) se evalúa como `0.00 kg (Intacto)` para evitar falsas alarmas por ruido hídrico/instrumental.
 * **Correlaciones & Composición Corporal (5 Gráficos Avanzados con Semáforos Inteligentes):**
   * **WEIGHT VS FAT (EMA) VS WATER VS MUSCLE:** Foto panorámica de recomposición corporal (Peso Total vs Masa Grasa EMA kg vs Masa de Agua kg vs Masa Muscular Seca EMA).
   * **PROTEIN VS MUSCLE:** Ingesta de proteína (g) vs Masa Muscular Seca EMA (kg).

@@ -552,6 +552,18 @@
                         class="bg-[#2c2c2e] border border-[#3a3a3c] text-white px-3 py-2 rounded-lg text-xs font-medium flex-1">+1
                         Día</button>
                 </div>
+                <div class="pt-2 border-t border-[#2c2c2e]">
+                    <label for="chkIncompleteDay" class="flex items-center justify-between p-2.5 bg-[#2c2c2e] hover:bg-[#3a3a3c] rounded-xl border border-[#3a3a3c] cursor-pointer transition-all">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">🔓</span>
+                            <div>
+                                <span class="text-xs font-bold text-white block">Registro Incompleto / Día Libre</span>
+                                <span class="text-[10px] text-white/50 block">Excluye la ingesta N-1 de las correlaciones</span>
+                            </div>
+                        </div>
+                        <input type="checkbox" id="chkIncompleteDay" onchange="toggleCurrentDayIncomplete()" class="custom-checkbox rounded text-amber-400 w-4 h-4 cursor-pointer">
+                    </label>
+                </div>
             </div>
 
             <div class="premium-card overflow-hidden animate-fade-in-up" style="animation-delay: 0.1s">
@@ -612,7 +624,12 @@
                 <div class="space-y-3.5">
                     <div class="flex flex-col justify-end">
                         <div class="flex justify-between items-center mb-1 h-6">
-                            <label class="block text-[10px] font-bold text-kcal uppercase flex items-end">Gasto Calórico referencia (kcal)</label>
+                            <div class="flex items-center gap-1.5">
+                                <label class="block text-[10px] font-bold text-kcal uppercase">Gasto Calórico referencia (kcal)</label>
+                                <button type="button" onclick="openGarminCalibrationModal()" class="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-kcal border border-[#3a3a3c] px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95 shadow-sm" title="Calcular el gasto calórico real deducido por termodinámica">
+                                    🧮 Calibrar
+                                </button>
+                            </div>
                             <span id="garminKcalVal" class="text-xs font-mono font-bold text-kcal">2000 kcal</span>
                         </div>
                         <input type="range" id="garminKcalInput" value="2000" step="50" min="1000" max="4000" class="w-full accent-[#0a84ff] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
@@ -1511,6 +1528,42 @@
         </div>
     </div>
 
+    <!-- MODAL CALIBRADOR DE GASTO REAL GARMIN -->
+    <div id="garminCalibrationModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-[100] flex items-center justify-center p-4 animate-fade-in">
+        <div class="bg-[#1c1c1e] border border-[#2c2c2e] rounded-2xl max-w-md w-full p-5 shadow-2xl space-y-4 relative">
+            <button onclick="closeGarminCalibrationModal()" class="absolute top-4 right-4 text-white/60 hover:text-white bg-[#2c2c2e] p-2 rounded-full transition-all">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-xl">
+                    🧮
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-white leading-tight">Calibrador de Gasto Real Garmin</h3>
+                    <p class="text-xs text-white/60">Deducción metabólica termodinámica (TDEE Real)</p>
+                </div>
+            </div>
+
+            <div id="garminCalibBody" class="space-y-3 text-xs">
+                <!-- Rellenado dinámicamente -->
+            </div>
+
+            <div class="pt-2 flex flex-col gap-2">
+                <button id="btnApplyCalibratedKcal" onclick="applyCalibratedKcal()" class="w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95 shadow-md flex items-center justify-center gap-1.5">
+                    🎯 Aplicar Corrección al Deslizador
+                </button>
+                <button onclick="closeGarminCalibrationModal()" class="w-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white/70 hover:text-white font-bold py-2.5 rounded-xl text-xs transition-all active:scale-95">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+
     <div id="scannerModal" class="fixed inset-0 bg-black/90 hidden z-[90] flex flex-col justify-center items-center">
         <div class="absolute top-5 right-5 z-20">
             <button onclick="stopScanner()" class="text-white bg-white/20 rounded-full p-2 backdrop-blur-md">
@@ -2158,6 +2211,45 @@
         let recipeData = [];
         let foodData = [];
         let FOOD_STRUCTURE = {};
+        let dayFlags = JSON.parse(localStorage.getItem('nutri_dayFlags')) || {};
+
+        function saveDayFlags() {
+            localStorage.setItem('nutri_dayFlags', JSON.stringify(dayFlags));
+        }
+
+        function getActiveFilterDate() {
+            const startInput = document.getElementById('filterStart');
+            return startInput && startInput.value ? startInput.value : getTodayDateStr();
+        }
+
+        function toggleCurrentDayIncomplete() {
+            const dateStr = getActiveFilterDate();
+            if (!dateStr) return;
+            const chk = document.getElementById('chkIncompleteDay');
+            if (!dayFlags[dateStr]) dayFlags[dateStr] = {};
+            if (chk) {
+                dayFlags[dateStr].isIncomplete = chk.checked;
+            } else {
+                dayFlags[dateStr].isIncomplete = !dayFlags[dateStr].isIncomplete;
+            }
+            saveDayFlags();
+            updateIncompleteDayUI();
+            updateBodyCompCharts();
+            applyFilter();
+            showToast(dayFlags[dateStr].isIncomplete ? "Día marcado como Incompleto / Libre" : "Día marcado como Registro Completo");
+        }
+
+        function updateIncompleteDayUI() {
+            const dateStr = getActiveFilterDate();
+            const isIncomplete = !!(dayFlags[dateStr] && dayFlags[dateStr].isIncomplete);
+            const chk = document.getElementById('chkIncompleteDay');
+            if (chk) {
+                chk.checked = isIncomplete;
+            }
+        }
+
+
+
         let chartInstance = null;
         let chartInstanceYesterday = null;
         let chartInstanceLastWeek = null;
@@ -2544,70 +2636,231 @@
             updateBodyCompCharts();
         }
 
+        let calculatedRealTdee = null;
+
+        function openGarminCalibrationModal() {
+            const body = document.getElementById('garminCalibBody');
+            const btnApply = document.getElementById('btnApplyCalibratedKcal');
+            const modal = document.getElementById('garminCalibrationModal');
+
+            if (!body || !modal) return;
+
+            const sortedLogs = [...bodyCompLog].sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            // Calcular masa grasa EMA para la serie
+            const alphaFat = 0.3;
+            const fatKgEmaData = [];
+            let prevFatEma = null;
+            sortedLogs.forEach((val, idx) => {
+                const fatKg = parseFloat((val.weight * (val.fatPct / 100)).toFixed(2));
+                if (idx === 0 || prevFatEma === null) {
+                    prevFatEma = fatKg;
+                } else {
+                    prevFatEma = (alphaFat * fatKg) + ((1 - alphaFat) * prevFatEma);
+                }
+                fatKgEmaData.push(parseFloat(prevFatEma.toFixed(2)));
+            });
+
+            // Encontrar días con comida real registrada y NO marcados como incompletos
+            const validIndices = [];
+            let totalEatenKcal = 0;
+            let totalGarminKcal = 0;
+            let excludedDaysCount = 0;
+
+            sortedLogs.forEach((l, idx) => {
+                const prevDate = getPreviousDateStr(l.date);
+                if (dayFlags[prevDate]?.isIncomplete || dayFlags[l.date]?.isIncomplete) {
+                    excludedDaysCount++;
+                    return;
+                }
+                let dayLogs = globalLog.filter(i => i.date === prevDate);
+                if (!dayLogs.length) dayLogs = globalLog.filter(i => i.date === l.date);
+                if (!dayLogs.length) {
+                    excludedDaysCount++;
+                    return;
+                }
+                let eaten = 0;
+                dayLogs.forEach(i => eaten += (i.kcal || 0));
+                if (eaten > 0) {
+                    validIndices.push(idx);
+                    totalEatenKcal += eaten;
+                    totalGarminKcal += (parseFloat(userGarmin.yesterdayKcal) || 2000);
+                }
+            });
+
+            const k = validIndices.length;
+
+            if (k < 2) {
+                body.innerHTML = `
+                    <div class="bg-[#2c2c2e] p-4 rounded-xl border border-[#3a3a3c] text-center space-y-2">
+                        <div class="text-2xl">📊</div>
+                        <div class="font-bold text-white text-xs">Pocos Datos Verificados</div>
+                        <p class="text-white/60 text-[11px]">Se necesitan al menos 2 días con registro de comidas completo y pesaje para deducir el gasto real.<br><span class="text-amber-400 font-medium">(Días incompletos excluidos: ${excludedDaysCount})</span>.</p>
+                    </div>
+                `;
+                if (btnApply) btnApply.classList.add('hidden');
+                modal.classList.remove('hidden');
+                return;
+            }
+
+            const fatStart = fatKgEmaData[0];
+            const fatEnd = fatKgEmaData[fatKgEmaData.length - 1];
+            const deltaFat = fatEnd - fatStart;
+
+            const avgEaten = Math.round(totalEatenKcal / k);
+            const avgGarmin = Math.round(totalGarminKcal / k);
+
+            // Variación calórica total por grasa (7,700 kcal por kg de grasa)
+            const dailyFatEnergyChange = (deltaFat * 7700) / k;
+
+            // Gasto Real Deducción Termodinámica: Ingesta Media - Cambio Calórico Diario por Grasa
+            calculatedRealTdee = Math.round(avgEaten - dailyFatEnergyChange);
+            const garminOffset = calculatedRealTdee - avgGarmin;
+
+            const offsetColor = garminOffset < 0 ? 'text-amber-400' : 'text-emerald-400';
+            const offsetText = garminOffset < 0 
+                ? `Garmin sobreestima tu gasto en +${Math.abs(garminOffset)} kcal/día` 
+                : (garminOffset > 0 
+                    ? `Garmin subestima tu gasto en -${Math.abs(garminOffset)} kcal/día` 
+                    : `Garmin estima con precisión perfecta (0 kcal de sesgo)`);
+
+            const daysRecommendationNotice = k < 14
+                ? `<div class="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
+                    <span>💡</span> <span><strong>Recomendación:</strong> Se aconseja acumular al menos <strong>14 días completos</strong> para eliminar el ruido hídrico y obtener la máxima precisión (actualmente: ${k} días).</span>
+                   </div>`
+                : `<div class="text-[10px] text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1.5 rounded-lg flex items-center gap-1.5 font-medium">
+                    <span>🟢</span> <span><strong>Periodo Óptimo:</strong> Dispones de ${k} días completos de registro para una calibración de alta precisión.</span>
+                   </div>`;
+
+            body.innerHTML = `
+                <div class="grid grid-cols-2 gap-2 text-center">
+                    <div class="bg-[#2c2c2e] p-2.5 rounded-xl border border-[#3a3a3c]">
+                        <span class="text-[9px] text-white/50 block font-bold uppercase">Días Analizados</span>
+                        <span class="font-bold text-white text-xs">${k} días completos</span>
+                        <span class="text-[9px] text-amber-400/80 block mt-0.5">${excludedDaysCount} días exentos</span>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2.5 rounded-xl border border-[#3a3a3c]">
+                        <span class="text-[9px] text-white/50 block font-bold uppercase">Ingesta Media Real</span>
+                        <span class="font-bold text-kcal text-xs">${avgEaten} kcal/día</span>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2.5 rounded-xl border border-[#3a3a3c]">
+                        <span class="text-[9px] text-white/50 block font-bold uppercase">Gasto Garmin Actual</span>
+                        <span class="font-bold text-blue-400 text-xs">${avgGarmin} kcal/día</span>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2.5 rounded-xl border border-[#3a3a3c]">
+                        <span class="text-[9px] text-fat/80 block font-bold uppercase">Δ Grasa (EMA)</span>
+                        <span class="font-bold text-fat text-xs">${deltaFat > 0 ? '+' : ''}${deltaFat.toFixed(2)} kg</span>
+                    </div>
+                </div>
+
+                ${daysRecommendationNotice}
+
+                <div class="bg-amber-500/10 border border-amber-500/30 p-3 rounded-xl space-y-1">
+                    <div class="flex justify-between items-center">
+                        <span class="font-bold text-white text-xs">🔥 Gasto Real Deducido (TDEE):</span>
+                        <span class="font-bold text-amber-400 text-sm font-mono">${calculatedRealTdee} kcal/día</span>
+                    </div>
+                    <div class="text-[11px] ${offsetColor} font-medium pt-1 border-t border-amber-500/20">
+                        ${offsetText}
+                    </div>
+                </div>
+
+                <p class="text-[10px] text-white/50 leading-tight">
+                    * Basado en la 1ª Ley de la Termodinámica (1 kg grasa = 7,700 kcal). Excluye automáticamente todos los días marcados como incompletos.
+                </p>
+            `;
+
+            if (btnApply) {
+                btnApply.classList.remove('hidden');
+                btnApply.textContent = `🎯 Aplicar ${calculatedRealTdee} kcal al Deslizador`;
+            }
+            modal.classList.remove('hidden');
+        }
+
+        function closeGarminCalibrationModal() {
+            const modal = document.getElementById('garminCalibrationModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function applyCalibratedKcal() {
+            if (!calculatedRealTdee) return;
+            userGarmin.yesterdayKcal = calculatedRealTdee;
+            const input = document.getElementById('garminKcalInput');
+            if (input) input.value = calculatedRealTdee;
+            saveGarmin();
+            updateGarminValueLabels();
+            renderGarminSummaryText();
+            updateDashboard();
+            updateBodyCompCharts();
+            applyFilter();
+            closeGarminCalibrationModal();
+            showToast(`Gasto de referencia ajustado a ${calculatedRealTdee} kcal`);
+        }
+
         const CHART_HELP_DATA = {
             weightFatMuscle: {
                 icon: "⚖️",
-                title: "Peso vs Masa Grasa (EMA) vs Masa de Agua vs Masa Muscular Seca (EMA)",
-                subtitle: "Evolución global de composición corporal sin artefactos hídricos",
-                purpose: "Muestra la foto global de tu recomposición corporal comparando el peso total de la báscula, la masa grasa suavizada con EMA (α=0.3), la masa de agua corporal y tu tendencia proteica seca.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\n1. Aislamiento 27% Seco: SMM_seca = SMM × 0.27\n2. Normalización %TBW_ref: SMM_norm = SMM × (%TBW_ref / %TBW)\n3. Filtro EMA Muscular (α=0.3): SMM_EMA_t = 0.3 × SMM_seca_norm + 0.7 × SMM_EMA_t-1\n4. Filtro EMA Grasa (α=0.3): Fat_EMA_t = 0.3 × Fat_t + 0.7 × Fat_EMA_t-1\n\n💡 EJEMPLO DE UTILIDAD REAL:\nTras 2 WODs pierdes -1.8 kg de agua y tu báscula Garmin marca engañosamente un pico de grasa. El filtro EMA aplana el pico bioeléctrico de 1 día y muestra la tendencia grasa real a medio plazo.",
-                howTo: "• Peso Total (Gris Claro): Peso bruto en la báscula.\n• Masa Grasa EMA (Rojo): Kilos de grasa suavizados con EMA (α=0.3) para neutralizar los picos de la bioimpedancia matutina.\n• Masa de Agua (Azul): Litros/kg de agua corporal total.\n• Masa Muscular Seca EMA (Verde Neón): Tendencia proteica contráctil pura sin fluctuaciones de agua.\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Gris baja + Rojo baja + Verde Neón PLANA: Definición Magra Impecable. El peso que estás perdiendo es 100% grasa y agua sin sacrificar masa muscular.\n🟢 Gris sube + Rojo plana + Verde Neón SUBE: Volumen Magro Limpio. Ganancia muscular real con mínima acumulación de grasa.\n⚠️ Gris baja + Rojo plana + Verde Neón CAE: Pérdida muscular rápida. Revisa tu proteína y calorías.",
-                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Recomposición Limpia (r ≤ -0.35): Quemando grasa mientras proteges o ganas tejido muscular seco.\n🔵 Tendencia Paralela (r ≥ +0.35): El peso y la grasa caen en paralelo con variaciones de agua (vaciado conjunto natural).\n🟡 Estable / Neutro: Sin sesgo trófico o cambios neutros."
+                title: "Peso vs Grasa (EMA) vs Agua vs Músculo Seco (EMA)",
+                subtitle: "Evolución de composición corporal sin ruido hídrico",
+                purpose: "Compara tu peso total, grasa suavizada (EMA α=0.3), masa de agua y masa muscular seca pura.",
+                howTo: "• Peso (Gris): Peso bruto en báscula.\n• Grasa EMA (Rojo): Grasa suavizada para eliminar picos de bioimpedancia.\n• Agua (Azul): Litros/kg de agua corporal.\n• Músculo Seco EMA (Verde): Matriz proteica contráctil pura (27% seco normalizado).\n\n📊 LECTURA RÁPIDA:\n🟢 Peso y Grasa bajan + Músculo plano: Definición perfecta (solo pierdes grasa/agua).\n🟢 Peso y Músculo suben + Grasa plana: Ganancia muscular limpia.\n⚠️ Músculo cae rápido: Alerta catabólica. Sube proteína o reduce déficit.",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Recomposición Limpia (r ≤ -0.35): Quemando grasa protegiendo el músculo.\n🔵 Tendencia Paralela (r ≥ +0.35): Vaciado conjunto natural de agua y peso."
             },
             bodyComp: {
                 icon: "📈",
                 title: "Evolución Corporal Global",
-                subtitle: "Masa Magra (kg) vs Masa Grasa (kg) vs Masa de Agua (kg)",
-                purpose: "Evalúa la calidad real de tu recomposición corporal a lo largo del tiempo, diferenciando entre cambios de grasa y masa magra.",
-                howTo: "• Masa Magra (Verde): Tejido muscular libre de grasa. Debe mantenerse o subir en volumen/recomposición.\n• Masa Grasa (Rojo): Masa total de tejido graso en kg. Debe descender si buscas definición.\n• Masa de Agua (Azul): Masa total hídrica corporal en kg.\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Verde sube / Rojo baja (Cruzadas): Recomposición corporal impecable (ganas músculo perdiendo grasa).\n⚖️ Verde plana / Rojo baja: Definición magra limpia (preservas 100% el músculo mientras pierdes grasa).\n⚠️ Verde cae / Rojo cae (Paralelo): Perdiendo peso demasiado rápido por catabolismo o déficit excesivo. Eleva la proteína o reduce el déficit.",
-                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Recomposición Limpia (r < -0.40): Quemando grasa sin sacrificar tejido muscular.\n🔴 Catabolismo / Volumen Conjunto (r > +0.40): Ambas variables se mueven en la misma dirección.\n⚠️ Alerta Trófica: Si la curva verde cae rápido en paralelo a la roja, eleva proteína o reduce déficit."
+                subtitle: "Masa Magra vs Masa Grasa vs Agua",
+                purpose: "Evalúa la calidad general de tu recomposición corporal a lo largo del tiempo.",
+                howTo: "• Masa Magra (Verde): Tejido libre de grasa.\n• Masa Grasa (Rojo): Kilos totales de grasa.\n• Masa de Agua (Azul): Agua corporal total.\n\n📊 LECTURA RÁPIDA:\n🟢 Verde sube / Rojo baja: Recomposición ideal.\n⚖️ Verde plano / Rojo baja: Definición limpia conservando músculo.\n⚠️ Verde cae / Rojo cae: Pérdida muscular. Eleva la proteína.",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Recomposición (r < -0.40): Perdiendo grasa manteniendo músculo.\n🔴 Variación Conjunta (r > +0.40): Ambas variables se mueven juntas."
             },
             protFFM: {
                 icon: "🥩",
-                title: "Proteína Real vs Masa Muscular Seca Real (EMA)",
-                subtitle: "Proteína Ingerida (g) vs Tendencia Muscular Seca Corregida (kg)",
-                purpose: "Analiza el impacto de tu ingesta de proteína registrada sobre la preservación de la matriz proteica contráctil pura (27% seco normalizado con EMA).\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\n1. Aislamiento 27% Seco: SMM_seca = SMM × 0.27\n2. Normalización %TBW_ref: SMM_norm = SMM × (%TBW_ref / %TBW)\n3. Filtro EMA (α=0.3): EMA_t = 0.3 × SMM_seca_norm + 0.7 × EMA_t-1\n\n💡 EJEMPLO DE UTILIDAD REAL:\nUn día con menor consumo de proteína deshidrata el músculo haciendo caer la lectura de Garmin. El algoritmo normaliza frente a tu mediana hídrica y demuestra que tu masa contráctil se mantiene estable.",
-                howTo: "• Proteína Real (Púrpura): Ingesta diaria de proteína consumida en tu dieta.\n• Masa Muscular Seca EMA (Verde Neón): Masa proteica pura sin agua, normalizada frente a tu mediana de %TBW y suavizada con EMA (α=0.3).\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Púrpura cae (día puntual) + Verde Neón PLANA: Protección Magra Exitosa. Aunque un día bajes la proteína o estés en déficit, tu masa seca se mantiene estable.\n🔴 Púrpura baja (sostenido semanas) + Verde Neón CAE: Déficit proteico real. Tu cuerpo está degradando proteína muscular para reparar tejidos.\n🟢 Púrpura alta + Verde Neón SUBE: Estímulo anabólico hipertrófico efectivo.",
-                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Protección Proteica (r ≥ +0.30): Ingesta proteica elevada que protege tu masa muscular seca.\n🔴 Baja Proteína (r ≤ -0.30): Ingesta de proteína insuficiente para la recuperación muscular.\n🟡 Ingesta Neutra: Masa seca estable sin sensibilidad evidente a la proteína."
+                title: "Proteína Real vs Músculo Seco EMA",
+                subtitle: "Proteína ingerida (g) N-1 vs Músculo seco (kg)",
+                purpose: "Comprueba si tu ingesta diaria de proteína es suficiente para proteger tu masa muscular real.",
+                howTo: "• Proteína N-1 (Púrpura): Gramos de proteína consumidos el día anterior.\n• Músculo Seco EMA (Verde): Masa proteica contráctil pura.\n\n📊 LECTURA RÁPIDA:\n🟢 Proteína adecuada + Músculo plano/sube: Músculo 100% protegido.\n⚠️ Proteína baja semanas + Músculo cae: Déficit proteico real. Eleva la proteína.",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Protección Proteica (r ≥ +0.30): Proteína suficiente para mantener el músculo.\n🔴 Proteína Insuficiente (r ≤ -0.30): Ingesta proteica baja para tu nivel de actividad."
             },
             carbWater: {
                 icon: "🍞",
-                title: "Carbohidratos vs Masa de Agua & Masa Seca",
-                subtitle: "Efecto del glucógeno sobre el agua corporal y volumen muscular",
-                purpose: "Demuestra la correlación directa entre la ingesta de carbohidratos, la recarga/vaciado de glucógeno y la masa de agua corporal.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\nSepara el volumen de agua de la masa proteica seca (27% SMM). Cada gramo de glucógeno arrastra 3-4g de agua, cambiando el volumen en báscula sin alterar el tejido muscular seco real.\n\n💡 EJEMPLO DE UTILIDAD REAL:\nTras una carga de hidratos ganas +1.2 kg en báscula. El algoritmo confirma que el 100% de la subida es masa de agua (línea azul) y que tu masa seca permanece plana en verde neón.",
-                howTo: "• Carbohidratos (Naranja): Gramos de carbohidratos consumidos al día.\n• Masa de Agua (Azul): Litros/kg de agua corporal total.\n• Masa Muscular Seca EMA (Verde Neón): Masa contráctil filtrada de oscilaciones hídricas.\n\n📊 INTERPRETACIÓN DE CURVAS:\n💧 Naranja cae + Azul cae (Verde Neón PLANA): Vaciado de Glucógeno Limpio. La pérdida de peso en la báscula es 100% agua y glucógeno gastado (3-4g agua por gramo de hidrato). Tu músculo seco está intocado.\n🍞 Naranja sube + Azul sube (Verde Neón PLANA): Efecto Tanque Lleno. Subida de peso por supercompensación de glucógeno e hidratación miocelular, NO ganancia de grasa.",
-                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Carbo-Hidratación Limpia (r ≥ +0.35): Los cambios hídricos en la báscula están justificados por la carga de glucógeno (3-4g agua/g hidrato), aislados del músculo seco.\n🟡 Sin Sesgo Hídrico: Las variaciones de agua no están condicionadas por los hidratos."
+                title: "Carbohidratos vs Agua & Músculo",
+                subtitle: "Efecto de los hidratos sobre el glucógeno y el agua",
+                purpose: "Demuestra cómo las cargas y descargas de hidratos mueven el agua corporal sin alterar el músculo seco.",
+                howTo: "• Carbohidratos N-1 (Naranja): Gramos de hidratos consumidos el día anterior.\n• Agua (Azul): Agua corporal en la báscula.\n• Músculo Seco EMA (Verde): Masa contráctil pura.\n\n📊 LECTURA RÁPIDA:\n💧 Hidratos bajan + Agua baja (Músculo plano): Vaciado de glucógeno normal (1g hidrato retiene 3-4g agua).\n🍞 Hidratos suben + Agua sube (Músculo plano): Recarga de glucógeno (no es grasa).",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Carbo-Hidratación Limpia (r ≥ +0.35): Oscilaciones de agua justificadas por el glucógeno."
             },
             deficitFFM: {
                 icon: "🔥",
-                title: "Déficit Real vs Masa Muscular Seca Real (EMA)",
-                subtitle: "Correlación entre el balance calórico diario y el tejido muscular seco",
-                purpose: "Evalúa si tu déficit o superávit calórico diario (Ingesta Real - Gasto Referencia) afecta a la proteína contráctil muscular real.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\n1. Aislamiento 27% Seco: SMM_seca = SMM × 0.27\n2. Normalización %TBW_ref: SMM_norm = SMM × (%TBW_ref / %TBW)\n3. Filtro EMA (α=0.3): EMA_t = 0.3 × SMM_seca_norm + 0.7 × EMA_t-1\n\n💡 EJEMPLO DE UTILIDAD REAL:\nUn déficit de -1250 kcal vacía el glucógeno y provoca una caída de peso rápida. El algoritmo verifica que tu matriz proteica no sufre catabolismo y se mantiene en la línea verde.",
-                howTo: "• Déficit Real (Rojo): Balance calórico diario en Kcal. Valores negativos (-500, -1000 kcal) representan déficit.\n• Masa Muscular Seca EMA (Verde Neón): Masa proteica seca con zoom dinámico de alta resolución.\n\n📊 INTERPRETACIÓN DE CURVAS:\n🟢 Rojo cae muy negativo (-800 kcal) + Verde Neón PLANA: Déficit Perfecto y Sostenible. Tu nutrición preserva el 100% del tejido magro. Estás perdiendo exclusivamente grasa y líquido.\n⚠️ Rojo cae muy negativo + Verde Neón CAE (a lo largo de semanas): Alerta Catabólica. El déficit es excesivo. Conviene moderar el déficit o subir la proteína FFM a 2.4 g/kg.",
-                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Conservación Magra (r ≤ +0.30): Tu déficit calórico es seguro y sostenible; la masa muscular seca está 100% protegida.\n🟡 Sensibilidad al Déficit (r ≥ +0.65): En déficits muy severos la masa seca muestra cierta sensibilidad; modera el déficit o eleva la proteína a 2.4 g/kg."
+                title: "Déficit Real vs Músculo Seco EMA",
+                subtitle: "Balance calórico diario vs Masa muscular seca",
+                purpose: "Mide si tu déficit calórico diario pone en riesgo tu proteína muscular contráctil.",
+                howTo: "• Déficit N-1 (Rojo): Balance calórico diario en kcal (Ingesta - Gasto).\n• Músculo Seco EMA (Verde): Masa muscular seca pura.\n\n📊 LECTURA RÁPIDA:\n🟢 Déficit alto (-800 kcal) + Músculo plano: Déficit perfecto y seguro (solo quemas grasa).\n⚠️ Músculo cae sostenidamente: Déficit demasiado agresivo. Reduce el déficit.",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Conservación Magra (r ≤ +0.30): Déficit seguro con músculo protegido."
             },
             actImpactHelp: {
                 icon: "🏃",
                 title: "Impacto del Entrenamiento (WOD, MTB, Descanso)",
-                subtitle: "Efecto de cada disciplina sobre tu Masa Muscular Seca (EMA)",
-                purpose: "Evalúa el impacto trófico a medio/largo plazo de WOD, MTB o Descanso eliminando el sesgo de sudoración post-entreno.\n\n🧮 ALGORITMO BIOFÍSICO APLICADO:\nCalcula la correlación entre cada tipo de sesión y la SMM seca normalizada. La corrección hídrica elimina las bajadas artificiales de masa magra tras sesiones intensas de sudoración en MTB.",
-                howTo: "• 🏋️ WOD (CrossFit): Impulso de reparación tisular e hipertrofia magra.\n• 🚴 MTB (Resistencia): Vaciado de glucógeno. El filtro biofísico elimina el falso catabolismo provocado por la sudoración.\n• 🛋️ Descanso: Refleja la supercompensación y recuperación muscular basal.\n\n📊 INTERPRETACIÓN DE BARRAS:\n🟢 Barra Verde (r > +0.30): La disciplina impulsa directamente la conservación o ganancia de masa seca.\n🔴 Barra Roja (r < -0.30): Tendencia a menor masa seca en días de esa actividad.\n⚠️ Nota con pocos datos (< 7 días): El primer día de descanso se compara con los días de entrenamiento iniciales. Al acumular semanas de registro, las barras reflejarán el comportamiento real a medio plazo.",
-                conclusiones: "🚦 INTERPRETACIÓN DEL SEMÁFORO (r):\n🟢 Barra Verde (r ≥ +0.30): Disciplina estimuladora/protectora de masa seca.\n🔴 Barra Roja (r ≤ -0.30): Tendencia a menor masa seca en días de esa actividad (se estabiliza tras acumular varias semanas)."
+                subtitle: "Respuesta de tu masa seca según la disciplina",
+                purpose: "Compara cómo responde tu masa muscular seca a medio plazo tras días de WOD, MTB o Descanso.",
+                howTo: "• 🏋️ WOD: Estímulo de fuerza y reparación tisular.\n• 🚴 MTB: Gasto glucídico elevado y sudoración (el filtro aisla la falsa caída muscular).\n• 🛋️ Descanso: Período de recuperación y síntesis muscular.\n\n📊 LECTURA RÁPIDA:\n🟢 Barra Verde (r ≥ +0.30): Disciplina que favorece la masa seca.\n🔴 Barra Roja: Tendencia a menor masa seca (se estabiliza acumulando semanas).",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Barra Verde: Disciplina estimuladora/protectora de masa seca."
             },
             ocrHelp: {
                 icon: "📷",
                 title: "Importación OCR de Capturas Garmin",
-                subtitle: "Escaneo y lectura automática de capturas de Garmin Connect",
-                purpose: "Permite importar al instante tu peso, % de grasa, masa magra y agua corporal directamente desde una captura de pantalla de la app Garmin Connect.",
-                howTo: "1. Captura la pantalla de Composición Corporal en Garmin Connect.\n2. Haz clic en el botón OCR para seleccionar una imagen o pega directamente con Ctrl+V.\n3. Los deslizadores (Peso, % Grasa, Masa Magra, % Agua) se ajustarán solos automáticamente.",
-                conclusiones: "✔ Automatización rápida: Evita teclear decimal a decimal cada mañana.\n✔ Precisión: Extrae directamente la información leída por el motor de visión."
+                subtitle: "Lectura automática de capturas de Garmin Connect",
+                purpose: "Importa peso, % grasa, masa magra y agua escaneando la captura de tu móvil.",
+                howTo: "1. Haz captura en la app Garmin Connect.\n2. Pulsa OCR o pega la imagen con Ctrl+V.\n3. Los deslizadores se ajustarán solos automáticamente.",
+                conclusiones: "✔ Rápido y cómodo: Sin teclear decimales a mano."
             },
             ffmNutritionHelp: {
                 icon: "⚡",
                 title: "Set Fat-Free Mass Based Nutrition",
-                subtitle: "Nutrición basada en la Masa Magra o Masa Libre de Grasa (FFM)",
-                purpose: "Ajusta automáticamente la ingesta objetivo a 2.4g de Proteína y 1.0g de Grasa por cada kg de Masa Magra (FFM), destinando el margen calórico restante a carbohidratos.",
-                howTo: "• Proteína (2.4 g/kg FFM): Basado en Helms et al. (2014) y Morton et al. (2018), durante déficits o alto entrenamiento de fuerza/CrossFit, el requerimiento óptimo para mitigar el catabolismo escala sobre la FFM (2.3–3.1 g/kg FFM).\n• Grasa (1.0 g/kg FFM): Basado en Iraki et al. (2019) y Slater & Phillips (2011), 1.0 g/kg FFM asegura la producción de hormonas esteroideas (testosterona) y la absorción de vitaminas liposolubles sin comprometer el cupo glucídico.\n• Priorización Carbohidratos: Al asegurar proteína y grasa sobre la masa magra activa, el resto del presupuesto calórico maximiza la recarga de glucógeno para rendimiento en WODs.",
-                conclusiones: "✔ Preservación de la Masa Magra: Maximiza la retención de tejido activo durante fases de definición o alto gasto.\n✔ Salud Endocrina: Mantiene el perfil hormonal estable mediante grasas esenciales adecuadas.\n✔ Rendimiento en Alta Intensidad: Optimiza la disponibilidad de glucógeno muscular."
+                subtitle: "Nutrición basada en Masa Magra (FFM)",
+                purpose: "Ajusta tus objetivos a 2.4g Proteína y 1.0g Grasa por kg de Masa Magra (Helms et al.).",
+                howTo: "• Proteína (2.4 g/kg FFM): Dosis óptima para proteger el músculo en déficit y CrossFit.\n• Grasa (1.0 g/kg FFM): Mantiene la salud hormonal y absorción de vitaminas.\n• Carbohidratos: Reciben el resto del presupuesto calórico para rendir en los WODs.",
+                conclusiones: "✔ Retención Magra Máxima: Protege el músculo activo en fases de alto gasto."
             }
         };
 
@@ -3665,8 +3918,8 @@
             });
             const weightData = sortedLogs.map(l => l.weight);
             const ffmData = sortedLogs.map(l => l.ffmKg);
-            const fatKgData = sortedLogs.map(l => parseFloat((l.weight * (l.fatPct / 100)).toFixed(1)));
-            const waterKgData = sortedLogs.map(l => parseFloat((l.weight * (l.waterPct / 100)).toFixed(1)));
+            const fatKgData = sortedLogs.map(l => parseFloat((l.weight * (l.fatPct / 100)).toFixed(2)));
+            const waterKgData = sortedLogs.map(l => parseFloat((l.weight * (l.waterPct / 100)).toFixed(2)));
 
             // Suavizado EMA (α=0.3) sobre la Masa Grasa para aplanar artefactos hídricos bioeléctricos de 1 día
             const alphaFat = 0.3;
@@ -3678,7 +3931,7 @@
                 } else {
                     prevFatEma = (alphaFat * val) + ((1 - alphaFat) * prevFatEma);
                 }
-                fatKgEmaData.push(parseFloat(prevFatEma.toFixed(1)));
+                fatKgEmaData.push(parseFloat(prevFatEma.toFixed(2)));
             });
 
             // Procesar modelo biofísico de corrección (mediana de %TBW_ref, aislamiento del 27% seco y EMA α=0.3)
@@ -3687,12 +3940,13 @@
             // Mapeo con el Desfase Fisiológico 24h (Ingesta del día N-1 enfrentada al pesaje 6am del día N)
             const protEatenData = sortedLogs.map(l => {
                 const prevDate = getPreviousDateStr(l.date);
+                if (dayFlags[prevDate]?.isIncomplete) return null;
                 let logsToUse = globalLog.filter(item => item.date === prevDate);
                 // Si el día anterior (N-1) no tiene registros (ej. el primer día del historial), usar el propio día como fallback inicial
                 if (!logsToUse.length) {
                     logsToUse = globalLog.filter(item => item.date === l.date);
                 }
-                if (!logsToUse.length) return null;
+                if (!logsToUse.length || dayFlags[l.date]?.isIncomplete) return null;
                 let sum = 0;
                 logsToUse.forEach(i => sum += (i.p || 0));
                 return Math.round(sum);
@@ -3700,11 +3954,12 @@
 
             const carbEatenData = sortedLogs.map(l => {
                 const prevDate = getPreviousDateStr(l.date);
+                if (dayFlags[prevDate]?.isIncomplete) return null;
                 let logsToUse = globalLog.filter(item => item.date === prevDate);
                 if (!logsToUse.length) {
                     logsToUse = globalLog.filter(item => item.date === l.date);
                 }
-                if (!logsToUse.length) return null;
+                if (!logsToUse.length || dayFlags[l.date]?.isIncomplete) return null;
                 let sum = 0;
                 logsToUse.forEach(i => sum += (i.c || 0));
                 return Math.round(sum);
@@ -3712,11 +3967,12 @@
 
             const realDeficitData = sortedLogs.map(l => {
                 const prevDate = getPreviousDateStr(l.date);
+                if (dayFlags[prevDate]?.isIncomplete) return null;
                 let logsToUse = globalLog.filter(item => item.date === prevDate);
                 if (!logsToUse.length) {
                     logsToUse = globalLog.filter(item => item.date === l.date);
                 }
-                if (!logsToUse.length) return null;
+                if (!logsToUse.length || dayFlags[l.date]?.isIncomplete) return null;
                 let eaten = 0;
                 logsToUse.forEach(i => eaten += (i.kcal || 0));
                 const refKcal = parseFloat(userGarmin.yesterdayKcal) || 2000;
@@ -3734,7 +3990,12 @@
                 const diffWater = waterKgData[waterKgData.length - 1] - waterKgData[0];
                 const diffSmm = smmSecaEmaData[smmSecaEmaData.length - 1] - smmSecaEmaData[0];
 
-                const fmtDelta = (v) => (v > 0 ? `+${v.toFixed(2)}` : `${v.toFixed(2)}`) + ' kg';
+                const fmtDelta = (v, isMuscle = false) => {
+                    if (Math.abs(v) < 0.05) {
+                        return isMuscle ? '0.00 kg (Intacto)' : '0.00 kg';
+                    }
+                    return (v > 0 ? `+${v.toFixed(2)}` : `${v.toFixed(2)}`) + ' kg';
+                };
 
                 const dW = document.getElementById('deltaWeight');
                 const dF = document.getElementById('deltaFat');
@@ -3744,7 +4005,7 @@
                 if (dW) dW.textContent = fmtDelta(diffWeight);
                 if (dF) dF.textContent = fmtDelta(diffFat);
                 if (dH2O) dH2O.textContent = fmtDelta(diffWater);
-                if (dS) dS.textContent = fmtDelta(diffSmm);
+                if (dS) dS.textContent = fmtDelta(diffSmm, true);
             }
 
             const rProt = calculatePearsonR(protEatenData, smmSecaEmaData);
@@ -3885,7 +4146,7 @@
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Proteína (g) N-1', data: protEatenData, borderColor: '#af52de', backgroundColor: 'rgba(175, 82, 222, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                        { label: 'Proteína (g) N-1', data: protEatenData, borderColor: '#af52de', backgroundColor: 'rgba(175, 82, 222, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
                         { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
                 },
@@ -3918,7 +4179,7 @@
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Carbohidratos (g) N-1', data: carbEatenData, borderColor: '#ff9500', backgroundColor: 'rgba(255, 149, 0, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                        { label: 'Carbohidratos (g) N-1', data: carbEatenData, borderColor: '#ff9500', backgroundColor: 'rgba(255, 149, 0, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
                         { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' },
                         { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
@@ -3953,7 +4214,7 @@
                 data: {
                     labels,
                     datasets: [
-                        { label: 'Déficit Real (kcal) N-1', data: realDeficitData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                        { label: 'Déficit Real (kcal) N-1', data: realDeficitData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
                         { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
                 },
@@ -5323,6 +5584,9 @@
                 const recipesData = localStorage.getItem('macroCalculatorRecipes');
                 if (recipesData) recipeData = JSON.parse(recipesData);
 
+                const savedFlags = localStorage.getItem('nutri_dayFlags');
+                if (savedFlags) dayFlags = JSON.parse(savedFlags);
+
                 // 3. FUSIÓN INTELIGENTE: 
                 // Recuperamos alimentos guardados en el móvil, pero SOLO los personalizados (ID >= 1000).
                 const localFoodsRaw = localStorage.getItem('macroCalculatorFoods');
@@ -5677,7 +5941,7 @@
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = globalLog.sort((a, b) => b.id - a.id);
             if (s && e) f = f.filter(i => i.date >= s && i.date <= e);
-            selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard(); updateComparisonCharts();
+            selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard(); updateComparisonCharts(); updateIncompleteDayUI();
         }
         function renderTable(items) {
             const tb = document.getElementById('foodTableBody'); tb.innerHTML = '';
