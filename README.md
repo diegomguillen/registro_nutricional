@@ -26,9 +26,9 @@
 * **Modelo Biofísico de Corrección SMM (Báscula Bioimpedancia):**
   * **Aislamiento del 27% Seco:** Aisla la matriz proteica contráctil pura libre de agua (`SMM_seca = SMM × 0.27`).
   * **Normalización Hídrica por Mediana:** Normaliza las lecturas frente a la mediana hídrica histórica del propio usuario (`%TBW_ref`) neutralizando las fluctuaciones por sudoración o glucógeno.
-  * **Filtro de Tendencia EMA (α = 0.3):** Aplica una Media Móvil Exponencial sobre la masa seca normalizada para filtrar la variabilidad bioeléctrica diaria y observar cambios hipertróficos/proteicos reales a medio plazo.
+  * **Filtro de Tendencia EMA (α = 0.3):** Aplica una Media Móvil Exponencial (EMA) sobre la masa seca normalizada y sobre la masa grasa corporal para aplanar artefactos hídricos/bioeléctricos diarios y observar tendencias reales a medio plazo.
 * **Correlaciones & Composición Corporal (5 Gráficos Avanzados con Semáforos Inteligentes):**
-  * **WEIGHT VS FAT VS MUSCLE:** Foto panorámica de recomposición corporal (Peso Total vs Masa Grasa kg vs Masa Muscular Seca EMA).
+  * **WEIGHT VS FAT (EMA) VS WATER VS MUSCLE:** Foto panorámica de recomposición corporal (Peso Total vs Masa Grasa EMA kg vs Masa de Agua kg vs Masa Muscular Seca EMA).
   * **PROTEIN VS MUSCLE:** Ingesta de proteína (g) vs Masa Muscular Seca EMA (kg).
   * **CARBS VS WATER & MUSCLE:** Carbohidratos (g) vs Masa de Agua (kg) & Masa Seca.
   * **DEFICIT REAL VS MUSCLE:** Balance calórico diario (kcal) vs Masa Muscular Seca EMA (kg).
@@ -38,7 +38,7 @@
 
 ---
 
-## Modelo Biofísico de Corrección SMM & Tendencia Muscular Real (EMA)
+## Modelo Biofísico de Corrección SMM & Tendencia Muscular y Grasa Real (EMA)
 
 Para eliminar las distorsiones ocasionadas por el estado de hidratación y la depleción de glucógeno en básculas de bioimpedancia (ej. Garmin Index S2), **NutriApp** aplica un modelo biofísico de corrección hídrica en 3 pasos:
 
@@ -51,9 +51,13 @@ Para evitar que la sudoración o depleción tras entrenamientos altere engañosa
 $$\text{SMM}_{\text{norm}} = \text{SMM} \times \left( \frac{\\% \text{TBW}_{\text{ref}}}{\\% \text{TBW}} \right)$$
 $$\text{SMM}_{\text{seca,norm}} = \text{SMM}_{\text{norm}} \times 0.27$$
 
-### 3. Filtro de Fluctuación Bioeléctrica (Suavizado EMA α = 0.3)
-Se aplica una Media Móvil Exponencial (EMA) sobre la masa seca normalizada para aislar la tendencia hipertrófica/protectora real frente al ruido eléctrico diario:
-$$\text{EMA}_{t} = 0.3 \times \text{SMM}_{\text{seca,norm}, t} + 0.7 \times \text{EMA}_{t-1}$$
+### 3. Filtro de Fluctuación Bioeléctrica Muscular y Grasa (Suavizado EMA α = 0.3)
+Se aplica una Media Móvil Exponencial (EMA) tanto sobre la masa seca normalizada como sobre la masa grasa estimada para aislar la tendencia fisiológica real frente al ruido bioeléctrico diario:
+$$\text{EMA}_{\text{SMM}, t} = 0.3 \times \text{SMM}_{\text{seca,norm}, t} + 0.7 \times \text{EMA}_{\text{SMM}, t-1}$$
+$$\text{Fat}_{\text{EMA}, t} = 0.3 \times \text{Fat}_{t} + 0.7 \times \text{Fat}_{\text{EMA}, t-1}$$
+
+### 4. Desfase Metabólico de Ingesta 24h (N-1 → N)
+El pesaje matutino en ayunas (6:00 AM) del día $N$ refleja la masa corporal, glucógeno y agua generados por la ingesta y el entrenamiento del día anterior ($N-1$). Para mantener la causalidad fisiológica real y evitar distorsiones por registros en curso a primera hora, **NutriApp** vincula la composición corporal del día $N$ con la ingesta nutricional del día $N-1$.
 
 ---
 

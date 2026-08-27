@@ -1,0 +1,5 @@
+# User Rules for Response Formatting
+
+- NEVER use LaTeX math mode (`$` or `$$`) in chat responses for variable names, formulas, or terms (e.g. do NOT write `$\text{FFM}_{\text{bruta}}$` or `$$\text{Masa Grasa} = ...$$`).
+- Always write variable names, equations, and mathematical expressions using backticks (`...`) or clean plain text.
+- Example: Write `Masa Grasa = Peso Total - FFM_bruta` instead of LaTeX math tags.
