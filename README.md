@@ -46,21 +46,30 @@
 Para eliminar las distorsiones ocasionadas por el estado de hidratación y la depleción de glucógeno en básculas de bioimpedancia (ej. Garmin Index S2), **NutriApp** aplica un modelo biofísico de corrección hídrica en 3 pasos:
 
 ### 1. Aislamiento de la Masa Muscular Seca (27%)
-El tejido muscular magro vivo contiene un ~73% de agua. Se aisla la matriz proteica contráctil pura libre de agua:
-$$\text{SMM}_{\text{seca}} = \text{SMM} \times 0.27$$
+El tejido muscular magro vivo contiene un ~73% de agua. Se aísla la matriz proteica contráctil pura libre de agua:
+
+```
+SMM_seca = SMM × 0.27
+```
 
 ### 2. Normalización Hídrica por Mediana (%TBW_ref)
-Para evitar que la sudoración o depleción tras entrenamientos altere engañosamente la lectura de la báscula, la masa muscular se normaliza respecto a la **mediana hídrica histórica del propio usuario** ($\\% \text{TBW}_{\text{ref}}$):
-$$\text{SMM}_{\text{norm}} = \text{SMM} \times \left( \frac{\\% \text{TBW}_{\text{ref}}}{\\% \text{TBW}} \right)$$
-$$\text{SMM}_{\text{seca,norm}} = \text{SMM}_{\text{norm}} \times 0.27$$
+Para evitar que la sudoración o depleción tras entrenamientos altere engañosamente la lectura de la báscula, la masa muscular se normaliza respecto a la **mediana hídrica histórica del propio usuario (`%TBW_ref`)**:
+
+```
+SMM_norm = SMM × (%TBW_ref / %TBW)
+SMM_seca_norm = SMM_norm × 0.27
+```
 
 ### 3. Filtro de Fluctuación Bioeléctrica Muscular y Grasa (Suavizado EMA α = 0.3)
 Se aplica una Media Móvil Exponencial (EMA) tanto sobre la masa seca normalizada como sobre la masa grasa estimada para aislar la tendencia fisiológica real frente al ruido bioeléctrico diario:
-$$\text{EMA}_{\text{SMM}, t} = 0.3 \times \text{SMM}_{\text{seca,norm}, t} + 0.7 \times \text{EMA}_{\text{SMM}, t-1}$$
-$$\text{Fat}_{\text{EMA}, t} = 0.3 \times \text{Fat}_{t} + 0.7 \times \text{Fat}_{\text{EMA}, t-1}$$
+
+```
+EMA_SMM(t) = 0.3 × SMM_seca_norm(t) + 0.7 × EMA_SMM(t-1)
+Fat_EMA(t) = 0.3 × Fat(t) + 0.7 × Fat_EMA(t-1)
+```
 
 ### 4. Desfase Metabólico de Ingesta 24h (N-1 → N)
-El pesaje matutino en ayunas (6:00 AM) del día $N$ refleja la masa corporal, glucógeno y agua generados por la ingesta y el entrenamiento del día anterior ($N-1$). Para mantener la causalidad fisiológica real y evitar distorsiones por registros en curso a primera hora, **NutriApp** vincula la composición corporal del día $N$ con la ingesta nutricional del día $N-1$.
+El pesaje matutino en ayunas (6:00 AM) del día **N** refleja la masa corporal, glucógeno y agua generados por la ingesta y el entrenamiento del día anterior (**N-1**). Para mantener la causalidad fisiológica real y evitar distorsiones por registros en curso a primera hora, **NutriApp** vincula la composición corporal del día **N** con la ingesta nutricional del día **N-1**.
 
 ---
 
@@ -102,11 +111,13 @@ Esta vista actúa como el cuadro de mando principal de la aplicación, diseñado
 
 ### 2. Correlaciones & Composición Corporal
 
-Sección analítica para evaluar la evolución fisiológica y el rendimiento deportivo a través de 4 gráficos interactivos con Chart.js:
+Sección analítica para evaluar la evolución fisiológica y el rendimiento deportivo a través de 5 gráficos interactivos con Chart.js:
 
 1. **Filtros Temporales:** Selector superior (`1m`, `3m`, `6m`, `1y`, `all`) para acotar los periodos visualizados.
-2. **Ayudas ❓:** Cada gráfica dispone de su botón de ayuda con interpretación de tendencias y conclusiones prácticas.
-3. **Eje X Optimizado:** Visualización limpia mostrando la fecha inicial a la izquierda y la fecha final a la derecha.
+2. **Navegación Móvil Fluida:** El scroll vertical de la página no se bloquea al deslizar 1 dedo sobre las gráficas. Se puede ampliar usando 2 dedos (pinch zoom).
+3. **Modo Pantalla Completa Horizontal (Doble Clic):** Al hacer doble clic sobre cualquier gráfica, se despliega un modal en alta resolución rotado a pantalla completa panorámica (90° en vertical), permitiendo arrastrar (pan con 1 dedo) y zoom (pinch con 2 dedos) para analizar la serie temporal en detalle.
+4. **Ayudas ❓:** Cada gráfica dispone de su botón de ayuda con interpretación de tendencias y conclusiones prácticas.
+5. **Eje X Optimizado:** Visualización limpia mostrando la fecha inicial a la izquierda y la fecha final a la derecha.
 
 ---
 
