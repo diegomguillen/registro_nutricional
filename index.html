@@ -623,13 +623,8 @@
 
                 <div class="space-y-3.5">
                     <div class="flex flex-col justify-end">
-                        <div class="flex justify-between items-center mb-1 h-6">
-                            <div class="flex items-center gap-1.5">
-                                <label class="block text-[10px] font-bold text-kcal uppercase">Gasto Calórico referencia (kcal)</label>
-                                <button type="button" onclick="openGarminCalibrationModal()" class="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-kcal border border-[#3a3a3c] px-2 py-0.5 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all active:scale-95 shadow-sm" title="Calcular el gasto calórico real deducido por termodinámica">
-                                    🧮 Calibrar
-                                </button>
-                            </div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-[10px] font-bold text-kcal uppercase">Gasto Calórico referencia (kcal)</label>
                             <span id="garminKcalVal" class="text-xs font-mono font-bold text-kcal">2000 kcal</span>
                         </div>
                         <input type="range" id="garminKcalInput" value="2000" step="50" min="1000" max="4000" class="w-full accent-[#0a84ff] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
@@ -748,6 +743,19 @@
                             <input type="checkbox" id="maxDeficitToggle" class="sr-only peer" onchange="onMaxDeficitToggleChange(this.checked)">
                             <div class="w-11 h-6 bg-[#3a3a3c] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                         </label>
+                    </div>
+
+                    <div onclick="openGarminCalibrationModal()" class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer animate-fade-in-up border-purple-500/30 hover:border-purple-500/50">
+                        <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400 flex-shrink-0 text-lg font-bold">
+                            🧮
+                        </div>
+                        <div class="flex-1 select-none">
+                            <h3 class="font-medium text-white text-sm">Calibrar Gasto Real Garmin</h3>
+                            <p class="text-xs text-white/50">Deducción metabólica termodinámica TDEE</p>
+                        </div>
+                        <svg class="w-5 h-5 text-white/40 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </div>
 
                     <div id="saveBodyCompCard" onclick="saveBodyCompMeasurement()"
