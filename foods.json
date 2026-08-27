@@ -793,5 +793,20 @@
     "qP": 1,
     "qC": 3,
     "qF": 1
+  },
+  {
+    "id": 56,
+    "name": "Ecocesta 5 cereales",
+    "p": 10.2,
+    "c": 66.9,
+    "f": 3.3,
+    "kcal": 357,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "PASTA_RICE",
+    "icon": "🌾",
+    "qP": 1,
+    "qC": 3,
+    "qF": 2
   }
 ]
