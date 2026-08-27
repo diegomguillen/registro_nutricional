@@ -13,7 +13,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-zoom/1.2.1/chartjs-plugin-zoom.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -4442,25 +4441,12 @@
                 clonedOptions.plugins.legend = sourceChart.config.options.plugins.legend;
             }
 
-            clonedOptions.plugins = clonedOptions.plugins || {};
-            clonedOptions.plugins.zoom = {
-                pan: { enabled: true, mode: 'x' },
-                zoom: { wheel: { enabled: true }, pinch: { enabled: true }, mode: 'x' }
-            };
-
             const fsCtx = fsCanvas.getContext('2d');
             fullscreenChartInstance = new Chart(fsCtx, {
                 type: sourceChart.config.type,
                 data: clonedData,
                 options: clonedOptions
             });
-
-            if (!fsCanvas.getAttribute('data-fs-zoom-listener')) {
-                fsCanvas.setAttribute('data-fs-zoom-listener', 'true');
-                fsCanvas.addEventListener('dblclick', () => {
-                    resetFullscreenZoom();
-                });
-            }
         }
 
         function closeFullscreenChartModal() {
@@ -4484,12 +4470,6 @@
             if (fullscreenChartInstance) {
                 fullscreenChartInstance.destroy();
                 fullscreenChartInstance = null;
-            }
-        }
-
-        function resetFullscreenZoom() {
-            if (fullscreenChartInstance && typeof fullscreenChartInstance.resetZoom === 'function') {
-                fullscreenChartInstance.resetZoom();
             }
         }
 
@@ -6218,13 +6198,12 @@
         <div id="chartFullscreenModalContent" class="flex flex-col justify-between items-center w-full h-full p-4 box-border">
             <!-- Barra Superior (Título + Botones) -->
             <div class="w-full flex justify-between items-center z-10 pointer-events-auto pb-2 border-b border-white/10 shrink-0">
-                <h3 id="fullscreenChartTitle" class="text-white font-bold text-sm sm:text-base tracking-wide truncate max-w-[60%]">Gráfico Ampliado</h3>
+                <h3 id="fullscreenChartTitle" class="text-white font-bold text-sm sm:text-base tracking-wide truncate max-w-[70%]">Gráfico Ampliado</h3>
                 <div class="flex items-center gap-2">
-                    <button id="resetFullscreenZoomBtn" type="button" onclick="resetFullscreenZoom()" class="px-3 py-1.5 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-lg border border-white/20 transition-all active:scale-95 flex items-center gap-1">
-                        <span>🔄 Restablecer</span>
-                    </button>
-                    <button id="closeFullscreenModalBtn" type="button" onclick="closeFullscreenChartModal()" class="px-3 py-1.5 bg-red-500/20 hover:bg-red-500/40 text-red-400 hover:text-red-200 text-xs font-semibold rounded-lg border border-red-500/30 transition-all active:scale-95 flex items-center gap-1">
-                        <span>✕ Cerrar</span>
+                    <button id="closeFullscreenModalBtn" type="button" onclick="closeFullscreenChartModal()" class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center" title="Cerrar">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
                     </button>
                 </div>
             </div>
@@ -6237,7 +6216,7 @@
             </div>
 
             <div class="text-[10px] text-gray-400 z-10 pointer-events-auto pt-1 text-center shrink-0">
-                <span>💡 Desliza para moverte • Pellizca con 2 dedos o rueda para zoom • Doble clic o 🔄 para restablecer</span>
+                <span>💡 Vista ampliada a pantalla completa horizontal</span>
             </div>
         </div>
     </div>
