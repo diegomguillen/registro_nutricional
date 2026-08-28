@@ -8,6 +8,7 @@ const ASSETS_TO_CACHE = [
   './structure.json',
   'https://cdn.tailwindcss.com',
   'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js',
+  'https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',
   './README.md'
 ];
 
