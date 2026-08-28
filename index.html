@@ -739,10 +739,26 @@
                 <div class="space-y-3.5">
                     <div class="flex flex-col justify-end">
                         <div class="flex justify-between items-center mb-1">
-                            <label class="block text-[10px] font-bold text-kcal uppercase">Gasto Calórico referencia (kcal)</label>
+                            <label class="block text-[10px] font-bold text-kcal uppercase">Gasto Calórico previsto hoy (kcal)</label>
                             <span id="garminKcalVal" class="text-xs font-mono font-bold text-kcal">2000 kcal</span>
                         </div>
                         <input type="range" id="garminKcalInput" value="2000" step="50" min="1000" max="4000" class="w-full accent-[#0a84ff] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()">
+                    </div>
+
+                    <!-- Slider de 3 posiciones para Actividad Planificada Hoy -->
+                    <div class="col-span-1 sm:col-span-2 lg:col-span-3 bg-[#1c1c1e] border border-[#2c2c2e] p-3 rounded-xl space-y-2 mb-1">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-[10px] font-bold text-emerald-400 uppercase tracking-wider">🎯 Actividad Planificada Hoy</label>
+                            <span id="garminPlannedActivityVal" class="text-xs font-mono font-bold text-emerald-300">🛋️ Descanso</span>
+                        </div>
+                        <input type="range" id="garminPlannedActivitySlider" value="0" min="0" max="2" step="1" 
+                            class="w-full accent-emerald-500 cursor-pointer h-2.5 bg-[#2c2c2e] rounded-lg appearance-none border border-[#3a3a3c]" 
+                            oninput="onPlannedActivitySliderChange(this.value)">
+                        <div class="flex justify-between text-[10px] text-white/60 px-1 font-medium select-none">
+                            <span class="cursor-pointer hover:text-white" onclick="setPlannedActivityType('rest')">🛋️ Descanso</span>
+                            <span class="cursor-pointer hover:text-white text-center" onclick="setPlannedActivityType('wod')">🏋️ WOD</span>
+                            <span class="cursor-pointer hover:text-white text-right" onclick="setPlannedActivityType('mtb')">🚴 MTB</span>
+                        </div>
                     </div>
 
                     <!-- Slider de 3 posiciones para Actividad del Día Anterior -->
@@ -822,7 +838,7 @@
                             <label class="block text-[10px] font-bold text-amber-400 uppercase flex items-end">Ajuste (kcal)</label>
                             <span id="garminDeficitVal" class="text-xs font-mono font-bold text-amber-400">0 kcal</span>
                         </div>
-                        <input type="range" id="garminDeficitInput" value="0" step="10" min="-1000" max="1000" class="w-full accent-amber-400 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()" ondblclick="resetGarminDeficit()">
+                        <input type="range" id="garminDeficitInput" value="0" step="1" min="-1000" max="500" class="w-full accent-amber-400 cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onGarminChange()" ondblclick="resetGarminDeficit()">
                     </div>
                 </div>
 
@@ -844,19 +860,6 @@
                         <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
                             <input type="checkbox" id="ffmNutritionToggle" class="sr-only peer" onchange="onFFMNutritionToggleChange(this.checked)">
                             <div class="w-11 h-6 bg-[#3a3a3c] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#0a84ff]"></div>
-                        </label>
-                    </div>
-
-                    <div class="action-card premium-card p-4 flex items-center gap-4 animate-fade-in-up border-amber-500/30 hover:border-amber-500/50">
-                        <div class="w-10 h-10 rounded-full bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 flex-shrink-0 text-lg font-bold">
-                            🔥
-                        </div>
-                        <div class="flex-1 cursor-pointer select-none" onclick="document.getElementById('maxDeficitToggle').click()">
-                            <h3 id="maxDeficitTitleText" class="font-medium text-white text-sm">Set Déficit Máximo (-0 kcal)</h3>
-                        </div>
-                        <label class="relative inline-flex items-center cursor-pointer flex-shrink-0">
-                            <input type="checkbox" id="maxDeficitToggle" class="sr-only peer" onchange="onMaxDeficitToggleChange(this.checked)">
-                            <div class="w-11 h-6 bg-[#3a3a3c] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                         </label>
                     </div>
 
@@ -2399,7 +2402,8 @@
             fatRatioWeight: 1.0,
             isFFMNutritionActive: false,
             isMaxDeficitActive: false,
-            activityType: 'rest'
+            activityType: 'rest',
+            plannedActivityToday: 'rest'
         };
         let userGarmin = { ...DEFAULT_GARMIN };
         let bodyCompLog = [];
@@ -2470,7 +2474,8 @@
                         fatRatioWeight: parseFloat(parsed.fatRatioWeight) || DEFAULT_GARMIN.fatRatioWeight,
                         isFFMNutritionActive: Boolean(parsed.isFFMNutritionActive),
                         isMaxDeficitActive: Boolean(parsed.isMaxDeficitActive),
-                        activityType: parsed.activityType || 'rest'
+                        activityType: parsed.activityType || 'rest',
+                        plannedActivityToday: parsed.plannedActivityToday || 'rest'
                     };
                 } catch (e) {
                     console.error("Error cargando Garmin:", e);
@@ -2521,6 +2526,71 @@
             const current = userGarmin.activityType || 'rest';
             const slider = document.getElementById('garminActivitySlider');
             const label = document.getElementById('garminActivityVal');
+
+            let num = 0;
+            let labelText = "🛋️ Descanso";
+            if (current === 'wod') {
+                num = 1;
+                labelText = "🏋️ WOD";
+            } else if (current === 'mtb') {
+                num = 2;
+                labelText = "🚴 MTB";
+            }
+
+            if (slider && parseInt(slider.value, 10) !== num) slider.value = num;
+            if (label) label.textContent = labelText;
+
+            updatePlannedActivityTypeButtonsUI();
+        }
+
+        function updateGarminDeficitBounds() {
+            const tTemp = getGarminCalculatedTargets();
+            const maxDefTemp = calculateMaxSafeDeficit(tTemp);
+            const defInputEl = document.getElementById('garminDeficitInput');
+            if (defInputEl) {
+                defInputEl.min = -maxDefTemp;
+                defInputEl.max = 500;
+                defInputEl.step = 1;
+            }
+            return maxDefTemp;
+        }
+
+        function snapDeficitToPlannedActivity() {
+            const maxDef = updateGarminDeficitBounds();
+            userGarmin.deficitKcal = -maxDef;
+            const defInputEl = document.getElementById('garminDeficitInput');
+            if (defInputEl) {
+                defInputEl.value = -maxDef;
+            }
+        }
+
+        function onPlannedActivitySliderChange(val) {
+            const num = parseInt(val, 10);
+            let type = 'rest';
+            if (num === 1) type = 'wod';
+            else if (num === 2) type = 'mtb';
+
+            userGarmin.plannedActivityToday = type;
+            snapDeficitToPlannedActivity();
+
+            saveGarmin();
+            updatePlannedActivityTypeButtonsUI();
+            onGarminChange();
+        }
+
+        function setPlannedActivityType(type) {
+            userGarmin.plannedActivityToday = type;
+            snapDeficitToPlannedActivity();
+
+            saveGarmin();
+            updatePlannedActivityTypeButtonsUI();
+            onGarminChange();
+        }
+
+        function updatePlannedActivityTypeButtonsUI() {
+            const current = userGarmin.plannedActivityToday || 'rest';
+            const slider = document.getElementById('garminPlannedActivitySlider');
+            const label = document.getElementById('garminPlannedActivityVal');
 
             let num = 0;
             let labelText = "🛋️ Descanso";
@@ -2715,8 +2785,9 @@
             const kcalLabel = document.getElementById('garminKcalVal');
             if (kcalLabel) kcalLabel.textContent = `${kcalVal} kcal`;
 
+            const defPct = kcalVal > 0 ? ((defVal / kcalVal) * 100).toFixed(1) : '0.0';
             const defLabel = document.getElementById('garminDeficitVal');
-            if (defLabel) defLabel.textContent = `${defVal > 0 ? '+' : ''}${defVal} kcal`;
+            if (defLabel) defLabel.textContent = `${defVal > 0 ? '+' : ''}${defVal} kcal (${defVal > 0 ? '+' : ''}${defPct}%)`;
 
             const weightLabel = document.getElementById('garminWeightVal');
             if (weightLabel) weightLabel.textContent = `${weightVal.toFixed(1)} kg`;
@@ -2748,13 +2819,24 @@
             const fatWEl = document.getElementById('garminFatWeightInput');
 
             if (kcalEl) kcalEl.value = userGarmin.yesterdayKcal;
-            if (defEl) defEl.value = (userGarmin.deficitKcal !== undefined && userGarmin.deficitKcal !== null) ? userGarmin.deficitKcal : 0;
             if (weightEl) weightEl.value = userGarmin.weightKg;
             if (fatPctEl) fatPctEl.value = userGarmin.fatPct;
             if (ffmEl) ffmEl.value = (userGarmin.ffmKg === 68.0 || !userGarmin.ffmKg) ? 33.0 : userGarmin.ffmKg;
             if (waterEl) waterEl.value = userGarmin.waterPct || 58.0;
             if (protFFMEl) protFFMEl.value = userGarmin.protRatioFFM;
             if (fatWEl) fatWEl.value = userGarmin.fatRatioWeight;
+
+            // Ajustar dinámicamente los límites del slider de Ajuste (kcal)
+            const t = getGarminCalculatedTargets();
+            const maxSafeDef = calculateMaxSafeDeficit(t);
+            if (defEl) {
+                defEl.min = -maxSafeDef;
+                defEl.max = 500;
+                let curDef = (userGarmin.deficitKcal !== undefined && userGarmin.deficitKcal !== null) ? userGarmin.deficitKcal : 0;
+                if (curDef < -maxSafeDef) curDef = -maxSafeDef;
+                defEl.value = curDef;
+                userGarmin.deficitKcal = curDef;
+            }
 
             updateGarminValueLabels();
             updateActivityTypeButtonsUI();
@@ -3074,22 +3156,13 @@
             applyFilter();
         }
 
-        function onMaxDeficitToggleChange(enable) {
-            if (enable) {
-                const t = getGarminCalculatedTargets();
-                const minTargetKcal = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
-                const maxDef = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcal));
-                userGarmin.deficitKcal = -maxDef;
-                userGarmin.isMaxDeficitActive = true;
-                showToast(`Set Déficit Máximo Activado (-${maxDef} kcal)`);
-            } else {
-                userGarmin.deficitKcal = 0;
-                userGarmin.isMaxDeficitActive = false;
-                showToast("Set Déficit Máximo Desactivado (0 kcal)");
-            }
-            saveGarmin();
-            updateGarminUI();
-            applyFilter();
+        function calculateMaxSafeDeficit(t) {
+            const plannedAct = userGarmin.plannedActivityToday || 'rest';
+            let safePct = 0.18; // 18% para Descanso
+            if (plannedAct === 'wod') safePct = 0.22; // 22% para WOD
+            else if (plannedAct === 'mtb') safePct = 0.25; // 25% para MTB
+
+            return Math.max(0, Math.round(t.yesterdayKcal * safePct));
         }
 
         function renderGarminSummaryText() {
@@ -3113,34 +3186,14 @@
                 ffmToggle.checked = Boolean(userGarmin.isFFMNutritionActive);
             }
 
-            // 2. Cálculo del Déficit Máximo Recomendado y Sincronización de Interruptor
-            const minTargetKcalForSafeCarbs = (t.p * 4) + (t.f * 9) + (t.ffm * 2.5 * 4);
-            const maxSafeDeficit = Math.max(0, Math.round(t.yesterdayKcal - minTargetKcalForSafeCarbs));
-            const maxDefTitleEl = document.getElementById('maxDeficitTitleText');
-            if (maxDefTitleEl) {
-                maxDefTitleEl.textContent = `Set Déficit Máximo (-${maxSafeDeficit} kcal)`;
-            }
-
-            const maxDefToggle = document.getElementById('maxDeficitToggle');
-            if (maxDefToggle) {
-                // Se desactiva si el valor ajustado es menor que el deficit maximo recomendado o ha variado del déficit óptimo fijado
-                if (maxSafeDeficit === 0 || userGarmin.deficitKcal !== -maxSafeDeficit || userGarmin.deficitKcal < -maxSafeDeficit) {
-                    userGarmin.isMaxDeficitActive = false;
-                }
-                maxDefToggle.checked = Boolean(userGarmin.isMaxDeficitActive);
-            }
+            // 2. Cálculo del Déficit Máximo Recomendado según Actividad Planificada Hoy
+            const maxSafeDeficit = calculateMaxSafeDeficit(t);
 
             // Cálculos Fisiológicos Científicos
             const carbRatioFFM = t.ffm > 0 ? (t.c / t.ffm) : 0;
             const protPct = t.k > 0 ? Math.round((t.p * 4 / t.k) * 100) : 0;
             const carbPct = t.k > 0 ? Math.round((t.c * 4 / t.k) * 100) : 0;
             const fatPct = t.k > 0 ? Math.round((t.f * 9 / t.k) * 100) : 0;
-
-            let statusBadge = '';
-            const isOptimal = (t.protRatioFFM >= 2.3 && t.protRatioFFM <= 2.6 && t.fatRatioWeight >= 0.9 && t.fatRatioWeight <= 1.1 && carbRatioFFM >= 2.5 && carbRatioFFM <= 3.5);
-            if (isOptimal) {
-                statusBadge = `<div class="mt-2 text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-1 rounded-md font-bold">🟢 Rango Óptimo Deportivo (Definición & WODs)</div>`;
-            }
 
             let carbWarning = '';
             if (carbRatioFFM < 2.5) {
@@ -3175,7 +3228,6 @@
                             <div class="text-[10px] ${deficitClass} mt-0.5">${deficitText}</div>
                         </div>
                     </div>
-                    ${statusBadge}
                     ${carbWarning}
                 `;
             }
@@ -3187,6 +3239,8 @@
             updateGarminUI();
             applyFilter();
         }
+
+        let lastMaxDefToastTime = 0;
 
         function onGarminChange(isManual = false) {
             if (isManual) {
@@ -3217,12 +3271,19 @@
             userGarmin.protRatioFFM = isNaN(protFFMVal) ? 2.0 : protFFMVal;
             userGarmin.fatRatioWeight = isNaN(fatWVal) ? 1.0 : fatWVal;
 
-            // Desactivar interruptor de déficit máximo si el usuario mueve manualmente el slider fuera del valor máximo recomendado
-            const tTemp = getGarminCalculatedTargets();
-            const minTargetKcalTemp = (tTemp.p * 4) + (tTemp.f * 9) + (tTemp.ffm * 2.5 * 4);
-            const maxDefTemp = Math.max(0, Math.round(tTemp.yesterdayKcal - minTargetKcalTemp));
-            if (userGarmin.isMaxDeficitActive && (defVal !== -maxDefTemp || defVal < -maxDefTemp)) {
-                userGarmin.isMaxDeficitActive = false;
+            // Ajustar límites del slider de ajuste de déficit si cambia la actividad o el gasto
+            const maxDefTemp = updateGarminDeficitBounds();
+            const defInputEl = document.getElementById('garminDeficitInput');
+            if (defInputEl) {
+                if (defVal <= -maxDefTemp) {
+                    defVal = -maxDefTemp;
+                    defInputEl.value = -maxDefTemp;
+                    const now = Date.now();
+                    if (now - lastMaxDefToastTime > 3500) {
+                        lastMaxDefToastTime = now;
+                        showToast(`🛡️ Límite de Déficit Máximo Seguro alcanzado (-${maxDefTemp} kcal)`);
+                    }
+                }
             }
 
             saveGarmin();
