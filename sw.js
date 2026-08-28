@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nutri-app-v1.776'
+const CACHE_NAME = 'nutri-app-v1.78'
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

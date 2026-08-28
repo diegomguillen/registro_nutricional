@@ -1911,9 +1911,9 @@
         function selectRecipeFromGrid(id) {
             document.getElementById('recipeGridModal').classList.add('hidden');
 
-            // Forzar fecha a hoy
+            // Usar fecha seleccionada en el filtro (o hoy por defecto)
             const dateInput = document.getElementById('recipeDate');
-            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            if (dateInput) dateInput.value = getActiveFilterDate();
 
             // Forzar cantidad a 1
             const amountInput = document.getElementById('recipeAmountInput');
@@ -1959,10 +1959,14 @@
         function openFoodModal(famKey = null) {
             document.getElementById('scannerSection').classList.add('hidden');
             document.getElementById('foodSelectionControls').classList.remove('hidden'); // Mostrar selects
+            const dateInput = document.getElementById('foodDate');
+            if (dateInput) dateInput.value = getActiveFilterDate();
             populateSelect(famKey);
             document.getElementById('foodModal').classList.remove('hidden');
         }
         function openRecipeLogModal() {
+            const dateInput = document.getElementById('recipeDate');
+            if (dateInput) dateInput.value = getActiveFilterDate();
             document.getElementById('recipeLogModal').classList.remove('hidden');
         }
 
@@ -2076,9 +2080,9 @@
             document.getElementById('subCategoryModal').classList.add('hidden');
             document.getElementById('categoryModal').classList.add('hidden');
 
-            // Forzar fecha a hoy
+            // Usar fecha seleccionada en el filtro (o hoy por defecto)
             const dateInput = document.getElementById('foodDate');
-            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            if (dateInput) dateInput.value = getActiveFilterDate();
 
             const food = foodData.find(f => f.id == foodId);
             const famKey = food ? (food.fam || (food.id >= 1000 ? 'OTHER' : null)) : null;
@@ -2254,7 +2258,7 @@
 
         function getActiveFilterDate() {
             const startInput = document.getElementById('filterStart');
-            return startInput && startInput.value ? startInput.value : getTodayDateStr();
+            return startInput && startInput.value ? startInput.value : new Date().toISOString().split('T')[0];
         }
 
         function toggleCurrentDayIncomplete() {
@@ -3641,7 +3645,7 @@
         }
 
         function saveSmartMealToLog() {
-            const todayStr = new Date().toISOString().split('T')[0];
+            const targetDateStr = getActiveFilterDate();
             const isPostWod = (smbState.timing === 'post');
 
             const protFood = foodData.find(f => f.id === (smbState.selectedProtId || parseInt(document.getElementById('smbProtSelect')?.value, 10)));
@@ -3661,7 +3665,7 @@
 
                 const newLog = {
                     id: Date.now() + Math.random(),
-                    date: todayStr,
+                    date: targetDateStr,
                     type: 'food',
                     foodId: food.id,
                     foodName: food.name,
@@ -5247,9 +5251,9 @@
             foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: unit, icon: '🌐' });
             populateSelect();
 
-            // Forzar fecha y cantidad para items web
+            // Usar fecha del filtro activo y cantidad para items web
             const dateInput = document.getElementById('foodDate');
-            if (dateInput) dateInput.value = new Date().toISOString().split('T')[0];
+            if (dateInput) dateInput.value = getActiveFilterDate();
 
             const amountInput = document.getElementById('amountInput');
             const amountDisplay = document.getElementById('amountDisplay');
@@ -5284,8 +5288,9 @@
             // Inputs de registro
             const foodDate = document.getElementById('foodDate');
             const recipeDate = document.getElementById('recipeDate');
-            if (foodDate) foodDate.value = today;
-            if (recipeDate) recipeDate.value = today;
+            const activeDate = getActiveFilterDate();
+            if (foodDate) foodDate.value = activeDate;
+            if (recipeDate) recipeDate.value = activeDate;
         }
 
         function setTodayFilter() { const t = new Date().toISOString().split('T')[0]; document.getElementById('filterStart').value = t; document.getElementById('filterEnd').value = t; updateDayLabels(); applyFilter(); }
