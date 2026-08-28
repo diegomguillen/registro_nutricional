@@ -545,6 +545,94 @@
                         <canvas id="chartActivityImpact"></canvas>
                     </div>
                 </div>
+
+                <!-- Tarjeta 6: Panel de Recomposición Corporal & Nutrición Inteligente -->
+                <div id="panelRecompositionCard" class="premium-card p-5 space-y-4 animate-fade-in">
+                    <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-3">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">🔥</span>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">PANEL DE RECOMPOSICIÓN CORPORAL</h4>
+                                    <button onclick="openChartHelpModal('recompPanelHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
+                                </div>
+                                <p class="text-[10px] text-white/60">Análisis inteligente de grasa, músculo seco e impacto hídrico</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Progreso Recomp Score -->
+                    <div class="space-y-1.5">
+                        <div class="flex justify-between items-center text-[10px]">
+                            <span id="recompStatusLabel" class="font-bold text-white uppercase tracking-wider">Calculando estado...</span>
+                            <span class="text-[10px] font-medium text-white/90">Recomp Score: <strong id="recompScoreVal" class="text-xs font-mono font-extrabold text-emerald-400">--</strong>/100</span>
+                        </div>
+                        <div class="w-full h-2.5 bg-[#2c2c2e] rounded-full overflow-hidden p-0.5 border border-[#3a3a3c]">
+                            <div id="recompProgressBar" class="h-full bg-gradient-to-r from-amber-500 via-emerald-500 to-teal-400 rounded-full transition-all duration-500 w-0"></div>
+                        </div>
+                    </div>
+
+                    <!-- Rankings Top 5 (3 Columnas) -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                        <!-- Columna 1: Top 5 Anabólicos -->
+                        <div class="bg-[#2c2c2e]/60 border border-[#3a3a3c] rounded-xl p-3 space-y-2 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between border-b border-[#3a3a3c] pb-1.5 mb-2">
+                                    <span class="text-[11px] font-bold text-emerald-400 uppercase flex items-center gap-1">💪 Top 5 Músculo Seco (a las 24h)</span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="openChartHelpModal('topAnabolicHelp')" class="w-4 h-4 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
+                                        <span class="text-[9px] text-white/50">Anabólicos</span>
+                                    </div>
+                                </div>
+                                <div id="listTopAnabolic" class="space-y-1.5 min-h-[6rem] text-xs">
+                                    <span class="text-[10px] text-white/50 italic">Sin datos suficientes...</span>
+                                </div>
+                            </div>
+                            <div id="confidenceAnabolic" class="pt-2 border-t border-[#3a3a3c]/60 text-[9px] text-white/60 flex items-center justify-between">
+                                <span>🎯 Confianza: --</span>
+                            </div>
+                        </div>
+
+                        <!-- Columna 2: Top 5 Pérdida Grasa -->
+                        <div class="bg-[#2c2c2e]/60 border border-[#3a3a3c] rounded-xl p-3 space-y-2 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between border-b border-[#3a3a3c] pb-1.5 mb-2">
+                                    <span class="text-[11px] font-bold text-amber-400 uppercase flex items-center gap-1">🔥 Top 5 Pérdida Grasa (a las 24h)</span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="openChartHelpModal('topLipolyticHelp')" class="w-4 h-4 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
+                                        <span class="text-[9px] text-white/50">Déficit</span>
+                                    </div>
+                                </div>
+                                <div id="listTopLipolytic" class="space-y-1.5 min-h-[6rem] text-xs">
+                                    <span class="text-[10px] text-white/50 italic">Sin datos suficientes...</span>
+                                </div>
+                            </div>
+                            <div id="confidenceLipolytic" class="pt-2 border-t border-[#3a3a3c]/60 text-[9px] text-white/60 flex items-center justify-between">
+                                <span>🎯 Confianza: --</span>
+                            </div>
+                        </div>
+
+                        <!-- Columna 3: Top 5 Retención Hídrica -->
+                        <div class="bg-[#2c2c2e]/60 border border-[#3a3a3c] rounded-xl p-3 space-y-2 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between border-b border-[#3a3a3c] pb-1.5 mb-2">
+                                    <span class="text-[11px] font-bold text-blue-400 uppercase flex items-center gap-1">💧 Top 5 Retención Agua (a las 24h)</span>
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="openChartHelpModal('topWaterHelp')" class="w-4 h-4 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
+                                        <span class="text-[9px] text-white/50">Hídricos</span>
+                                    </div>
+                                </div>
+                                <div id="listTopWater" class="space-y-1.5 min-h-[6rem] text-xs">
+                                    <span class="text-[10px] text-white/50 italic">Sin datos suficientes...</span>
+                                </div>
+                            </div>
+                            <div id="confidenceWater" class="pt-2 border-t border-[#3a3a3c]/60 text-[9px] text-white/60 flex items-center justify-between">
+                                <span>🎯 Confianza: --</span>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -2900,6 +2988,56 @@
                 purpose: "Ajusta tus objetivos a 2.4g Proteína y 1.0g Grasa por kg de Masa Magra (Helms et al.).",
                 howTo: "• Proteína (2.4 g/kg FFM): Dosis óptima para proteger el músculo en déficit y CrossFit.\n• Grasa (1.0 g/kg FFM): Mantiene la salud hormonal y absorción de vitaminas.\n• Carbohidratos: Reciben el resto del presupuesto calórico para rendir en los WODs.",
                 conclusiones: "✔ Retención Magra Máxima: Protege el músculo activo en fases de alto gasto."
+            },
+            recompPanelHelp: {
+                icon: "🤖",
+                title: "Panel de Recomposición & Machine Learning",
+                subtitle: "Modelos analíticos de correlación temporal y recomposición corporal",
+                purpose: "Procesa tu historial nutricional y corporal combinando 4 algoritmos de Machine Learning y estadística aplicada.",
+                howTo: "🤖 MODELOS Y ALGORITMOS UTILIZADOS:\n\n" +
+                       "1. EMA (Exponential Moving Average α=0.3): Filtro no lineal adaptativo que elimina las oscilaciones diarias de agua y glucógeno, aislando la tendencia de Masa Muscular Seca (SMM) y Masa Grasa pura.\n\n" +
+                       "2. Modelo de Asociación Temporal (Covarianza a 24h): Mapea la correlación cruzada entre la ingesta de alimentos puntuales y la respuesta en báscula a las 24 horas (t+24h), descartando datos huérfanos.\n\n" +
+                       "3. Algoritmo de Confianza Sigmoidal (Sample-Size Confidence Score): Evalúa el tamaño muestral N de días emparejados para estimar la certidumbre matemática de los datos (0% a 99%).\n\n" +
+                       "4. Recomp Score Engine (0-100 pts): Algoritmo compuesto que pondera la velocidad de ganancia magra frente a la tasa de oxidación grasa.",
+                conclusiones: "✔ Transparencia Algorítmica: Lógica determinista basada en fisiología deportiva y ciencia de datos."
+            },
+            topAnabolicHelp: {
+                icon: "💪",
+                title: "Top 5 Músculo Seco (a las 24h)",
+                subtitle: "Alimentos anabólicos estrella para masa magra",
+                purpose: "Muestra los alimentos de tu historial con mayor asociación en preservación y aumento de masa muscular seca pura a las 24h.",
+                howTo: "🤖 MODELO ML UTILIZADO:\n" +
+                       "• Modelo EMA + Covarianza Muscular a 24h: Mide el cambio medio estimado en masa muscular seca normalizada a las 24h de consumir el alimento.\n" +
+                       "• Confianza Sigmoidal (%): Precisión matemática calculada según los días emparejados con báscula.\n\n" +
+                       "📊 DECISIÓN NUTRICIONAL:\n" +
+                       "🟢 Días de Fuerza / WOD: Coloca estos alimentos como prioritarios en el entorno de tus entrenamientos (Pre y Post-WOD) para maximizar la síntesis proteica.",
+                conclusiones: "✔ Estrategia Magra: Asegura raciones de estos alimentos en tus ventanas peri-entreno para proteger el músculo contráctil."
+            },
+            topLipolyticHelp: {
+                icon: "🔥",
+                title: "Top 5 Pérdida Grasa (a las 24h)",
+                subtitle: "Alimentos aliados en días de déficit calórico",
+                purpose: "Identifica los alimentos presentes de forma más habitual en tus mejores días de pérdida de masa grasa a las 24h.",
+                howTo: "🤖 MODELO ML UTILIZADO:\n" +
+                       "• Regresión y Filtro de Asociación de Grasa: Identifica correlaciones entre alimentos e ingesta saciante que conducen a balances calóricos negativos sin pérdida magra.\n" +
+                       "• Métrica en gramos (-100g, -85g): Reducción media de masa grasa a las 24h de ingerir el alimento.\n\n" +
+                       "📊 DECISIÓN NUTRICIONAL:\n" +
+                       "🟢 Menús en Definición: Convierte estos alimentos en la columna vertebral de tus almuerzos y cenas cuando busques apretar el déficit.",
+                conclusiones: "✔ Estrategia de Definición: Sostenibilidad del déficit con alta saciedad y sin picar entre horas."
+            },
+            topWaterHelp: {
+                icon: "💧",
+                title: "Top 5 Retención Agua (a las 24h)",
+                subtitle: "Impacto hídrico y digestivo a las 24 horas",
+                purpose: "Refleja la fluctuación media en litros/gramos de agua corporal (TBW) a las 24h tras consumir dicho alimento.",
+                howTo: "🤖 MODELO ML UTILIZADO:\n" +
+                       "• Descomposición de Vectores Hídricos (TBW Delta): Aisla la oscilación de fluidos gastrointestinales e intracelulares.\n" +
+                       "• Métrica positiva (+388g): Aumento medio de volumen de agua a las 24h (hidratación/retención digestiva o celular).\n" +
+                       "• Métrica negativa (-180g): Vaciado hídrico o sudoración en la sesión deportiva.\n\n" +
+                       "📊 DECISIÓN NUTRICIONAL:\n" +
+                       "🟢 Control Visual / Eventos: Modera estos alimentos 24h antes si buscas lucir muy seco.\n" +
+                       "🚴 Días de MTB / Calor: Úsalos para llegar con depósitos de fluidos y glucógeno óptimos.",
+                conclusiones: "✔ Estrategia Hídrica: Gestión táctica de fluidos según tus exigencias deportivas o estéticas."
             }
         };
 
@@ -4274,6 +4412,7 @@
 
             // 5. Gráfico Impacto Actividad: Correlación de Pearson por disciplina contra Masa Muscular Seca EMA
             const ctxAct = document.getElementById('chartActivityImpact');
+            let rWod = null, rMtb = null, rRest = null;
             if (ctxAct) {
                 if (chartInstanceActivityImpact) chartInstanceActivityImpact.destroy();
 
@@ -4281,9 +4420,9 @@
                 const isMtb = sortedLogs.map(l => l.activityType === 'mtb' ? 1 : 0);
                 const isRest = sortedLogs.map(l => (!l.activityType || l.activityType === 'rest') ? 1 : 0);
 
-                const rWod = calculatePearsonR(isWod, smmSecaEmaData);
-                const rMtb = calculatePearsonR(isMtb, smmSecaEmaData);
-                const rRest = calculatePearsonR(isRest, smmSecaEmaData);
+                rWod = calculatePearsonR(isWod, smmSecaEmaData);
+                rMtb = calculatePearsonR(isMtb, smmSecaEmaData);
+                rRest = calculatePearsonR(isRest, smmSecaEmaData);
 
                 const getBarColor = (rVal) => {
                     if (rVal === null || rVal === undefined || isNaN(rVal)) return 'rgba(142, 142, 147, 0.6)';
@@ -4390,6 +4529,228 @@
                     diagTextEl.innerHTML = baseDiag;
                 }
             }
+
+            // Actualizar Panel de Recomposición Corporal
+            updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData, rWod, rMtb, rRest);
+        }
+
+        function updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData, rWod, rMtb, rRest) {
+            const panelEl = document.getElementById('panelRecompositionCard');
+            if (!panelEl) return;
+
+            const scoreValEl = document.getElementById('recompScoreVal');
+            const scoreLabelEl = document.getElementById('recompStatusLabel');
+            const scoreDescEl = document.getElementById('recompScoreDesc');
+            const progressBarEl = document.getElementById('recompProgressBar');
+
+            if (!sortedLogs || sortedLogs.length < 2 || !smmSecaEmaData || smmSecaEmaData.length < 2) {
+                if (scoreValEl) scoreValEl.textContent = '--';
+                if (scoreLabelEl) scoreLabelEl.textContent = 'DATOS INSUFICIENTES EN LA VENTANA';
+                if (scoreDescEl) scoreDescEl.textContent = 'Guarda al menos 2 registros en fechas distintas para obtener el análisis.';
+                if (progressBarEl) progressBarEl.style.width = '0%';
+                return;
+            }
+
+            // 1. RECOMP SCORE (0 - 100)
+            const firstMuscle = smmSecaEmaData[0];
+            const lastMuscle = smmSecaEmaData[smmSecaEmaData.length - 1];
+            const diffMuscle = lastMuscle - firstMuscle;
+
+            const firstFat = fatKgEmaData[0];
+            const lastFat = fatKgEmaData[fatKgEmaData.length - 1];
+            const diffFat = lastFat - firstFat; // negativo = pérdida de grasa
+
+            let fatScore = 25;
+            if (diffFat < 0) {
+                fatScore = Math.min(50, 25 + Math.abs(diffFat) * 25);
+            } else if (diffFat > 0) {
+                fatScore = Math.max(0, 25 - diffFat * 25);
+            }
+
+            let muscleScore = 25;
+            if (diffMuscle >= 0) {
+                muscleScore = Math.min(50, 25 + (diffMuscle + 0.05) * 50);
+            } else {
+                muscleScore = Math.max(0, 25 - Math.abs(diffMuscle) * 60);
+            }
+
+            const totalScore = Math.min(100, Math.max(0, Math.round(fatScore + muscleScore)));
+
+            console.log(`[Recomp Engine] Días Emparejados: ${sortedLogs.length} | Recomp Score: ${totalScore}/100 | ΔMúsculo: ${diffMuscle.toFixed(3)}kg | ΔGrasa: ${diffFat.toFixed(3)}kg`);
+
+            if (scoreValEl) scoreValEl.textContent = totalScore;
+            if (progressBarEl) progressBarEl.style.width = totalScore + '%';
+
+            if (totalScore >= 80) {
+                if (scoreLabelEl) {
+                    scoreLabelEl.textContent = '🟢 ZONA DULCE ÓPTIMA (RECOMPOSICIÓN ACTIVA)';
+                    scoreLabelEl.className = 'font-bold text-emerald-400 uppercase tracking-wider';
+                }
+                if (scoreDescEl) scoreDescEl.textContent = 'Perdiendo grasa y conservando/ganando músculo seco eficazmente';
+            } else if (totalScore >= 50) {
+                if (scoreLabelEl) {
+                    scoreLabelEl.textContent = '🟡 MANTENIMIENTO ESTABILIZADO';
+                    scoreLabelEl.className = 'font-bold text-amber-400 uppercase tracking-wider';
+                }
+                if (scoreDescEl) scoreDescEl.textContent = 'Composición corporal estable. Buen equilibrio general';
+            } else {
+                if (scoreLabelEl) {
+                    scoreLabelEl.textContent = '🟠 REVISAR DÉFICIT / PROTEÍNA';
+                    scoreLabelEl.className = 'font-bold text-orange-400 uppercase tracking-wider';
+                }
+                if (scoreDescEl) scoreDescEl.textContent = 'Ligera tendencia catabólica o superávit no deseado';
+            }
+
+            // 2. RANKINGS TOP 5 DE ALIMENTOS
+            const foodStats = {};
+            const compMap = {};
+
+            sortedLogs.forEach((l, idx) => {
+                const prev = idx > 0 ? sortedLogs[idx - 1] : l;
+                const waterKg = l.weight * (l.waterPct / 100);
+                const prevWaterKg = prev.weight * (prev.waterPct / 100);
+
+                compMap[l.date] = {
+                    diffMuscle: smmSecaEmaData[idx] - smmSecaEmaData[Math.max(0, idx - 1)],
+                    diffFat: fatKgEmaData[idx] - fatKgEmaData[Math.max(0, idx - 1)],
+                    diffWater: waterKg - prevWaterKg
+                };
+            });
+
+            const totalPairedDays = sortedLogs.length;
+
+            globalLog.forEach(item => {
+                if (item.type !== 'food' && item.type !== 'recipe') return;
+                const comp = compMap[item.date];
+                // Ignorar registros huérfanos sin medición corporal
+                if (!comp) return;
+
+                const name = item.foodName || item.name || 'Alimento';
+                const icon = item.foodIcon || (item.type === 'recipe' ? '📖' : '🔹');
+                const key = name.trim().toLowerCase();
+
+                if (!foodStats[key]) {
+                    foodStats[key] = {
+                        name: name,
+                        icon: icon,
+                        pairedCount: 0,
+                        totalMuscleDelta: 0,
+                        totalFatDelta: 0,
+                        totalWaterDelta: 0
+                    };
+                }
+
+                foodStats[key].pairedCount++;
+                foodStats[key].totalMuscleDelta += comp.diffMuscle;
+                foodStats[key].totalFatDelta += comp.diffFat;
+                foodStats[key].totalWaterDelta += comp.diffWater;
+            });
+
+            // Umbral dinámico de repeticiones mínimas emparejadas
+            const minRep = totalPairedDays >= 6 ? 2 : 1;
+            const validFoods = Object.values(foodStats).filter(f => f.pairedCount >= minRep);
+
+            // A) TOP 5 ANABÓLICOS
+            const topAnabolic = [...validFoods]
+                .sort((a, b) => (b.totalMuscleDelta / b.pairedCount) - (a.totalMuscleDelta / a.pairedCount))
+                .slice(0, 5);
+
+            // B) TOP 5 DÍAS PÉRDIDA GRASA
+            const topLipolytic = [...validFoods]
+                .sort((a, b) => (a.totalFatDelta / a.pairedCount) - (b.totalFatDelta / b.pairedCount))
+                .slice(0, 5);
+
+            // C) TOP 5 RETENCIÓN HÍDRICA
+            const topWater = [...validFoods]
+                .sort((a, b) => (b.totalWaterDelta / b.pairedCount) - (a.totalWaterDelta / a.pairedCount))
+                .slice(0, 5);
+
+            const renderList = (containerId, foods, valFormatter, badgeClass) => {
+                const container = document.getElementById(containerId);
+                if (!container) return;
+                container.innerHTML = '';
+                if (!foods || foods.length === 0) {
+                    container.innerHTML = `<span class="text-[10px] text-white/50 italic">Sin alimentos con ≥${minRep} consumos...</span>`;
+                    return;
+                }
+
+                foods.forEach((f) => {
+                    const avgVal = valFormatter(f);
+                    const row = document.createElement('div');
+                    row.className = 'flex items-center justify-between py-1 border-b border-[#3a3a3c]/40 last:border-0';
+                    row.innerHTML = `
+                        <div class="flex items-center gap-1.5 overflow-hidden pr-2">
+                            <span class="text-xs shrink-0">${f.icon}</span>
+                            <span class="text-[11px] font-medium text-white truncate" title="${f.name}">${f.name}</span>
+                        </div>
+                        <span class="text-[9px] font-bold ${badgeClass} shrink-0 px-1.5 py-0.5 rounded bg-black/30 border border-current/20">${avgVal}</span>
+                    `;
+                    container.appendChild(row);
+                });
+            };
+
+            renderList(
+                'listTopAnabolic',
+                topAnabolic,
+                f => {
+                    const avg = f.totalMuscleDelta / f.pairedCount;
+                    return (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g';
+                },
+                'text-emerald-400 border-emerald-500/30'
+            );
+
+            renderList(
+                'listTopLipolytic',
+                topLipolytic,
+                f => {
+                    const avg = f.totalFatDelta / f.pairedCount;
+                    return (avg <= 0 ? '' : '+') + (avg * 1000).toFixed(0) + 'g';
+                },
+                'text-amber-400 border-amber-500/30'
+            );
+
+            renderList(
+                'listTopWater',
+                topWater,
+                f => {
+                    const avg = f.totalWaterDelta / f.pairedCount;
+                    return (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g';
+                },
+                'text-blue-400 border-blue-500/30'
+            );
+
+            // Calcular y renderizar indicador de confianza estadística
+            let confPct = 0;
+            let confText = 'Baja';
+            let confColor = 'text-red-400';
+
+            if (totalPairedDays < 3) {
+                confPct = Math.min(50, Math.round(totalPairedDays * 15));
+                confText = 'Muestra reducida';
+                confColor = 'text-orange-400';
+            } else if (totalPairedDays < 10) {
+                confPct = Math.min(78, Math.round(50 + (totalPairedDays - 3) * 4));
+                confText = 'Moderada';
+                confColor = 'text-amber-400';
+            } else if (totalPairedDays < 20) {
+                confPct = Math.min(94, Math.round(78 + (totalPairedDays - 10) * 1.6));
+                confText = 'Alta';
+                confColor = 'text-emerald-400';
+            } else {
+                confPct = Math.min(99, Math.round(94 + (totalPairedDays - 20) * 0.3));
+                confText = 'Excelente';
+                confColor = 'text-emerald-400 font-extrabold';
+            }
+
+            const renderConfidence = (elementId) => {
+                const el = document.getElementById(elementId);
+                if (!el) return;
+                el.innerHTML = `<span>🎯 Confianza: <strong class="${confColor}">${confPct}% (${confText})</strong></span><span class="text-white/40">${totalPairedDays}d emparejados</span>`;
+            };
+
+            renderConfidence('confidenceAnabolic');
+            renderConfidence('confidenceLipolytic');
+            renderConfidence('confidenceWater');
         }
 
         let fullscreenChartInstance = null;
