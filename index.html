@@ -6326,7 +6326,8 @@
                 recipes: recipeData,
                 targets: userTargets,
                 garmin: userGarmin,
-                bodyCompLog: bodyCompLog
+                bodyCompLog: bodyCompLog,
+                dayFlags: dayFlags
             };
 
             const f = new File([JSON.stringify(backupObject, null, 2)], `backup_nutri_${new Date().toISOString().split('T')[0]}.json`, { type: "application/json" });
@@ -6369,7 +6370,7 @@
                                 saveRecipes();
                             }
 
-                            // 4. RESTAURAR OBJETIVOS Y GARMIN
+                            // 4. RESTAURAR OBJETIVOS, GARMIN Y DÍAS INCOMPLETOS
                             if (d.targets) {
                                 userTargets = { ...DEFAULT_TARGETS, ...d.targets };
                                 saveTargets();
@@ -6383,6 +6384,11 @@
                             if (d.bodyCompLog) {
                                 bodyCompLog = d.bodyCompLog;
                                 saveBodyCompLog();
+                            }
+                            if (d.dayFlags) {
+                                dayFlags = d.dayFlags;
+                                saveDayFlags();
+                                updateIncompleteDayUI();
                             }
 
                             // 4. REINICIAR LA APP (FUSIÓN)
