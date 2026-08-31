@@ -823,5 +823,20 @@
     "qP": 1,
     "qC": 3,
     "qF": 2
+  },
+  {
+    "id": 58,
+    "name": "Yogur Griego Semidesnatado",
+    "p": 10.5,
+    "c": 6,
+    "f": 3,
+    "kcal": 110,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "YOGURT",
+    "icon": "🥣",
+    "qP": 3,
+    "qC": 1,
+    "qF": 2
   }
 ]
