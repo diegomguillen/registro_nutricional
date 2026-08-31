@@ -508,7 +508,7 @@
                 <!-- Tarjeta 3: Carbohidratos Reales vs Masa de Agua & Masa Magra -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-carb uppercase tracking-wider">CARBS VS WATER & MUSCLE</h4>
+                        <h4 class="text-xs font-bold text-carb uppercase tracking-wider">CARBS VS MUSCLE</h4>
                         <div class="flex items-center gap-2">
                             <div id="badgeCarbWater" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
                             <button onclick="openChartHelpModal('carbWater')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
@@ -3050,11 +3050,11 @@
             },
             carbWater: {
                 icon: "🍞",
-                title: "Carbohidratos vs Agua & Músculo",
-                subtitle: "Efecto de los hidratos sobre el glucógeno y el agua",
-                purpose: "Demuestra cómo las cargas y descargas de hidratos mueven el agua corporal sin alterar el músculo seco.",
-                howTo: "• Carbohidratos N-1 (Naranja): Gramos de hidratos consumidos el día anterior.\n• Agua (Azul): Agua corporal en la báscula.\n• Músculo Seco EMA (Verde): Masa contráctil pura.\n\n📊 LECTURA RÁPIDA:\n💧 Hidratos bajan + Agua baja (Músculo plano): Vaciado de glucógeno normal (1g hidrato retiene 3-4g agua).\n🍞 Hidratos suben + Agua sube (Músculo plano): Recarga de glucógeno (no es grasa).",
-                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Carbo-Hidratación Limpia (r ≥ +0.35): Oscilaciones de agua justificadas por el glucógeno."
+                title: "Carbohidratos vs Músculo Seco EMA",
+                subtitle: "Efecto de la ingesta de hidratos sobre la repleción de masa magra",
+                purpose: "Demuestra cómo las cargas y descargas de hidratos influyen en el volumen de masa muscular seca y reservas energéticas.",
+                howTo: "• Carbohidratos N-1 (Naranja): Gramos de hidratos consumidos el día anterior.\n• Músculo Seco EMA (Verde): Masa proteica contráctil pura.\n\n📊 LECTURA RÁPIDA:\n🟢 Hidratos adecuados + Músculo plano: Reservas energéticas óptimas sin pérdida magra.\n🟣 Hidratos muy bajos + Músculo cae: Vaciado glucídico excesivo. Aumenta carbohidratos en días de entrenamiento.",
+                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Repleción Glucídica (r ≥ +0.30): Ingesta de carbohidratos adecuada para rendimiento."
             },
             deficitFFM: {
                 icon: "🔥",
@@ -4086,20 +4086,20 @@
                     label = "Ingesta Neutra";
                 }
             } else if (type === 'carbs') {
-                varPairs = "Carbos N-1 / Agua";
-                varFullDesc = "entre Carbohidratos Ingeridos N-1 (g) y Masa de Agua Corporal (kg)";
-                if (rValue >= 0.35) {
+                varPairs = "Carbos N-1 / Músculo";
+                varFullDesc = "entre Carbohidratos Ingeridos N-1 (g) y Masa Muscular Seca EMA (kg)";
+                if (rValue >= 0.30) {
                     dotColorClass = "bg-emerald-400";
                     textColorClass = "text-emerald-400";
-                    label = "Carbo-Hidratación Limpia";
-                } else if (rValue <= -0.35) {
+                    label = "Repleción Glucídica";
+                } else if (rValue <= -0.30) {
                     dotColorClass = "bg-purple-400";
                     textColorClass = "text-purple-400";
-                    label = "Vaciado Glucógeno";
+                    label = "Vaciado de Hidratos";
                 } else {
                     dotColorClass = "bg-yellow-400";
                     textColorClass = "text-yellow-400";
-                    label = "Sin Sesgo Hídrico";
+                    label = "Ingesta Neutra";
                 }
             } else if (type === 'deficit') {
                 varPairs = "Déficit N-1 / Músculo";
@@ -4304,7 +4304,7 @@
             const rProt = calculatePearsonR(protEatenData, smmSecaEmaData);
             renderCorrelationBadge('badgeProtFFM', rProt, 'protein');
 
-            const rCarb = calculatePearsonR(carbEatenData, waterKgData);
+            const rCarb = calculatePearsonR(carbEatenData, smmSecaEmaData);
             renderCorrelationBadge('badgeCarbWater', rCarb, 'carbs');
 
             const rDeficit = calculatePearsonR(realDeficitData, smmSecaEmaData);
@@ -4461,7 +4461,7 @@
                 }
             });
 
-            // 3. Gráfico Carbohidratos vs Masa de Agua & Masa Seca EMA
+            // 3. Gráfico Carbohidratos vs Masa Muscular Seca Real (EMA)
             if (chartInstanceCarbWater) chartInstanceCarbWater.destroy();
             chartInstanceCarbWater = new Chart(ctx3, {
                 type: 'line',
@@ -4469,7 +4469,6 @@
                     labels,
                     datasets: [
                         { label: 'Carbohidratos (g) N-1', data: carbEatenData, borderColor: '#ff9500', backgroundColor: 'rgba(255, 149, 0, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'y2' },
                         { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                     ]
                 },
@@ -4478,8 +4477,7 @@
                     scales: {
                         x: xAxisConfig,
                         y: { position: 'left', min: carbYMin, max: carbYMax, ticks: { color: '#ff9500', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } },
-                        y2: { position: 'right', min: waterKgYMin, max: waterKgYMax, ticks: { color: '#32ade6', font: { size: 9 } }, grid: { drawOnChartArea: false } }
+                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
                     },
                     plugins: {
                         legend: {
