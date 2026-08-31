@@ -465,22 +465,26 @@
                         <canvas id="chartWeightFatMuscle"></canvas>
                     </div>
                     <!-- Barra de Resumen de Variaciones Netas (Δ) en el Periodo -->
-                    <div id="card1DeltaSummary" class="grid grid-cols-4 gap-1.5 p-2.5 bg-[#1c1c1e] rounded-xl border border-[#2c2c2e] text-center text-xs">
+                    <div id="card1DeltaSummary" class="grid grid-cols-5 gap-1 p-2 bg-[#1c1c1e] rounded-xl border border-[#2c2c2e] text-center text-xs">
                         <div>
-                            <span class="text-[9px] text-white/50 block font-bold uppercase tracking-wider">Δ Peso</span>
-                            <span id="deltaWeight" class="font-bold text-white text-[11px]">-</span>
+                            <span class="text-[8px] sm:text-[9px] text-white/50 block font-bold uppercase tracking-wider">Δ Peso</span>
+                            <span id="deltaWeight" class="font-bold text-white text-[10px] sm:text-[11px]">-</span>
                         </div>
                         <div>
-                            <span class="text-[9px] text-fat/80 block font-bold uppercase tracking-wider">Δ Grasa EMA</span>
-                            <span id="deltaFat" class="font-bold text-fat text-[11px]">-</span>
+                            <span class="text-[8px] sm:text-[9px] text-fat/80 block font-bold uppercase tracking-wider">Δ Grasa</span>
+                            <span id="deltaFat" class="font-bold text-fat text-[10px] sm:text-[11px]">-</span>
                         </div>
                         <div>
-                            <span class="text-[9px] text-cyan-400/80 block font-bold uppercase tracking-wider">Δ Agua</span>
-                            <span id="deltaWater" class="font-bold text-cyan-400 text-[11px]">-</span>
+                            <span class="text-[8px] sm:text-[9px] text-cyan-400/80 block font-bold uppercase tracking-wider">Δ Agua</span>
+                            <span id="deltaWater" class="font-bold text-cyan-400 text-[10px] sm:text-[11px]">-</span>
                         </div>
                         <div>
-                            <span class="text-[9px] text-emerald-400/80 block font-bold uppercase tracking-wider">Δ Músculo Seco</span>
-                            <span id="deltaSmmSeca" class="font-bold text-emerald-400 text-[11px]">-</span>
+                            <span class="text-[8px] sm:text-[9px] text-emerald-400/80 block font-bold uppercase tracking-wider">Δ Músculo</span>
+                            <span id="deltaSmmSeca" class="font-bold text-emerald-400 text-[10px] sm:text-[11px]">-</span>
+                        </div>
+                        <div>
+                            <span class="text-[8px] sm:text-[9px] text-purple-400/80 block font-bold uppercase tracking-wider">Δ Glucógeno</span>
+                            <span id="deltaGlycogen" class="font-bold text-purple-400 text-[10px] sm:text-[11px]">-</span>
                         </div>
                     </div>
                 </div>
@@ -3009,11 +3013,24 @@
         const CHART_HELP_DATA = {
             weightFatMuscle: {
                 icon: "⚖️",
-                title: "Peso vs Grasa (EMA) vs Agua vs Músculo Seco (EMA)",
-                subtitle: "Evolución de composición corporal sin ruido hídrico",
-                purpose: "Compara tu peso total, grasa suavizada (EMA α=0.3), masa de agua y masa muscular seca pura.",
-                howTo: "• Peso (Gris): Peso bruto en báscula.\n• Grasa EMA (Rojo): Grasa suavizada para eliminar picos de bioimpedancia.\n• Agua (Azul): Litros/kg de agua corporal.\n• Músculo Seco EMA (Verde): Matriz proteica contráctil pura (27% seco normalizado).\n\n📊 LECTURA RÁPIDA:\n🟢 Peso y Grasa bajan + Músculo plano: Definición perfecta (solo pierdes grasa/agua).\n🟢 Peso y Músculo suben + Grasa plana: Ganancia muscular limpia.\n⚠️ Músculo cae rápido: Alerta catabólica. Sube proteína o reduce déficit.",
-                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Recomposición Limpia (r ≤ -0.35): Quemando grasa protegiendo el músculo.\n🔵 Tendencia Paralela (r ≥ +0.35): Vaciado conjunto natural de agua y peso."
+                title: "Peso Tendencia vs Grasa vs Agua vs Músculo vs Glucógeno",
+                subtitle: "Evolución real de la composición corporal filtrando el ruido diario",
+                purpose: "Separa las fluctuaciones puntuales de agua y glucógeno de los cambios reales en grasa y músculo.",
+                howTo: "📈 LÍNEAS DEL GRÁFICO:\n" +
+                       "• Peso Tendencia (Blanco Sólido): Tu peso real filtrado a 7 días (EMA α=0.25). Filtra los picos de agua y marca tu dirección corporal real.\n" +
+                       "• Peso Bruto (Gris Punteado): La lectura puntual de tu báscula cada mañana.\n" +
+                       "• Grasa EMA (Rojo): Masa grasa suavizada a 7 días.\n" +
+                       "• Agua (Azul): Litros/kg de agua corporal total.\n" +
+                       "• Músculo Seco EMA (Verde): Músculo esquelético puro (libre de agua).\n\n" +
+                       "📊 RESUMEN INFERIOR (5 CASILLAS):\n" +
+                       "• Δ Peso: Cambio en tendencia real acumulada.\n" +
+                       "• Δ Grasa: Grasa corporal pura quemada o ganada.\n" +
+                       "• Δ Agua: Líquido hídrico liberado o retenido.\n" +
+                       "• Δ Músculo: Músculo esquelético real (Si está en ~0.00 kg, tu músculo está 100% intacto).\n" +
+                       "• Δ Glucógeno: Vaciado de reservas de carbohidratos en músculo e hígado.\n\n" +
+                       "💡 ¿POR QUÉ LA TENDENCIA VA MÁS LENTA QUE LA BÁSCULA?\n" +
+                       "Si un día el peso bruto cae o sube 1.5 kg de golpe, la línea de tendencia no se lanza inmediatamente: comprueba durante 2-3 días si es un cambio real o simple ruido de agua/glucógeno.",
+                conclusiones: "🚦 REGLA DE ORO:\n🟢 Peso baja + Grasa baja + Músculo plano (0.00 kg) = Definición perfecta (conservas tu músculo)."
             },
             bodyComp: {
                 icon: "📈",
@@ -4004,7 +4021,7 @@
                 smmSecaNormData.push(parseFloat(secaNorm.toFixed(2)));
             });
 
-            const alpha = 0.3;
+            const alpha = 0.25;
             const smmSecaEmaData = [];
             let prevEma = null;
             smmSecaNormData.forEach((val, idx) => {
@@ -4162,8 +4179,40 @@
             const fatKgData = sortedLogs.map(l => parseFloat((l.weight * (l.fatPct / 100)).toFixed(2)));
             const waterKgData = sortedLogs.map(l => parseFloat((l.weight * (l.waterPct / 100)).toFixed(2)));
 
-            // Suavizado EMA (α=0.3) sobre la Masa Grasa para aplanar artefactos hídricos bioeléctricos de 1 día
-            const alphaFat = 0.3;
+            // Opción B: Modelo de Descomposición en Masa Seca (Peso sin agua) y EMA diferenciado
+            const masaSecaData = sortedLogs.map((l, idx) => parseFloat((l.weight - waterKgData[idx]).toFixed(2)));
+
+            // EMA sobre Masa Seca (alpha = 0.25) para capturar tendencias de tejido real
+            const alphaSeco = 0.25;
+            const masaSecaEmaData = [];
+            let prevSeco = null;
+            masaSecaData.forEach((val, idx) => {
+                if (idx === 0 || prevSeco === null) {
+                    prevSeco = val;
+                } else {
+                    prevSeco = (alphaSeco * val) + ((1 - alphaSeco) * prevSeco);
+                }
+                masaSecaEmaData.push(parseFloat(prevSeco.toFixed(2)));
+            });
+
+            // EMA amortiguado sobre Masa de Agua Total (alpha = 0.08) para aplanar ruido agudo de 24h
+            const alphaAgua = 0.08;
+            const actEmaData = [];
+            let prevAct = null;
+            waterKgData.forEach((val, idx) => {
+                if (idx === 0 || prevAct === null) {
+                    prevAct = val;
+                } else {
+                    prevAct = (alphaAgua * val) + ((1 - alphaAgua) * prevAct);
+                }
+                actEmaData.push(parseFloat(prevAct.toFixed(2)));
+            });
+
+            // Peso Tendencia EMA = Masa Seca EMA + ACT EMA
+            const weightEmaData = masaSecaEmaData.map((mSeca, idx) => parseFloat((mSeca + actEmaData[idx]).toFixed(2)));
+
+            // Suavizado EMA (α=0.25) sobre la Masa Grasa para aplanar artefactos hídricos bioeléctricos de 1 día
+            const alphaFat = 0.25;
             const fatKgEmaData = [];
             let prevFatEma = null;
             fatKgData.forEach((val, idx) => {
@@ -4175,7 +4224,7 @@
                 fatKgEmaData.push(parseFloat(prevFatEma.toFixed(2)));
             });
 
-            // Procesar modelo biofísico de corrección (mediana de %TBW_ref, aislamiento del 27% seco y EMA α=0.3)
+            // Procesar modelo biofísico de corrección (mediana de %TBW_ref, aislamiento del 27% seco y EMA α=0.25)
             const { tbwRef, smmNormData, smmSecaNormData, smmSecaEmaData } = processSmmBiophysicalModel(sortedLogs);
 
             // Mapeo con el Desfase Fisiológico 24h (Ingesta del día N-1 enfrentada al pesaje 6am del día N)
@@ -4224,12 +4273,13 @@
             const rFatMuscle = calculatePearsonR(fatKgEmaData, smmSecaEmaData);
             renderCorrelationBadge('badgeWeightFatMuscle', rFatMuscle, 'recomp');
 
-            // Actualizar resumen de variaciones netas (Δ) en la primera tarjeta
+            // Actualizar resumen de variaciones netas (Δ) en la primera tarjeta (5 compartimentos)
             if (sortedLogs.length >= 2) {
-                const diffWeight = weightData[weightData.length - 1] - weightData[0];
+                const diffWeight = weightEmaData[weightEmaData.length - 1] - weightEmaData[0];
                 const diffFat = fatKgEmaData[fatKgEmaData.length - 1] - fatKgEmaData[0];
-                const diffWater = waterKgData[waterKgData.length - 1] - waterKgData[0];
+                const diffWater = actEmaData[actEmaData.length - 1] - actEmaData[0];
                 const diffSmm = smmSecaEmaData[smmSecaEmaData.length - 1] - smmSecaEmaData[0];
+                const diffGlycogen = diffWeight - (diffFat + diffWater + diffSmm);
 
                 const fmtDelta = (v, isMuscle = false) => {
                     if (Math.abs(v) < 0.05) {
@@ -4242,11 +4292,13 @@
                 const dF = document.getElementById('deltaFat');
                 const dH2O = document.getElementById('deltaWater');
                 const dS = document.getElementById('deltaSmmSeca');
+                const dG = document.getElementById('deltaGlycogen');
 
                 if (dW) dW.textContent = fmtDelta(diffWeight);
                 if (dF) dF.textContent = fmtDelta(diffFat);
                 if (dH2O) dH2O.textContent = fmtDelta(diffWater);
                 if (dS) dS.textContent = fmtDelta(diffSmm, true);
+                if (dG) dG.textContent = fmtDelta(diffGlycogen);
             }
 
             const rProt = calculatePearsonR(protEatenData, smmSecaEmaData);
@@ -4259,8 +4311,8 @@
             renderCorrelationBadge('badgeDeficitFFM', rDeficit, 'deficit');
 
             // Valores de ejes Y (+1 máx y -1 mín) para Peso, Masa Magra Bruta, Grasa y Agua
-            const weightMax = Math.max(...weightData);
-            const weightMin = Math.min(...weightData);
+            const weightMax = Math.max(...weightData, ...weightEmaData);
+            const weightMin = Math.min(...weightData, ...weightEmaData);
             const weightYMax = parseFloat((weightMax + 1).toFixed(1));
             const weightYMin = parseFloat((weightMin - 1).toFixed(1));
 
@@ -4346,7 +4398,8 @@
                     data: {
                         labels,
                         datasets: [
-                            { label: 'Peso Total (kg)', data: weightData, borderColor: '#e5e5ea', backgroundColor: 'rgba(229, 229, 234, 0.05)', spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                            { label: 'Peso Tendencia EMA (kg)', data: weightEmaData, borderColor: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderWidth: 2, spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                            { label: 'Peso Bruto (kg)', data: weightData, borderColor: 'rgba(229, 229, 234, 0.35)', backgroundColor: 'transparent', borderDash: [3, 3], pointRadius: 3, pointBackgroundColor: 'rgba(229, 229, 234, 0.6)', spanGaps: true, tension: 0.1, yAxisID: 'y' },
                             { label: 'Masa Grasa EMA (kg)', data: fatKgEmaData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'yFat' },
                             { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'yWater' },
                             { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
