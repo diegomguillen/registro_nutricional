@@ -684,9 +684,16 @@
         </div>
 
         <div id="view-history" class="space-y-6 hidden animate-fade-in">
-            <header>
-                <h1 class="text-2xl font-medium text-white">Historial</h1>
-                <p class="text-white text-sm">Consulta y filtra tus registros</p>
+            <header class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-medium text-white">Historial</h1>
+                    <p class="text-white text-sm">Consulta y filtra tus registros</p>
+                </div>
+                <button type="button" onclick="toggleMagnifierMode()" title="Activar/Desactivar Lupa (Toque/Arrastre)" class="toggleMagnifierBtn p-1.5 rounded-full text-white/70 hover:text-white transition-all border border-white/10 flex items-center justify-center bg-[#2c2c2e]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                </button>
             </header>
 
             <div class="premium-card p-4 space-y-3 animate-fade-in-up">
@@ -728,6 +735,14 @@
                 </div>
             </div>
 
+            <!-- Tarjeta de Balance y Diferencia vs Objetivo Diario -->
+            <div id="historyTargetDiffCard" class="premium-card p-3.5 space-y-2 animate-fade-in-up">
+                <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
+                    <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
+                </div>
+                <div id="historyTargetDiffContent" class="grid grid-cols-4 gap-2 text-center text-xs"></div>
+            </div>
+
             <div class="premium-card overflow-hidden animate-fade-in-up" style="animation-delay: 0.1s">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-[#2c2c2e]">
@@ -753,9 +768,16 @@
         </div>
 
         <div id="view-backup" class="space-y-6 hidden animate-fade-in">
-            <header>
-                <h1 class="text-2xl font-medium text-white">Datos & Métricas</h1>
-                <p class="text-white text-sm">Métricas deportivas Garmin y copias de seguridad</p>
+            <header class="flex justify-between items-center">
+                <div>
+                    <h1 class="text-2xl font-medium text-white">Datos & Métricas</h1>
+                    <p class="text-white text-sm">Métricas deportivas Garmin y copias de seguridad</p>
+                </div>
+                <button type="button" onclick="toggleMagnifierMode()" title="Activar/Desactivar Lupa (Toque/Arrastre)" class="toggleMagnifierBtn p-1.5 rounded-full text-white/70 hover:text-white transition-all border border-white/10 flex items-center justify-center bg-[#2c2c2e]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                    </svg>
+                </button>
             </header>
 
             <!-- TARJETA GARMIN SPORTS MODULE -->
@@ -1411,6 +1433,46 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
                 </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Ajustar Cantidad por Doble Tap -->
+    <div id="editAmountModal" class="fixed inset-0 bg-black/80 hidden z-[85] flex items-end sm:items-center justify-center backdrop-blur-md transition-all">
+        <div class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in relative space-y-4">
+            <!-- Cabecera con Título y X -->
+            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-3">
+                <h3 id="editAmountModalTitle" class="text-base font-bold text-white truncate max-w-[85%] flex items-center gap-2">
+                    ✏️ Ajustar Cantidad
+                </h3>
+                <button type="button" onclick="closeEditAmountModal()" class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center" title="Cerrar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Tarjeta Superior (Balance vs Objetivo Diario) dentro del modal -->
+            <div class="bg-[#1c1c1e] p-3 rounded-xl border border-[#2c2c2e] space-y-2">
+                <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
+                    <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
+                </div>
+                <div id="editAmountTargetDiffContent" class="grid grid-cols-4 gap-2 text-center text-xs"></div>
+            </div>
+
+            <!-- Slider para Ajustar Cantidad -->
+            <div class="bg-[#2c2c2e] p-4 rounded-xl border border-[#3a3a3c] space-y-3">
+                <div class="flex justify-between items-center">
+                    <span class="text-xs font-bold text-white uppercase tracking-wider">Cantidad Ajustada:</span>
+                    <span id="editAmountDisplayVal" class="text-base font-mono font-extrabold text-[#0a84ff]">100 g</span>
+                </div>
+
+                <input type="range" id="editAmountRangeSlider" class="w-full accent-[#0a84ff] cursor-pointer h-2 bg-[#1c1c1e] rounded-lg appearance-none border border-[#3a3a3c]" oninput="onEditAmountSliderInput(this.value)">
+
+                <div class="flex justify-between text-[10px] font-mono text-white/50">
+                    <span id="editAmountMinLabel">5 g</span>
+                    <span id="editAmountMaxLabel">500 g</span>
+                </div>
             </div>
         </div>
     </div>
@@ -6683,21 +6745,69 @@
             });
         }
 
+        let currentEditingItemId = null;
+
         function editLogItemAmount(id) {
+            openEditAmountModal(id);
+        }
+
+        function openEditAmountModal(id) {
             const item = globalLog.find(l => String(l.id) === String(id));
             if (!item) return;
 
-            const currentAmt = item.amount !== undefined ? item.amount : (item.qty || 0);
-            const unit = item.unit || 'g';
-            const newAmtStr = prompt(`Editar cantidad de "${item.foodName || item.name || 'Alimento'}" (${unit}):`, currentAmt);
+            currentEditingItemId = id;
+            const modal = document.getElementById('editAmountModal');
+            const titleEl = document.getElementById('editAmountModalTitle');
+            const slider = document.getElementById('editAmountRangeSlider');
+            const displayVal = document.getElementById('editAmountDisplayVal');
+            const minLabel = document.getElementById('editAmountMinLabel');
+            const maxLabel = document.getElementById('editAmountMaxLabel');
+            if (!modal || !slider) return;
 
-            if (newAmtStr === null) return;
-            const newAmt = parseFloat(newAmtStr);
-            if (isNaN(newAmt) || newAmt <= 0) {
-                if (typeof showToast === 'function') showToast("Cantidad no válida.");
-                return;
+            const unit = item.unit || 'g';
+            const isUnit = (unit === 'u');
+            const currentAmt = item.amount !== undefined ? item.amount : (item.qty || 0);
+
+            const isRecipe = item.type === 'recipe';
+            const icon = isRecipe ? '📖 ' : (item.foodIcon || '🔹 ');
+            if (titleEl) titleEl.innerHTML = `${icon} ${item.foodName || item.name || 'Alimento'}`;
+
+            if (isUnit) {
+                slider.min = "0.5";
+                slider.max = "10";
+                slider.step = "0.5";
+                if (minLabel) minLabel.textContent = "0.5 ud";
+                if (maxLabel) maxLabel.textContent = "10 ud";
+            } else {
+                slider.min = "5";
+                slider.max = "500";
+                slider.step = "5";
+                if (minLabel) minLabel.textContent = "5 g";
+                if (maxLabel) maxLabel.textContent = "500 g";
             }
 
+            slider.value = currentAmt;
+            if (displayVal) displayVal.textContent = `${currentAmt} ${unit}`;
+
+            modal.classList.remove('hidden');
+            updateEditAmountModalCard();
+        }
+
+        function closeEditAmountModal() {
+            const modal = document.getElementById('editAmountModal');
+            if (modal) modal.classList.add('hidden');
+            currentEditingItemId = null;
+        }
+
+        function onEditAmountSliderInput(newValStr) {
+            if (!currentEditingItemId) return;
+            const item = globalLog.find(l => String(l.id) === String(currentEditingItemId));
+            if (!item) return;
+
+            const newAmt = parseFloat(newValStr);
+            if (isNaN(newAmt) || newAmt <= 0) return;
+
+            const currentAmt = item.amount !== undefined ? item.amount : (item.qty || 0);
             if (newAmt === currentAmt) return;
 
             const oldAmt = currentAmt > 0 ? currentAmt : 1;
@@ -6709,10 +6819,50 @@
             item.f = parseFloat((item.f * ratio).toFixed(1));
             item.kcal = Math.round(item.kcal * ratio);
 
+            const unit = item.unit || 'g';
+            const displayVal = document.getElementById('editAmountDisplayVal');
+            if (displayVal) displayVal.textContent = `${newAmt} ${unit}`;
+
             saveData();
             applyFilter();
             updateComparisonCharts();
-            if (typeof showToast === 'function') showToast(`✏️ Cantidad actualizada a ${newAmt} ${unit}`);
+            updateEditAmountModalCard();
+        }
+
+        function updateEditAmountModalCard() {
+            const modalDiffEl = document.getElementById('editAmountTargetDiffContent');
+            if (!modalDiffEl) return;
+
+            const s = document.getElementById('filterStart')?.value, e = document.getElementById('filterEnd')?.value;
+            let filtered = [...globalLog];
+            if (s && e) filtered = filtered.filter(i => i.date >= s && i.date <= e);
+
+            let p = 0, c = 0, f = 0, k = 0;
+            filtered.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
+            const targets = getTargetMacros();
+
+            modalDiffEl.innerHTML = `
+                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                    <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
+                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
+                    <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                </div>
+                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                    <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
+                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
+                    <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
+                </div>
+                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                    <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
+                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
+                    <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
+                </div>
+                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                    <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
+                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
+                    <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                </div>
+            `;
         }
 
         function moveGlobalLogItem(draggedId, targetId) {
@@ -6797,6 +6947,7 @@
 
             tableBody.addEventListener('touchstart', (e) => {
                 if (e.touches.length !== 1) return;
+                if (typeof isMagnifierMode !== 'undefined' && isMagnifierMode) return;
                 const touch = e.touches[0];
                 const handle = e.target.closest('.drag-handle');
                 const row = e.target.closest('tr');
@@ -6915,6 +7066,32 @@
         function calcTotals(items) {
             let p = 0, c = 0, f = 0, k = 0; items.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
             const targets = getTargetMacros();
+
+            const historyDiffEl = document.getElementById('historyTargetDiffContent');
+            if (historyDiffEl) {
+                historyDiffEl.innerHTML = `
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
+                        <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
+                        <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
+                        <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
+                        <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                    </div>
+                `;
+            }
 
             if (document.getElementById('homeProt')) {
                 document.getElementById('homeProt').innerHTML = `
@@ -7064,16 +7241,20 @@
 
         function toggleMagnifierMode() {
             isMagnifierMode = !isMagnifierMode;
-            const btn = document.getElementById('toggleMagnifierBtn');
-            if (btn) {
+            const btns = document.querySelectorAll('#toggleMagnifierBtn, .toggleMagnifierBtn');
+            btns.forEach(btn => {
                 if (isMagnifierMode) {
                     btn.classList.add('magnifier-btn-active');
-                    if (typeof showToast === 'function') showToast('🔍 Modo Lupa activado (Desliza sobre tarjetas/textos)');
                 } else {
                     btn.classList.remove('magnifier-btn-active');
-                    hideMagnifierLens();
-                    if (typeof showToast === 'function') showToast('Modo Lupa desactivado');
                 }
+            });
+
+            if (isMagnifierMode) {
+                if (typeof showToast === 'function') showToast('🔍 Modo Lupa activado (Desliza sobre tarjetas/textos)');
+            } else {
+                hideMagnifierLens();
+                if (typeof showToast === 'function') showToast('Modo Lupa desactivado');
             }
         }
 
@@ -7148,7 +7329,7 @@
 
             // Touch Listeners
             window.addEventListener('touchstart', (e) => {
-                if (e.touches.length !== 1) return;
+                if (e.touches.length !== 1 || !isMagnifierMode) return;
                 const touch = e.touches[0];
                 const target = e.target;
 
@@ -7157,18 +7338,11 @@
                     return;
                 }
 
-                if (isMagnifierMode) {
-                    startMagnification(touch.clientX, touch.clientY, target);
-                } else {
-                    // Long press activation (320ms)
-                    longPressTimer = setTimeout(() => {
-                        startMagnification(touch.clientX, touch.clientY, target);
-                    }, 320);
-                }
+                startMagnification(touch.clientX, touch.clientY, target);
             }, { passive: true });
 
             window.addEventListener('touchmove', (e) => {
-                if (e.touches.length !== 1) return;
+                if (e.touches.length !== 1 || !isMagnifierMode) return;
                 const touch = e.touches[0];
                 if (isMagnifyingActive) {
                     const target = document.elementFromPoint(touch.clientX, touch.clientY) || e.target;
@@ -7179,9 +7353,6 @@
                     const sourceElement = target ? (target.closest('.premium-card') || target.closest('table') || target.closest('.action-card') || target.closest('li') || mainContainer) : mainContainer;
                     const rect = sourceElement.getBoundingClientRect();
                     updateLensPosition(touch.clientX, touch.clientY, rect);
-                } else if (longPressTimer) {
-                    clearTimeout(longPressTimer);
-                    longPressTimer = null;
                 }
             }, { passive: true });
 
