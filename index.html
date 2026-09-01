@@ -2029,7 +2029,7 @@
             </div>
 
             <!-- ACCESO DIRECTO AL RECOMENDADOR / ASISTENTE DE MENÚ EN PANTALLA CATEGORÍAS -->
-            <div onclick="document.getElementById('categoryModal').classList.add('hidden'); openSmartMealBuilder();" class="action-card premium-card p-3.5 mb-4 flex items-center gap-3 cursor-pointer border-purple-500/40 hover:border-purple-500/60 bg-gradient-to-r from-purple-900/20 to-[#1c1c1e]">
+            <div onclick="document.getElementById('categoryModal').classList.add('hidden'); openSmartMealBuilder();" class="action-card premium-card p-3.5 mb-3 flex items-center gap-3 cursor-pointer border-purple-500/40 hover:border-purple-500/60 bg-gradient-to-r from-purple-900/20 to-[#1c1c1e]">
                 <div class="w-10 h-10 rounded-full bg-purple-500/20 border border-purple-500/40 flex items-center justify-center text-purple-300 font-bold text-lg flex-shrink-0">
                     💡
                 </div>
@@ -2040,6 +2040,20 @@
                 <svg class="w-5 h-5 text-purple-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                 </svg>
+            </div>
+
+            <!-- BOTÓN MODO COMPARADOR DE ALIMENTOS EN PANTALLA CATEGORÍAS -->
+            <div id="btnToggleCompareMode" onclick="toggleCompareMode()" class="action-card premium-card p-3 mb-4 flex items-center gap-3 cursor-pointer border-emerald-500/40 hover:border-emerald-500/60 bg-gradient-to-r from-emerald-900/20 to-[#1c1c1e] transition-all">
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-300 font-bold text-lg flex-shrink-0">
+                    ⚖️
+                </div>
+                <div class="flex-1">
+                    <h3 class="font-medium text-white text-sm leading-tight">Comparar Alimentos (hasta 3)</h3>
+                    <p id="btnCompareSubtext" class="text-[11px] text-white/50">Compara nutrientes y raciones lado a lado</p>
+                </div>
+                <div id="compareModeStatusBadge" class="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c]">
+                    Activar
+                </div>
             </div>
 
             <div id="categoryGrid" class="grid grid-cols-3 gap-3"></div>
@@ -2071,6 +2085,91 @@
         </div>
     </div>
 
+    <!-- BANDEJA FLOTANTE DE COMPARACIÓN -->
+    <div id="compareTray" class="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:w-96 bg-[#1c1c1e] border border-emerald-500/40 shadow-2xl rounded-2xl p-3 z-[85] hidden animate-slide-up backdrop-blur-md">
+        <div class="flex items-center justify-between mb-2 pb-1.5 border-b border-[#2c2c2e]">
+            <div class="flex items-center gap-2">
+                <span class="text-base">⚖️</span>
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Comparar Alimentos</span>
+                <span id="compareCountBadge" class="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold px-2 py-0.5 rounded-full">0/3</span>
+            </div>
+            <button onclick="toggleCompareMode(false)" class="text-white/60 hover:text-white text-xs font-bold px-1.5 py-0.5 rounded bg-[#2c2c2e]">✕ Salir</button>
+        </div>
+        
+        <div id="compareItemsList" class="flex gap-2 mb-2 overflow-x-auto no-scrollbar py-1"></div>
+        
+        <div class="flex gap-2">
+            <button onclick="clearCompareSelection()" class="bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white/80 text-xs py-2 px-3 rounded-xl border border-[#3a3a3c] transition-all">Limpiar</button>
+            <button id="btnLaunchCompare" onclick="openCompareModal()" disabled class="flex-1 bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:hover:bg-emerald-500 text-black font-bold text-xs py-2 px-3 rounded-xl transition-all shadow-lg flex items-center justify-center gap-1.5">
+                <span>⚖️ Ver Comparativa</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- MODAL COMPARADOR DE ALIMENTOS -->
+    <div id="compareModal" class="fixed inset-0 bg-black/85 hidden z-[90] flex items-end sm:items-center justify-center backdrop-blur-md">
+        <div class="bg-[#1c1c1e] w-full sm:max-w-3xl rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[92vh] overflow-y-auto flex flex-col">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-[#2c2c2e]">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">⚖️</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-white leading-tight">Comparativa Nutricional</h3>
+                        <p class="text-[11px] text-white/60">Comparativa gráfica de macronutrientes por alimento</p>
+                    </div>
+                </div>
+                <button onclick="closeCompareModal()" class="text-white hover:text-white bg-[#2c2c2e] p-1.5 rounded-full border border-white/10">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Control de Ración Base -->
+            <div class="bg-[#2c2c2e] p-3 rounded-xl border border-[#3a3a3c] mb-4 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Ración Base de Comparación:</span>
+                <div class="flex items-center gap-2">
+                    <button onclick="setCompareBaseGrams(100)" class="compare-gram-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-primary text-white border border-primary/40">100g (Estándar)</button>
+                    <button onclick="setCompareBaseGrams(50)" class="compare-gram-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-[#1c1c1e] text-white/80 border border-[#3a3a3c]">50g</button>
+                    <button onclick="setCompareBaseGrams(200)" class="compare-gram-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-[#1c1c1e] text-white/80 border border-[#3a3a3c]">200g</button>
+                </div>
+            </div>
+
+            <!-- Tarjetas Resumen Alimentos Selección + Botón Añadir -->
+            <div id="compareFoodHeaderCards" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4"></div>
+
+            <!-- 3 Gráficos de Macronutrientes -->
+            <div class="space-y-4">
+                <!-- 1. Proteínas -->
+                <div class="bg-[#121214] p-4 rounded-xl border border-blue-500/20">
+                    <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>💪 Proteínas (g)</span>
+                    </h4>
+                    <div class="h-44 relative">
+                        <canvas id="compareChartProtein"></canvas>
+                    </div>
+                </div>
+
+                <!-- 2. Carbohidratos -->
+                <div class="bg-[#121214] p-4 rounded-xl border border-amber-500/20">
+                    <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>🌾 Carbohidratos (g)</span>
+                    </h4>
+                    <div class="h-44 relative">
+                        <canvas id="compareChartCarbs"></canvas>
+                    </div>
+                </div>
+
+                <!-- 3. Grasas -->
+                <div class="bg-[#121214] p-4 rounded-xl border border-red-500/20">
+                    <h4 class="text-xs font-bold text-red-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>🥑 Grasas (g)</span>
+                    </h4>
+                    <div class="h-44 relative">
+                        <canvas id="compareChartFat"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Visual de Recetas -->
     <div id="recipeGridModal"
         class="fixed inset-0 bg-black/80 hidden z-[70] flex items-end sm:items-center justify-center backdrop-blur-sm">
@@ -2090,6 +2189,281 @@
     </div>
 
     <script>
+        // --- SISTEMA DE COMPARACIÓN DE ALIMENTOS ---
+        let isCompareMode = false;
+        let compareSelectedFoods = [];
+        let compareBaseGrams = 100;
+        let compareChartProteinInstance = null;
+        let compareChartCarbsInstance = null;
+        let compareChartFatInstance = null;
+
+        function toggleCompareMode(forceState) {
+            if (typeof forceState === 'boolean') {
+                isCompareMode = forceState;
+            } else {
+                isCompareMode = !isCompareMode;
+            }
+
+            const statusBadge = document.getElementById('compareModeStatusBadge');
+            const btnCard = document.getElementById('btnToggleCompareMode');
+            const tray = document.getElementById('compareTray');
+
+            if (isCompareMode) {
+                if (statusBadge) {
+                    statusBadge.textContent = 'ACTIVO';
+                    statusBadge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-500 text-black border border-emerald-400 animate-pulse';
+                }
+                if (btnCard) btnCard.classList.add('border-emerald-500', 'bg-emerald-900/30');
+                if (tray) tray.classList.remove('hidden');
+                if (typeof showToast === 'function') showToast('⚖️ Modo Comparador activo: selecciona hasta 3 alimentos');
+            } else {
+                if (statusBadge) {
+                    statusBadge.textContent = 'Activar';
+                    statusBadge.className = 'px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c]';
+                }
+                if (btnCard) btnCard.classList.remove('border-emerald-500', 'bg-emerald-900/30');
+                if (tray) tray.classList.add('hidden');
+            }
+            updateCompareTrayUI();
+            refreshCurrentCategoryGrid();
+        }
+
+        function toggleFoodInCompare(foodId) {
+            const food = foodData.find(f => f.id == foodId);
+            if (!food) return;
+
+            const existingIndex = compareSelectedFoods.findIndex(f => f.id == foodId);
+            if (existingIndex >= 0) {
+                compareSelectedFoods.splice(existingIndex, 1);
+                if (typeof showToast === 'function') showToast(`Quitado: ${food.name}`);
+            } else {
+                if (compareSelectedFoods.length >= 3) {
+                    if (typeof showToast === 'function') showToast('⚠️ Máximo 3 alimentos para comparar');
+                    return;
+                }
+                compareSelectedFoods.push(food);
+                if (typeof showToast === 'function') showToast(`Añadido a comparación: ${food.name}`);
+            }
+
+            updateCompareTrayUI();
+            refreshCurrentCategoryGrid();
+        }
+
+        function clearCompareSelection() {
+            compareSelectedFoods = [];
+            updateCompareTrayUI();
+            refreshCurrentCategoryGrid();
+        }
+
+        function updateCompareTrayUI() {
+            const listContainer = document.getElementById('compareItemsList');
+            const countBadge = document.getElementById('compareCountBadge');
+            const btnLaunch = document.getElementById('btnLaunchCompare');
+            if (!listContainer || !countBadge || !btnLaunch) return;
+
+            countBadge.textContent = `${compareSelectedFoods.length}/3`;
+            btnLaunch.disabled = compareSelectedFoods.length < 2;
+
+            listContainer.innerHTML = '';
+            if (compareSelectedFoods.length === 0) {
+                listContainer.innerHTML = `<span class="text-xs text-white/50 italic py-1">Toca hasta 3 alimentos para comparar...</span>`;
+                return;
+            }
+
+            compareSelectedFoods.forEach((item) => {
+                const chip = document.createElement('div');
+                chip.className = "flex items-center gap-1.5 bg-[#2c2c2e] border border-emerald-500/30 rounded-xl px-2.5 py-1 text-xs text-white shrink-0";
+                chip.innerHTML = `
+                    <span>${item.icon || '🔹'}</span>
+                    <span class="font-medium max-w-[100px] truncate">${item.name}</span>
+                    <button onclick="toggleFoodInCompare(${item.id})" class="text-white/60 hover:text-white font-bold ml-1">✕</button>
+                `;
+                listContainer.appendChild(chip);
+            });
+        }
+
+        function refreshCurrentCategoryGrid() {
+            const subModal = document.getElementById('subCategoryModal');
+            if (subModal && !subModal.classList.contains('hidden')) {
+                const title = document.getElementById('subCategoryTitle')?.textContent;
+                if (title === "Resultados Web / Otros") {
+                    openWebFoodsGrid();
+                } else {
+                    for (const [key, val] of Object.entries(FOOD_STRUCTURE)) {
+                        if (val.label === title) {
+                            openSubCategorySelector(key);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        function setCompareBaseGrams(grams) {
+            compareBaseGrams = grams;
+            document.querySelectorAll('.compare-gram-btn').forEach(btn => {
+                if (btn.textContent.includes(`${grams}g`)) {
+                    btn.className = 'compare-gram-btn px-2.5 py-1 rounded-lg text-xs font-bold bg-primary text-white border border-primary/40';
+                } else {
+                    btn.className = 'compare-gram-btn px-2.5 py-1 rounded-lg text-xs font-medium bg-[#1c1c1e] text-white/80 border border-[#3a3a3c]';
+                }
+            });
+            renderCompareModalContent();
+        }
+
+        function openCompareModal() {
+            if (compareSelectedFoods.length < 2) {
+                if (typeof showToast === 'function') showToast("Selecciona al menos 2 alimentos para comparar");
+                return;
+            }
+            document.getElementById('compareModal').classList.remove('hidden');
+            renderCompareModalContent();
+        }
+
+        function closeCompareModal() {
+            document.getElementById('compareModal').classList.add('hidden');
+            if (compareChartProteinInstance) { compareChartProteinInstance.destroy(); compareChartProteinInstance = null; }
+            if (compareChartCarbsInstance) { compareChartCarbsInstance.destroy(); compareChartCarbsInstance = null; }
+            if (compareChartFatInstance) { compareChartFatInstance.destroy(); compareChartFatInstance = null; }
+        }
+
+        function renderCompareModalContent() {
+            const baseMultiplier = compareBaseGrams / 100;
+            const items = compareSelectedFoods.map(f => {
+                const kcal = Math.round((f.kcal || 0) * baseMultiplier);
+                const p = parseFloat(((f.p || 0) * baseMultiplier).toFixed(1));
+                const c = parseFloat(((f.c || 0) * baseMultiplier).toFixed(1));
+                const fat = parseFloat(((f.f || 0) * baseMultiplier).toFixed(1));
+                return { ...f, calcKcal: kcal, calcP: p, calcC: c, calcF: fat };
+            });
+
+            // Tarjetas superiores con botón directo +Añadir
+            const headerCardsContainer = document.getElementById('compareFoodHeaderCards');
+            if (headerCardsContainer) {
+                let cardsHtml = '';
+                items.forEach((item, idx) => {
+                    const colors = ['border-blue-500/40', 'border-emerald-500/40', 'border-amber-500/40'];
+                    cardsHtml += `
+                        <div class="bg-[#2c2c2e] p-3 rounded-xl border ${colors[idx % colors.length]} flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center gap-1.5 mb-1">
+                                    <span class="text-xl">${item.icon || '🔹'}</span>
+                                    <span class="font-bold text-white text-xs truncate flex-1">${item.name}</span>
+                                </div>
+                                <div class="text-[11px] text-white/60 mb-2 font-medium">${item.calcKcal} kcal <span class="text-[9px] opacity-70">(${compareBaseGrams}g)</span></div>
+                            </div>
+                            <button onclick="addFoodFromCompare(${item.id}, ${compareBaseGrams})" class="w-full bg-emerald-500 hover:bg-emerald-400 text-black font-bold py-1.5 px-2 rounded-lg text-xs transition-all active:scale-95 shadow flex items-center justify-center gap-1">
+                                <span>+ Añadir</span>
+                            </button>
+                        </div>
+                    `;
+                });
+                headerCardsContainer.innerHTML = cardsHtml;
+            }
+
+            renderThreeMacroCharts(items);
+        }
+
+        function createSingleMacroChart(canvasId, items, dataKey, macroLabel) {
+            const ctx = document.getElementById(canvasId)?.getContext('2d');
+            if (!ctx) return null;
+
+            const foodNames = items.map(i => i.name);
+            const values = items.map(i => i[dataKey]);
+
+            const foodColors = [
+                '#0a84ff',
+                '#32d74b',
+                '#ff9f0a'
+            ];
+
+            return new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: foodNames,
+                    datasets: [{
+                        label: macroLabel,
+                        data: values,
+                        backgroundColor: items.map((_, idx) => foodColors[idx % foodColors.length]),
+                        borderRadius: 8,
+                        barThickness: 28
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1c1c1e',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#3a3a3c',
+                            borderWidth: 1,
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.raw}g de ${macroLabel}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#ffffff', font: { size: 10, weight: 'bold' } },
+                            grid: { display: false }
+                        },
+                        y: {
+                            ticks: { color: '#8e8e93', font: { size: 10 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.08)' },
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderThreeMacroCharts(items) {
+            if (compareChartProteinInstance) compareChartProteinInstance.destroy();
+            if (compareChartCarbsInstance) compareChartCarbsInstance.destroy();
+            if (compareChartFatInstance) compareChartFatInstance.destroy();
+
+            compareChartProteinInstance = createSingleMacroChart('compareChartProtein', items, 'calcP', 'Proteínas (g)');
+            compareChartCarbsInstance = createSingleMacroChart('compareChartCarbs', items, 'calcC', 'Carbohidratos (g)');
+            compareChartFatInstance = createSingleMacroChart('compareChartFat', items, 'calcF', 'Grasas (g)');
+        }
+
+        function addFoodFromCompare(foodId, grams) {
+            const food = foodData.find(f => f.id == foodId);
+            if (!food) return;
+
+            const dateStr = getActiveFilterDate();
+            const multiplier = grams / 100;
+
+            const logItem = {
+                id: Date.now(),
+                foodId: food.id,
+                name: food.name,
+                amount: grams,
+                unit: food.unit || 'g',
+                kcal: Math.round((food.kcal || 0) * multiplier),
+                p: parseFloat(((food.p || 0) * multiplier).toFixed(1)),
+                c: parseFloat(((food.c || 0) * multiplier).toFixed(1)),
+                f: parseFloat(((food.f || 0) * multiplier).toFixed(1)),
+                date: dateStr
+            };
+
+            globalLog.push(logItem);
+            saveLog();
+            applyFilter();
+
+            if (typeof showToast === 'function') showToast(`✅ ${food.name} (${grams}g) añadido al diario`);
+            closeCompareModal();
+            toggleCompareMode(false);
+
+            document.getElementById('subCategoryModal')?.classList.add('hidden');
+            document.getElementById('categoryModal')?.classList.add('hidden');
+        }
+
         // --- FUNCIONES EXTRA (Mosaicos) ---
         function openQuickSearch() {
             document.getElementById('foodModal').classList.remove('hidden');
@@ -2300,10 +2674,23 @@
 
             // 2. Renderizar todos los alimentos directamente en la grilla principal
             foods.forEach(f => {
+                const isSelectedInCompare = typeof isCompareMode !== 'undefined' && isCompareMode && compareSelectedFoods.some(item => item.id == f.id);
+                const selectedIdx = isSelectedInCompare ? compareSelectedFoods.findIndex(item => item.id == f.id) : -1;
+
                 const btn = document.createElement('button');
-                btn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-[#2c2c2e] border border-[#3a3a3c] hover:bg-emerald-500/10 hover:border-emerald-500/30 transition-all active:scale-95 min-h-[5rem]";
+                const borderStyle = isSelectedInCompare 
+                    ? "border-emerald-500 bg-emerald-500/20 shadow-[0_0_12px_rgba(50,215,75,0.4)]" 
+                    : "bg-[#2c2c2e] border-[#3a3a3c] hover:bg-emerald-500/10 hover:border-emerald-500/30";
+
+                btn.className = `relative flex flex-col items-center justify-center p-2 rounded-xl border transition-all active:scale-95 min-h-[5rem] ${borderStyle}`;
                 btn.onclick = () => selectFood(f.id);
+
+                const badgeHtml = isSelectedInCompare 
+                    ? `<div class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold text-[11px] flex items-center justify-center shadow-md">${selectedIdx + 1}</div>` 
+                    : '';
+
                 btn.innerHTML = `
+                    ${badgeHtml}
                     <div class="text-2xl mb-1">${f.icon || '🔹'}</div>
                     <span class="text-[9px] font-medium text-white uppercase text-center leading-tight line-clamp-2">${f.name}</span>
                 `;
@@ -2330,6 +2717,11 @@
         }
 
         function selectFood(foodId) {
+            if (typeof isCompareMode !== 'undefined' && isCompareMode) {
+                toggleFoodInCompare(foodId);
+                return;
+            }
+
             document.getElementById('subCategoryModal').classList.add('hidden');
             document.getElementById('categoryModal').classList.add('hidden');
 
@@ -2372,14 +2764,27 @@
                 grid.innerHTML = '<div class="col-span-3 text-center text-white py-4 italic text-sm">No hay alimentos web guardados.</div>';
             } else {
                 foods.forEach(f => {
+                    const isSelectedInCompare = typeof isCompareMode !== 'undefined' && isCompareMode && compareSelectedFoods.some(item => item.id == f.id);
+                    const selectedIdx = isSelectedInCompare ? compareSelectedFoods.findIndex(item => item.id == f.id) : -1;
+
                     const wrapper = document.createElement('div');
                     wrapper.className = "relative group";
 
                     const btn = document.createElement('button');
-                    btn.className = "w-full h-full flex flex-col items-center justify-center p-2 rounded-xl bg-[#2c2c2e] border border-[#3a3a3c] hover:bg-[#3a3a3c] transition-all active:scale-95 min-h-[5rem]";
+                    const borderStyle = isSelectedInCompare 
+                        ? "border-emerald-500 bg-emerald-500/20 shadow-[0_0_12px_rgba(50,215,75,0.4)]" 
+                        : "bg-[#2c2c2e] border-[#3a3a3c] hover:bg-[#3a3a3c]";
+
+                    btn.className = `w-full h-full relative flex flex-col items-center justify-center p-2 rounded-xl border transition-all active:scale-95 min-h-[5rem] ${borderStyle}`;
                     btn.onclick = () => selectFood(f.id);
                     const displayName = f.name.replace(/^\[WEB\]\s*/, '');
+
+                    const badgeHtml = isSelectedInCompare 
+                        ? `<div class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold text-[11px] flex items-center justify-center shadow-md z-20">${selectedIdx + 1}</div>` 
+                        : '';
+
                     btn.innerHTML = `
+                        ${badgeHtml}
                         <div class="text-2xl mb-1">🌐</div>
                         <span class="text-[9px] font-medium text-white uppercase text-center leading-tight line-clamp-2">${displayName}</span>
                     `;
