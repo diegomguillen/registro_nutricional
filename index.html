@@ -733,6 +733,7 @@
                     <table class="min-w-full divide-y divide-[#2c2c2e]">
                         <thead class="bg-[#2c2c2e] text-white">
                             <tr>
+                                <th class="px-2 py-3 w-6 text-center text-white/40"></th>
                                 <th class="px-4 py-3 w-8"><input type="checkbox" onclick="toggleAll(this)"
                                         class="custom-checkbox rounded text-primary"></th>
                                 <th class="px-4 py-3 text-left text-xs font-bold uppercase">Item</th>
@@ -6620,13 +6621,18 @@
         // --- RENDER TABLA ---
         function applyFilter() {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
-            let f = globalLog.sort((a, b) => b.id - a.id);
+            let f = [...globalLog];
+            f.sort((a, b) => {
+                const orderA = a.sortOrder !== undefined ? a.sortOrder : (10000000000000 - (a.id || 0));
+                const orderB = b.sortOrder !== undefined ? b.sortOrder : (10000000000000 - (b.id || 0));
+                return orderA - orderB;
+            });
             if (s && e) f = f.filter(i => i.date >= s && i.date <= e);
             selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard(); updateComparisonCharts(); updateIncompleteDayUI();
         }
         function renderTable(items) {
             const tb = document.getElementById('foodTableBody'); tb.innerHTML = '';
-            if (!items.length) { tb.innerHTML = '<tr><td colspan="4" class="p-8 text-center text-white italic text-sm">Sin registros</td></tr>'; return; }
+            if (!items.length) { tb.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-white italic text-sm">Sin registros</td></tr>'; return; }
             items.forEach(i => {
                 const ck = selectedIds.has(i.id) ? 'checked' : '';
                 const isRecipe = i.type === 'recipe';
@@ -6635,7 +6641,8 @@
                 const displayAmount = i.amount !== undefined ? i.amount : (i.qty || 0);
                 const displayUnit = i.unit || '';
                 tb.innerHTML += `
-                <tr class="hover:bg-[#2c2c2e] group transition-colors">
+                <tr data-id="${i.id}" draggable="true" class="hover:bg-[#2c2c2e] group transition-colors drag-row border-b border-[#2c2c2e]">
+                    <td class="px-2 py-3 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
                     <td class="px-4 py-3">
                         <div class="font-medium text-white">${icon}${displayName}</div>
@@ -6645,6 +6652,135 @@
                     <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
                 </tr>`;
             });
+        }
+
+        function moveGlobalLogItem(draggedId, targetId) {
+            if (!draggedId || !targetId || String(draggedId) === String(targetId)) return;
+            const idxA = globalLog.findIndex(item => String(item.id) === String(draggedId));
+            const idxB = globalLog.findIndex(item => String(item.id) === String(targetId));
+            if (idxA === -1 || idxB === -1) return;
+
+            const [movedItem] = globalLog.splice(idxA, 1);
+            globalLog.splice(idxB, 0, movedItem);
+
+            globalLog.forEach((item, index) => {
+                item.sortOrder = index;
+            });
+
+            saveData();
+            applyFilter();
+            if (typeof showToast === 'function') showToast('📌 Orden del historial actualizado');
+        }
+
+        function initTableDragAndDrop() {
+            const tableBody = document.getElementById('foodTableBody');
+            if (!tableBody) return;
+
+            let draggedRow = null;
+            let draggedId = null;
+
+            tableBody.addEventListener('dragstart', (e) => {
+                const row = e.target.closest('tr');
+                if (!row) return;
+                draggedRow = row;
+                draggedId = row.dataset.id;
+                row.classList.add('opacity-40', 'bg-[#3a3a3c]');
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', draggedId);
+            });
+
+            tableBody.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                e.dataTransfer.dropEffect = 'move';
+                const targetRow = e.target.closest('tr');
+                if (targetRow && targetRow !== draggedRow && tableBody.contains(targetRow)) {
+                    tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
+                    targetRow.classList.add('border-t-2', 'border-primary');
+                }
+            });
+
+            tableBody.addEventListener('dragleave', (e) => {
+                const targetRow = e.target.closest('tr');
+                if (targetRow) {
+                    targetRow.classList.remove('border-t-2', 'border-primary');
+                }
+            });
+
+            tableBody.addEventListener('drop', (e) => {
+                e.preventDefault();
+                const targetRow = e.target.closest('tr');
+                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
+                if (targetRow && draggedId) {
+                    const targetId = targetRow.dataset.id;
+                    moveGlobalLogItem(draggedId, targetId);
+                }
+            });
+
+            tableBody.addEventListener('dragend', () => {
+                if (draggedRow) {
+                    draggedRow.classList.remove('opacity-40', 'bg-[#3a3a3c]');
+                }
+                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
+                draggedRow = null;
+                draggedId = null;
+            });
+
+            // Touch Drag Engine for Mobile
+            let activeTouchRow = null;
+            let activeTouchId = null;
+
+            tableBody.addEventListener('touchstart', (e) => {
+                const handle = e.target.closest('.drag-handle');
+                if (!handle) return;
+                const row = handle.closest('tr');
+                if (!row) return;
+
+                activeTouchRow = row;
+                activeTouchId = row.dataset.id;
+                row.classList.add('opacity-40', 'bg-[#3a3a3c]');
+            }, { passive: true });
+
+            tableBody.addEventListener('touchmove', (e) => {
+                if (!activeTouchRow || e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (!targetElem) return;
+                const targetRow = targetElem.closest('tr');
+
+                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
+                if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
+                    targetRow.classList.add('border-t-2', 'border-primary');
+                }
+            }, { passive: true });
+
+            tableBody.addEventListener('touchend', (e) => {
+                if (!activeTouchRow) return;
+                const touch = e.changedTouches[0];
+                const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+                if (targetElem) {
+                    const targetRow = targetElem.closest('tr');
+                    if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
+                        const targetId = targetRow.dataset.id;
+                        moveGlobalLogItem(activeTouchId, targetId);
+                    }
+                }
+
+                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('opacity-40', 'bg-[#3a3a3c]', 'border-t-2', 'border-primary'));
+                activeTouchRow = null;
+                activeTouchId = null;
+            });
+
+            tableBody.addEventListener('touchcancel', () => {
+                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('opacity-40', 'bg-[#3a3a3c]', 'border-t-2', 'border-primary'));
+                activeTouchRow = null;
+                activeTouchId = null;
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initTableDragAndDrop);
+        } else {
+            initTableDragAndDrop();
         }
         function calcTotals(items) {
             let p = 0, c = 0, f = 0, k = 0; items.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
