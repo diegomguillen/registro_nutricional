@@ -6097,7 +6097,7 @@
             document.getElementById('recipeLogModal').classList.add('hidden'); // Cerrar modal
         }
 
-        function deleteItem(id) { if (confirm('¿Borrar registro?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); saveData(); applyFilter(); updateComparisonCharts(); } }
+        function deleteItem(id) { if (confirm('¿Borrar registro?')) { globalLog = globalLog.filter(i => i.id !== id); selectedIds.delete(id); consumedIds.delete(id); saveConsumedIds(); saveData(); applyFilter(); updateComparisonCharts(); } }
 
         function deleteSelectedFood() {
             const select = document.getElementById('foodSelect');
@@ -6253,9 +6253,10 @@
                     }
                 }
 
-                // 2. Cargamos el historial y recetas del usuario (LocalStorage)
+                // 2. Cargamos el historial, recetas y estado consumido del usuario (LocalStorage)
                 const historyData = localStorage.getItem('macroCalculatorData');
                 if (historyData) globalLog = JSON.parse(historyData);
+                loadConsumedIds();
 
                 const recipesData = localStorage.getItem('macroCalculatorRecipes');
                 if (recipesData) recipeData = JSON.parse(recipesData);
@@ -6456,8 +6457,32 @@
         }
 
         // --- MODAL ANALISIS Y TABLA ---
+        let consumedIds = new Set();
+
+        function saveConsumedIds() {
+            try {
+                localStorage.setItem('nutriApp_consumedIds', JSON.stringify(Array.from(consumedIds)));
+            } catch (e) {
+                console.error("Error guardando consumedIds:", e);
+            }
+        }
+
+        function loadConsumedIds() {
+            const raw = localStorage.getItem('nutriApp_consumedIds');
+            if (raw) {
+                try {
+                    const arr = JSON.parse(raw);
+                    if (Array.isArray(arr)) {
+                        consumedIds = new Set(arr.map(id => typeof id === 'number' ? id : parseFloat(id)));
+                    }
+                } catch (e) {
+                    console.error("Error cargando consumedIds:", e);
+                }
+            }
+        }
+
         function toggleSelection(id) { selectedIds.has(id) ? selectedIds.delete(id) : selectedIds.add(id); updateFab(); }
-        function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseInt(c.dataset.id); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
+        function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseFloat(c.dataset.id) || parseInt(c.dataset.id, 10); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
         function updateFab() {
             const fab = document.getElementById('analyzeFab');
             if (selectedIds.size > 0) { fab.classList.remove('hidden'); fab.classList.add('flex'); document.getElementById('fabText').textContent = `Analizar (${selectedIds.size})`; }
@@ -6635,18 +6660,22 @@
             if (!items.length) { tb.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-white italic text-sm">Sin registros</td></tr>'; return; }
             items.forEach(i => {
                 const ck = selectedIds.has(i.id) ? 'checked' : '';
+                const isConsumed = consumedIds.has(i.id);
                 const isRecipe = i.type === 'recipe';
                 const icon = isRecipe ? '📖 ' : (i.foodIcon || '🔹 ');
                 const displayName = i.foodName || i.name || 'Alimento';
                 const displayAmount = i.amount !== undefined ? i.amount : (i.qty || 0);
                 const displayUnit = i.unit || '';
+                const rowBg = isConsumed ? 'bg-emerald-950/40 border-l-4 border-emerald-500' : 'hover:bg-[#2c2c2e]';
+                const titleColor = isConsumed ? 'text-emerald-400 font-semibold' : 'text-white font-medium';
+
                 tb.innerHTML += `
-                <tr data-id="${i.id}" draggable="true" class="hover:bg-[#2c2c2e] group transition-colors drag-row border-b border-[#2c2c2e]">
+                <tr data-id="${i.id}" draggable="true" class="group transition-all drag-row border-b border-[#2c2c2e] ${rowBg}">
                     <td class="px-2 py-3 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
-                    <td class="px-4 py-3">
-                        <div class="font-medium text-white">${icon}${displayName}</div>
-                        <div class="text-xs text-white">${i.date} &bull; ${displayAmount}${displayUnit}</div>
+                    <td class="px-4 py-3 swipe-cell cursor-pointer select-none">
+                        <div class="${titleColor} flex items-center gap-1">${icon}${displayName}</div>
+                        <div class="text-xs text-white/70">${i.date} &bull; ${displayAmount}${displayUnit}</div>
                     </td>
                     <td class="px-4 py-3 text-right font-medium text-white">${i.kcal}</td>
                     <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
@@ -6725,55 +6754,110 @@
                 draggedId = null;
             });
 
-            // Touch Drag Engine for Mobile
+            // Touch Drag & Swipe Engine for Mobile
             let activeTouchRow = null;
             let activeTouchId = null;
+            let touchStartX = 0;
+            let touchStartY = 0;
+            let isSwiping = false;
 
             tableBody.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+                const touch = e.touches[0];
                 const handle = e.target.closest('.drag-handle');
-                if (!handle) return;
-                const row = handle.closest('tr');
+                const row = e.target.closest('tr');
                 if (!row) return;
 
-                activeTouchRow = row;
-                activeTouchId = row.dataset.id;
-                row.classList.add('opacity-40', 'bg-[#3a3a3c]');
+                touchStartX = touch.clientX;
+                touchStartY = touch.clientY;
+
+                if (handle) {
+                    // Vertical drag for reordering
+                    activeTouchRow = row;
+                    activeTouchId = row.dataset.id;
+                    row.classList.add('opacity-40', 'bg-[#3a3a3c]');
+                    isSwiping = false;
+                } else if (!e.target.closest('input') && !e.target.closest('button')) {
+                    // Potential horizontal swipe for consumed state
+                    activeTouchRow = row;
+                    activeTouchId = row.dataset.id;
+                    isSwiping = true;
+                }
             }, { passive: true });
 
             tableBody.addEventListener('touchmove', (e) => {
                 if (!activeTouchRow || e.touches.length !== 1) return;
                 const touch = e.touches[0];
-                const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (!targetElem) return;
-                const targetRow = targetElem.closest('tr');
+                const diffX = touch.clientX - touchStartX;
+                const diffY = touch.clientY - touchStartY;
 
-                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
-                if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
-                    targetRow.classList.add('border-t-2', 'border-primary');
+                if (isSwiping) {
+                    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > 15) {
+                        activeTouchRow.style.transform = `translateX(${diffX}px)`;
+                        if (diffX > 40) {
+                            activeTouchRow.classList.add('bg-emerald-900/40');
+                        } else if (diffX < -40) {
+                            activeTouchRow.classList.remove('bg-emerald-900/40');
+                        }
+                    }
+                } else {
+                    const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (!targetElem) return;
+                    const targetRow = targetElem.closest('tr');
+
+                    tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
+                    if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
+                        targetRow.classList.add('border-t-2', 'border-primary');
+                    }
                 }
             }, { passive: true });
 
             tableBody.addEventListener('touchend', (e) => {
                 if (!activeTouchRow) return;
                 const touch = e.changedTouches[0];
-                const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
-                if (targetElem) {
-                    const targetRow = targetElem.closest('tr');
-                    if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
-                        const targetId = targetRow.dataset.id;
-                        moveGlobalLogItem(activeTouchId, targetId);
+                const diffX = touch.clientX - touchStartX;
+
+                if (isSwiping) {
+                    activeTouchRow.style.transform = '';
+                    activeTouchRow.classList.remove('bg-emerald-900/40');
+
+                    const idNum = parseFloat(activeTouchId) || parseInt(activeTouchId, 10);
+                    if (diffX > 55 && idNum) {
+                        // Swipe Right -> Mark Consumed
+                        consumedIds.add(idNum);
+                        saveConsumedIds();
+                        applyFilter();
+                        if (typeof showToast === 'function') showToast('✅ Ingesta marcada como consumida');
+                    } else if (diffX < -55 && idNum) {
+                        // Swipe Left -> Unmark Consumed
+                        consumedIds.delete(idNum);
+                        saveConsumedIds();
+                        applyFilter();
+                        if (typeof showToast === 'function') showToast('↩️ Ingesta desmarcada');
+                    }
+                } else {
+                    const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
+                    if (targetElem) {
+                        const targetRow = targetElem.closest('tr');
+                        if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
+                            const targetId = targetRow.dataset.id;
+                            moveGlobalLogItem(activeTouchId, targetId);
+                        }
                     }
                 }
 
                 tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('opacity-40', 'bg-[#3a3a3c]', 'border-t-2', 'border-primary'));
                 activeTouchRow = null;
                 activeTouchId = null;
+                isSwiping = false;
             });
 
             tableBody.addEventListener('touchcancel', () => {
-                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('opacity-40', 'bg-[#3a3a3c]', 'border-t-2', 'border-primary'));
+                if (activeTouchRow) activeTouchRow.style.transform = '';
+                tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('opacity-40', 'bg-[#3a3a3c]', 'border-t-2', 'border-primary', 'bg-emerald-900/40'));
                 activeTouchRow = null;
                 activeTouchId = null;
+                isSwiping = false;
             });
         }
 
