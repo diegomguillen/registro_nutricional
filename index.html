@@ -231,6 +231,44 @@
                 transform: none !important;
             }
         }
+
+        /* Floating Magnifier Lens Overlay */
+        .magnifier-lens {
+            position: fixed;
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 15px rgba(10, 132, 255, 0.4), inset 0 0 15px rgba(255, 255, 255, 0.15);
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 99999;
+            background: #1c1c1e;
+            transform: translate(-50%, -115%) scale(0.9);
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.15s ease-out;
+            opacity: 0;
+            backdrop-filter: blur(4px);
+        }
+
+        .magnifier-lens.active {
+            opacity: 1;
+            transform: translate(-50%, -120%) scale(1);
+        }
+
+        .magnifier-lens-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            transform-origin: 0 0;
+            pointer-events: none;
+            background: #000000;
+        }
+
+        .magnifier-btn-active {
+            color: #32d74b !important;
+            background-color: rgba(50, 215, 75, 0.15) !important;
+            border-color: rgba(50, 215, 75, 0.4) !important;
+        }
     </style>
 </head>
 
@@ -249,6 +287,11 @@
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
+                    <button id="toggleMagnifierBtn" onclick="toggleMagnifierMode()" title="Activar/Desactivar Lupa (Toque/Arrastre)" class="p-1.5 rounded-full text-white/70 hover:text-white transition-all border border-white/10 flex items-center justify-center bg-[#2c2c2e]">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7" />
+                        </svg>
+                    </button>
                     <button onclick="location.reload()" class="text-white hover:text-white transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -6741,6 +6784,177 @@
             </div>
         </div>
     </div>
+
+    <!-- Elemento Lupa Flotante -->
+    <div id="magnifierLens" class="magnifier-lens">
+        <div id="magnifierLensContent" class="magnifier-lens-content"></div>
+    </div>
+
+    <script>
+        // Floating Magnifier Lens Engine
+        let isMagnifierMode = false;
+        let isMagnifyingActive = false;
+        let longPressTimer = null;
+
+        function toggleMagnifierMode() {
+            isMagnifierMode = !isMagnifierMode;
+            const btn = document.getElementById('toggleMagnifierBtn');
+            if (btn) {
+                if (isMagnifierMode) {
+                    btn.classList.add('magnifier-btn-active');
+                    if (typeof showToast === 'function') showToast('🔍 Modo Lupa activado (Desliza sobre tarjetas/textos)');
+                } else {
+                    btn.classList.remove('magnifier-btn-active');
+                    hideMagnifierLens();
+                    if (typeof showToast === 'function') showToast('Modo Lupa desactivado');
+                }
+            }
+        }
+
+        function isChartElement(target) {
+            if (!target) return false;
+            return !!(
+                target.closest('canvas') ||
+                target.closest('svg') ||
+                target.closest('.chart-container') ||
+                target.closest('[id*="chart"]') ||
+                target.closest('[id*="Chart"]') ||
+                target.closest('button') ||
+                target.closest('a')
+            );
+        }
+
+        function hideMagnifierLens() {
+            isMagnifyingActive = false;
+            const lens = document.getElementById('magnifierLens');
+            if (lens) lens.classList.remove('active');
+            if (longPressTimer) {
+                clearTimeout(longPressTimer);
+                longPressTimer = null;
+            }
+        }
+
+        function initMagnifierLens() {
+            const lens = document.getElementById('magnifierLens');
+            const lensContent = document.getElementById('magnifierLensContent');
+            const mainContainer = document.getElementById('mainContainer') || document.body;
+            if (!lens || !lensContent) return;
+
+            function startMagnification(clientX, clientY, target) {
+                if (isChartElement(target)) return;
+                
+                const sourceElement = target.closest('.premium-card') || target.closest('table') || target.closest('.action-card') || target.closest('li') || mainContainer;
+                if (!sourceElement) return;
+
+                isMagnifyingActive = true;
+                lens.classList.add('active');
+
+                // Clone target HTML element into lens
+                lensContent.innerHTML = '';
+                const cloned = sourceElement.cloneNode(true);
+                cloned.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+                cloned.removeAttribute('id');
+                lensContent.appendChild(cloned);
+
+                const rect = sourceElement.getBoundingClientRect();
+                lensContent.style.width = rect.width + 'px';
+                lensContent.style.height = rect.height + 'px';
+                
+                updateLensPosition(clientX, clientY, rect);
+            }
+
+            function updateLensPosition(clientX, clientY, rect) {
+                if (!isMagnifyingActive) return;
+                
+                lens.style.left = clientX + 'px';
+                lens.style.top = clientY + 'px';
+
+                const scale = 1.8;
+                const relX = clientX - rect.left;
+                const relY = clientY - rect.top;
+
+                const lensRadius = 75; // 150px / 2
+                const offsetX = (lensRadius / scale) - relX;
+                const offsetY = (lensRadius / scale) - relY;
+
+                lensContent.style.transform = `scale(${scale}) translate(${offsetX}px, ${offsetY}px)`;
+            }
+
+            // Touch Listeners
+            window.addEventListener('touchstart', (e) => {
+                if (e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                const target = e.target;
+
+                if (isChartElement(target)) {
+                    hideMagnifierLens();
+                    return;
+                }
+
+                if (isMagnifierMode) {
+                    startMagnification(touch.clientX, touch.clientY, target);
+                } else {
+                    // Long press activation (320ms)
+                    longPressTimer = setTimeout(() => {
+                        startMagnification(touch.clientX, touch.clientY, target);
+                    }, 320);
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchmove', (e) => {
+                if (e.touches.length !== 1) return;
+                const touch = e.touches[0];
+                if (isMagnifyingActive) {
+                    const target = document.elementFromPoint(touch.clientX, touch.clientY) || e.target;
+                    if (isChartElement(target)) {
+                        hideMagnifierLens();
+                        return;
+                    }
+                    const sourceElement = target ? (target.closest('.premium-card') || target.closest('table') || target.closest('.action-card') || target.closest('li') || mainContainer) : mainContainer;
+                    const rect = sourceElement.getBoundingClientRect();
+                    updateLensPosition(touch.clientX, touch.clientY, rect);
+                } else if (longPressTimer) {
+                    clearTimeout(longPressTimer);
+                    longPressTimer = null;
+                }
+            }, { passive: true });
+
+            window.addEventListener('touchend', () => hideMagnifierLens());
+            window.addEventListener('touchcancel', () => hideMagnifierLens());
+
+            // Mouse Listeners for desktop preview
+            let isMouseDown = false;
+            window.addEventListener('mousedown', (e) => {
+                if (!isMagnifierMode) return;
+                if (isChartElement(e.target)) return;
+                isMouseDown = true;
+                startMagnification(e.clientX, e.clientY, e.target);
+            });
+
+            window.addEventListener('mousemove', (e) => {
+                if (isMagnifierMode && isMouseDown && isMagnifyingActive) {
+                    if (isChartElement(e.target)) {
+                        hideMagnifierLens();
+                        return;
+                    }
+                    const sourceElement = e.target.closest('.premium-card') || e.target.closest('table') || e.target.closest('.action-card') || e.target.closest('li') || mainContainer;
+                    const rect = sourceElement.getBoundingClientRect();
+                    updateLensPosition(e.clientX, e.clientY, rect);
+                }
+            });
+
+            window.addEventListener('mouseup', () => {
+                isMouseDown = false;
+                if (isMagnifierMode) hideMagnifierLens();
+            });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMagnifierLens);
+        } else {
+            initMagnifierLens();
+        }
+    </script>
 </body>
 
 </html>
