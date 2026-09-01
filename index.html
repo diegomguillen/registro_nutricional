@@ -1477,6 +1477,46 @@
         </div>
     </div>
 
+    <!-- Modal Ranking Completo de Alimentos y Suplementos -->
+    <div id="fullRankingModal" class="fixed inset-0 bg-black/80 hidden z-[85] flex items-end sm:items-center justify-center backdrop-blur-md transition-all">
+        <div class="bg-[#1c1c1e] w-full sm:max-w-lg rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in relative space-y-4 max-h-[85vh] flex flex-col">
+            <!-- Cabecera -->
+            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-3 shrink-0">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    📊 Ranking Completo de Alimentos e Impacto (24h)
+                </h3>
+                <button type="button" onclick="closeFullRankingModal()" class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center" title="Cerrar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Pestañas del Ranking -->
+            <div class="flex bg-[#2c2c2e] p-1 rounded-xl border border-[#3a3a3c] gap-1 shrink-0 text-xs font-medium">
+                <button id="tabRankAnabolic" onclick="switchFullRankingTab('anabolic')" class="flex-1 py-2 rounded-lg text-center transition-all bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
+                    💪 Músculo Seco
+                </button>
+                <button id="tabRankLipolytic" onclick="switchFullRankingTab('lipolytic')" class="flex-1 py-2 rounded-lg text-center transition-all text-white/60 hover:text-white">
+                    🔥 Pérdida Grasa
+                </button>
+                <button id="tabRankWater" onclick="switchFullRankingTab('water')" class="flex-1 py-2 rounded-lg text-center transition-all text-white/60 hover:text-white">
+                    💧 Retención Agua
+                </button>
+            </div>
+
+            <!-- Buscador interno -->
+            <div class="shrink-0">
+                <input type="text" id="fullRankingSearch" oninput="renderFullRankingList()" placeholder="Buscar alimento o suplemento..." class="w-full rounded-xl border-[#3a3a3c] bg-[#2c2c2e] text-white text-xs p-2.5 focus:border-[#0a84ff]">
+            </div>
+
+            <!-- Lista scrolleable de todos los alimentos -->
+            <div id="fullRankingListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs min-h-[220px]">
+                <!-- Se rellenará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
     <div id="recipeModal"
         class="fixed inset-0 bg-black/80 hidden z-[90] flex items-center justify-center backdrop-blur-sm px-4">
         <div class="bg-[#1c1c1e] w-full max-w-sm rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-fade-in">
@@ -4870,6 +4910,7 @@
             // Umbral dinámico de repeticiones mínimas emparejadas
             const minRep = totalPairedDays >= 6 ? 2 : 1;
             const validFoods = Object.values(foodStats).filter(f => f.pairedCount >= minRep);
+            cachedValidFoods = validFoods;
 
             // A) TOP 5 ANABÓLICOS
             const topAnabolic = [...validFoods]
@@ -4963,15 +5004,119 @@
                 confColor = 'text-emerald-400 font-extrabold';
             }
 
-            const renderConfidence = (elementId) => {
+            const renderConfidence = (elementId, tabType) => {
                 const el = document.getElementById(elementId);
                 if (!el) return;
-                el.innerHTML = `<span>🎯 Confianza: <strong class="${confColor}">${confPct}% (${confText})</strong></span><span class="text-white/40">${totalPairedDays}d emparejados</span>`;
+                el.innerHTML = `
+                    <span>🎯 Confianza: <strong class="${confColor}">${confPct}% (${confText})</strong></span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-white/40">${totalPairedDays}d emparejados</span>
+                        <button type="button" onclick="openFullRankingModal('${tabType}')" class="text-[9px] text-[#0a84ff] hover:underline font-bold bg-[#1c1c1e] px-2 py-0.5 rounded border border-[#3a3a3c] active:scale-95 transition-transform">Ver todos →</button>
+                    </div>`;
             };
 
-            renderConfidence('confidenceAnabolic');
-            renderConfidence('confidenceLipolytic');
-            renderConfidence('confidenceWater');
+            renderConfidence('confidenceAnabolic', 'anabolic');
+            renderConfidence('confidenceLipolytic', 'lipolytic');
+            renderConfidence('confidenceWater', 'water');
+        }
+
+        // --- ENGINE RANKING COMPLETO (OPCIÓN A) ---
+        let cachedValidFoods = [];
+        let currentRankingTab = 'anabolic';
+
+        function openFullRankingModal(tab = 'anabolic') {
+            const modal = document.getElementById('fullRankingModal');
+            if (!modal) return;
+            switchFullRankingTab(tab);
+            modal.classList.remove('hidden');
+        }
+
+        function closeFullRankingModal() {
+            const modal = document.getElementById('fullRankingModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function switchFullRankingTab(tab) {
+            currentRankingTab = tab;
+            const btnAnabolic = document.getElementById('tabRankAnabolic');
+            const btnLipolytic = document.getElementById('tabRankLipolytic');
+            const btnWater = document.getElementById('tabRankWater');
+
+            [btnAnabolic, btnLipolytic, btnWater].forEach(btn => {
+                if (btn) btn.className = "flex-1 py-2 rounded-lg text-center transition-all text-white/60 hover:text-white";
+            });
+
+            if (tab === 'anabolic' && btnAnabolic) {
+                btnAnabolic.className = "flex-1 py-2 rounded-lg text-center transition-all bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30";
+            } else if (tab === 'lipolytic' && btnLipolytic) {
+                btnLipolytic.className = "flex-1 py-2 rounded-lg text-center transition-all bg-amber-500/20 text-amber-400 font-bold border border-amber-500/30";
+            } else if (tab === 'water' && btnWater) {
+                btnWater.className = "flex-1 py-2 rounded-lg text-center transition-all bg-blue-500/20 text-blue-400 font-bold border border-blue-500/30";
+            }
+
+            renderFullRankingList();
+        }
+
+        function renderFullRankingList() {
+            const container = document.getElementById('fullRankingListContainer');
+            const searchVal = (document.getElementById('fullRankingSearch')?.value || '').trim().toLowerCase();
+            if (!container) return;
+
+            let foods = [...cachedValidFoods];
+
+            if (searchVal) {
+                foods = foods.filter(f => f.name.toLowerCase().includes(searchVal));
+            }
+
+            if (currentRankingTab === 'anabolic') {
+                foods.sort((a, b) => (b.totalMuscleDelta / b.pairedCount) - (a.totalMuscleDelta / a.pairedCount));
+            } else if (currentRankingTab === 'lipolytic') {
+                foods.sort((a, b) => (a.totalFatDelta / a.pairedCount) - (b.totalFatDelta / b.pairedCount));
+            } else if (currentRankingTab === 'water') {
+                foods.sort((a, b) => (b.totalWaterDelta / b.pairedCount) - (a.totalWaterDelta / a.pairedCount));
+            }
+
+            container.innerHTML = '';
+            if (!foods.length) {
+                container.innerHTML = `<div class="p-6 text-center text-white/50 italic">Sin alimentos registrados o emparejados en esta categoría.</div>`;
+                return;
+            }
+
+            foods.forEach((f, idx) => {
+                let avg = 0;
+                let valStr = '';
+                let badgeStyle = '';
+
+                if (currentRankingTab === 'anabolic') {
+                    avg = f.totalMuscleDelta / f.pairedCount;
+                    valStr = (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / día';
+                    badgeStyle = avg >= 0 ? 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30' : 'text-red-400 bg-red-500/20 border-red-500/30';
+                } else if (currentRankingTab === 'lipolytic') {
+                    avg = f.totalFatDelta / f.pairedCount;
+                    valStr = (avg <= 0 ? '' : '+') + (avg * 1000).toFixed(0) + 'g / día';
+                    badgeStyle = avg <= 0 ? 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30' : 'text-amber-400 bg-amber-500/20 border-amber-500/30';
+                } else if (currentRankingTab === 'water') {
+                    avg = f.totalWaterDelta / f.pairedCount;
+                    valStr = (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / día';
+                    badgeStyle = 'text-blue-400 bg-blue-500/20 border-blue-500/30';
+                }
+
+                const rankNum = idx + 1;
+                const row = document.createElement('div');
+                row.className = 'flex items-center justify-between p-2.5 bg-[#2c2c2e] hover:bg-[#3a3a3c] rounded-xl border border-[#3a3a3c] transition-all';
+                row.innerHTML = `
+                    <div class="flex items-center gap-2 overflow-hidden pr-2">
+                        <span class="text-[10px] font-mono font-bold text-white/40 w-5 text-right">#${rankNum}</span>
+                        <span class="text-sm shrink-0">${f.icon}</span>
+                        <div class="truncate">
+                            <span class="text-xs font-bold text-white block truncate" title="${f.name}">${f.name}</span>
+                            <span class="text-[10px] text-white/50">${f.pairedCount} consumos emparejados</span>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold font-mono ${badgeStyle} shrink-0 px-2 py-1 rounded-lg border">${valStr}</span>
+                `;
+                container.appendChild(row);
+            });
         }
 
         let fullscreenChartInstance = null;
