@@ -6670,10 +6670,10 @@
                 const titleColor = isConsumed ? 'text-emerald-400 font-semibold' : 'text-white font-medium';
 
                 tb.innerHTML += `
-                <tr data-id="${i.id}" draggable="true" class="group transition-all drag-row border-b border-[#2c2c2e] ${rowBg}">
+                <tr data-id="${i.id}" draggable="true" ondblclick="editLogItemAmount(${i.id})" class="group transition-all drag-row border-b border-[#2c2c2e] ${rowBg}">
                     <td class="px-2 py-3 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
-                    <td class="px-4 py-3 swipe-cell cursor-pointer select-none">
+                    <td class="px-4 py-3 swipe-cell cursor-pointer select-none" title="Doble toque para editar cantidad">
                         <div class="${titleColor} flex items-center gap-1">${icon}${displayName}</div>
                         <div class="text-xs text-white/70">${i.date} &bull; ${displayAmount}${displayUnit}</div>
                     </td>
@@ -6681,6 +6681,38 @@
                     <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
                 </tr>`;
             });
+        }
+
+        function editLogItemAmount(id) {
+            const item = globalLog.find(l => String(l.id) === String(id));
+            if (!item) return;
+
+            const currentAmt = item.amount !== undefined ? item.amount : (item.qty || 0);
+            const unit = item.unit || 'g';
+            const newAmtStr = prompt(`Editar cantidad de "${item.foodName || item.name || 'Alimento'}" (${unit}):`, currentAmt);
+
+            if (newAmtStr === null) return;
+            const newAmt = parseFloat(newAmtStr);
+            if (isNaN(newAmt) || newAmt <= 0) {
+                if (typeof showToast === 'function') showToast("Cantidad no válida.");
+                return;
+            }
+
+            if (newAmt === currentAmt) return;
+
+            const oldAmt = currentAmt > 0 ? currentAmt : 1;
+            const ratio = newAmt / oldAmt;
+
+            item.amount = newAmt;
+            item.p = parseFloat((item.p * ratio).toFixed(1));
+            item.c = parseFloat((item.c * ratio).toFixed(1));
+            item.f = parseFloat((item.f * ratio).toFixed(1));
+            item.kcal = Math.round(item.kcal * ratio);
+
+            saveData();
+            applyFilter();
+            updateComparisonCharts();
+            if (typeof showToast === 'function') showToast(`✏️ Cantidad actualizada a ${newAmt} ${unit}`);
         }
 
         function moveGlobalLogItem(draggedId, targetId) {
@@ -6754,12 +6786,14 @@
                 draggedId = null;
             });
 
-            // Touch Drag & Swipe Engine for Mobile
+            // Touch Drag, Swipe & Double Tap Engine for Mobile
             let activeTouchRow = null;
             let activeTouchId = null;
             let touchStartX = 0;
             let touchStartY = 0;
             let isSwiping = false;
+            let lastTapTime = 0;
+            let lastTapId = null;
 
             tableBody.addEventListener('touchstart', (e) => {
                 if (e.touches.length !== 1) return;
@@ -6834,6 +6868,18 @@
                         saveConsumedIds();
                         applyFilter();
                         if (typeof showToast === 'function') showToast('↩️ Ingesta desmarcada');
+                    } else if (Math.abs(diffX) <= 15) {
+                        // Detect Double Tap for Mobile
+                        const now = Date.now();
+                        const rowId = activeTouchId;
+                        if (lastTapId === rowId && (now - lastTapTime) < 350) {
+                            editLogItemAmount(rowId);
+                            lastTapTime = 0;
+                            lastTapId = null;
+                        } else {
+                            lastTapTime = now;
+                            lastTapId = rowId;
+                        }
                     }
                 } else {
                     const targetElem = document.elementFromPoint(touch.clientX, touch.clientY);
