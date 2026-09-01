@@ -269,6 +269,18 @@
             background-color: rgba(50, 215, 75, 0.15) !important;
             border-color: rgba(50, 215, 75, 0.4) !important;
         }
+
+        /* Desactivar selecciones de texto y gestos de reordenamiento mientras la Lupa está activa */
+        body.magnifier-mode-active {
+            user-select: none !important;
+            -webkit-user-select: none !important;
+            -webkit-touch-callout: none !important;
+        }
+
+        body.magnifier-mode-active .drag-handle {
+            pointer-events: none !important;
+            opacity: 0.3 !important;
+        }
     </style>
 </head>
 
@@ -7036,6 +7048,10 @@
             let draggedId = null;
 
             tableBody.addEventListener('dragstart', (e) => {
+                if (typeof isMagnifierMode !== 'undefined' && isMagnifierMode) {
+                    e.preventDefault();
+                    return false;
+                }
                 const row = e.target.closest('tr');
                 if (!row) return;
                 draggedRow = row;
@@ -7386,6 +7402,7 @@
 
         function toggleMagnifierMode() {
             isMagnifierMode = !isMagnifierMode;
+            document.body.classList.toggle('magnifier-mode-active', isMagnifierMode);
             const btns = document.querySelectorAll('#toggleMagnifierBtn, .toggleMagnifierBtn');
             btns.forEach(btn => {
                 if (isMagnifierMode) {
@@ -7472,6 +7489,14 @@
                 lensContent.style.transform = `scale(${scale}) translate(${offsetX}px, ${offsetY}px)`;
             }
 
+            // Prevent context menu (long press popups) when magnifier is active
+            window.addEventListener('contextmenu', (e) => {
+                if (isMagnifierMode) {
+                    e.preventDefault();
+                    return false;
+                }
+            }, true);
+
             // Touch Listeners
             window.addEventListener('touchstart', (e) => {
                 if (e.touches.length !== 1 || !isMagnifierMode) return;
@@ -7483,13 +7508,18 @@
                     return;
                 }
 
+                if (e.cancelable && !target.closest('input') && !target.closest('textarea') && !target.closest('select')) {
+                    e.preventDefault();
+                }
+
                 startMagnification(touch.clientX, touch.clientY, target);
-            }, { passive: true });
+            }, { passive: false });
 
             window.addEventListener('touchmove', (e) => {
                 if (e.touches.length !== 1 || !isMagnifierMode) return;
                 const touch = e.touches[0];
                 if (isMagnifyingActive) {
+                    if (e.cancelable) e.preventDefault();
                     const target = document.elementFromPoint(touch.clientX, touch.clientY) || e.target;
                     if (isChartElement(target)) {
                         hideMagnifierLens();
@@ -7499,7 +7529,7 @@
                     const rect = sourceElement.getBoundingClientRect();
                     updateLensPosition(touch.clientX, touch.clientY, rect);
                 }
-            }, { passive: true });
+            }, { passive: false });
 
             window.addEventListener('touchend', () => hideMagnifierLens());
             window.addEventListener('touchcancel', () => hideMagnifierLens());
