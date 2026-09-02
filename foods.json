@@ -1338,5 +1338,25 @@
     "bcaa": 0.37,
     "eaa": 0.93
   }
+ },
+ {
+  "id": 70,
+  "name": "Palito Surimi Carrefour (Ud ~15g)",
+  "p": 0.98,
+  "c": 2.7,
+  "f": 0.72,
+  "kcal": 21,
+  "unit": "u",
+  "fam": "PROTEIN",
+  "sub": "FISH_BLUE",
+  "icon": "🦀",
+  "qP": 2,
+  "qC": 2,
+  "qF": 2,
+  "aa": {
+    "leu": 0.08,
+    "bcaa": 0.17,
+    "eaa": 0.41
+  }
  }
 ]
