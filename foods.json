@@ -1298,5 +1298,25 @@
     "bcaa": 1.48,
     "eaa": 3.37
    }
+  },
+  {
+  "id": 68,
+  "name": "Lacón Carrefour",
+  "p": 17,
+  "c": 1,
+  "f": 9,
+  "kcal": 153,
+  "unit": "g",
+  "fam": "PROTEIN",
+  "sub": "MEAT_RED",
+  "icon": "🐷",
+  "qP": 2,
+  "qC": 1,
+  "qF": 1,
+  "aa": {
+    "leu": 1.39,
+    "bcaa": 3.06,
+    "eaa": 7.31
   }
+ }
 ]
