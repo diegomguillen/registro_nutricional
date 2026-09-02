@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nutri-app-v2.11'
+const CACHE_NAME = 'nutri-app-v2.12'
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -12,15 +12,16 @@ const ASSETS_TO_CACHE = [
   './README.md'
 ];
 
-// Instalación: Cacheamos los recursos estáticos y librerías externas
+// Instalación: Cacheamos los recursos estáticos y activamos de inmediato
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(ASSETS_TO_CACHE))
   );
 });
 
-// Activación: Limpiamos caches viejas si actualizamos la versión
+// Activación: Limpiamos caches viejas y tomamos control de las páginas abiertas
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((keyList) => {
@@ -29,20 +30,30 @@ self.addEventListener('activate', (event) => {
           return caches.delete(key);
         }
       }));
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
-// Interceptamos peticiones: Servir desde caché si existe, sino buscar en red
+// Interceptamos peticiones: Network-First para datos JSON (foods.json, structure.json), Cache-First para assets
 self.addEventListener('fetch', (event) => {
-  event.respondWith(
-    caches.match(event.request).then((response) => {
-      return response || fetch(event.request);
-    })
-  );
-
+  const url = new URL(event.request.url);
+  if (url.pathname.endsWith('foods.json') || url.pathname.endsWith('structure.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            const responseClone = networkResponse.clone();
+            caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+          }
+          return networkResponse;
+        })
+        .catch(() => caches.match(event.request))
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request).then((response) => {
+        return response || fetch(event.request);
+      })
+    );
+  }
 });
-
-
-
-
