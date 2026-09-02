@@ -7271,11 +7271,13 @@
         function applyFilter() {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = [...globalLog];
-            f.sort((a, b) => {
-                const orderA = a.sortOrder !== undefined ? a.sortOrder : (10000000000000 - (a.id || 0));
-                const orderB = b.sortOrder !== undefined ? b.sortOrder : (10000000000000 - (b.id || 0));
-                return orderA - orderB;
-            });
+            const explicitOrders = f.filter(i => i.sortOrder !== undefined).map(i => i.sortOrder);
+            const minSortOrder = explicitOrders.length > 0 ? Math.min(...explicitOrders) : 0;
+            const getOrder = (item) => {
+                if (item.sortOrder !== undefined) return item.sortOrder;
+                return (minSortOrder - 1) - ((item.id || 0) / 1e15);
+            };
+            f.sort((a, b) => getOrder(a) - getOrder(b));
             if (s && e) f = f.filter(i => i.date >= s && i.date <= e);
             selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard(); updateComparisonCharts(); updateIncompleteDayUI();
         }
