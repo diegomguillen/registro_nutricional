@@ -2162,7 +2162,7 @@
             <div id="compareFoodHeaderCards" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4"></div>
 
             <!-- 3 Gráficos de Macronutrientes -->
-            <div class="space-y-4">
+            <div class="space-y-4 mb-6">
                 <!-- 1. Proteínas -->
                 <div class="bg-[#121214] p-4 rounded-xl border border-blue-500/20">
                     <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-2 flex items-center justify-between">
@@ -2190,6 +2190,43 @@
                     </h4>
                     <div class="h-44 relative">
                         <canvas id="compareChartFat"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3 Gráficos de Aminoácidos -->
+            <div class="pt-4 border-t border-[#2c2c2e] space-y-4">
+                <h4 class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
+                    <span>🧬 Perfil de Aminoácidos (g)</span>
+                </h4>
+
+                <!-- 4. Leucina -->
+                <div class="bg-[#121214] p-4 rounded-xl border border-emerald-500/20">
+                    <h4 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>⚡ Leucina (g)</span>
+                    </h4>
+                    <div class="h-44 relative">
+                        <canvas id="compareChartLeu"></canvas>
+                    </div>
+                </div>
+
+                <!-- 5. BCAA -->
+                <div class="bg-[#121214] p-4 rounded-xl border border-cyan-500/20">
+                    <h4 class="text-xs font-bold text-cyan-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>🛡️ BCAA (g)</span>
+                    </h4>
+                    <div class="h-44 relative">
+                        <canvas id="compareChartBcaa"></canvas>
+                    </div>
+                </div>
+
+                <!-- 6. EAA -->
+                <div class="bg-[#121214] p-4 rounded-xl border border-purple-500/20">
+                    <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>🧱 EAA (g)</span>
+                    </h4>
+                    <div class="h-44 relative">
+                        <canvas id="compareChartEaa"></canvas>
                     </div>
                 </div>
             </div>
@@ -2222,6 +2259,9 @@
         let compareChartProteinInstance = null;
         let compareChartCarbsInstance = null;
         let compareChartFatInstance = null;
+        let compareChartLeuInstance = null;
+        let compareChartBcaaInstance = null;
+        let compareChartEaaInstance = null;
 
         function toggleCompareMode(forceState) {
             if (typeof forceState === 'boolean') {
@@ -2351,6 +2391,9 @@
             if (compareChartProteinInstance) { compareChartProteinInstance.destroy(); compareChartProteinInstance = null; }
             if (compareChartCarbsInstance) { compareChartCarbsInstance.destroy(); compareChartCarbsInstance = null; }
             if (compareChartFatInstance) { compareChartFatInstance.destroy(); compareChartFatInstance = null; }
+            if (compareChartLeuInstance) { compareChartLeuInstance.destroy(); compareChartLeuInstance = null; }
+            if (compareChartBcaaInstance) { compareChartBcaaInstance.destroy(); compareChartBcaaInstance = null; }
+            if (compareChartEaaInstance) { compareChartEaaInstance.destroy(); compareChartEaaInstance = null; }
         }
 
         function renderCompareModalContent() {
@@ -2360,7 +2403,17 @@
                 const p = parseFloat(((f.p || 0) * baseMultiplier).toFixed(1));
                 const c = parseFloat(((f.c || 0) * baseMultiplier).toFixed(1));
                 const fat = parseFloat(((f.f || 0) * baseMultiplier).toFixed(1));
-                return { ...f, calcKcal: kcal, calcP: p, calcC: c, calcF: fat };
+
+                const aa = f.aa || {
+                    leu: (f.p || 0) * 0.08,
+                    bcaa: (f.p || 0) * 0.18,
+                    eaa: (f.p || 0) * 0.42
+                };
+                const leu = parseFloat(((aa.leu || 0) * baseMultiplier).toFixed(2));
+                const bcaa = parseFloat(((aa.bcaa || 0) * baseMultiplier).toFixed(2));
+                const eaa = parseFloat(((aa.eaa || 0) * baseMultiplier).toFixed(2));
+
+                return { ...f, calcKcal: kcal, calcP: p, calcC: c, calcF: fat, calcLeu: leu, calcBcaa: bcaa, calcEaa: eaa };
             });
 
             // Tarjetas superiores con botón directo +Añadir
@@ -2387,10 +2440,10 @@
                 headerCardsContainer.innerHTML = cardsHtml;
             }
 
-            renderThreeMacroCharts(items);
+            renderCompareCharts(items);
         }
 
-        function createSingleMacroChart(canvasId, items, dataKey, macroLabel) {
+        function createSingleCompareChart(canvasId, items, dataKey, macroLabel) {
             const ctx = document.getElementById(canvasId)?.getContext('2d');
             if (!ctx) return null;
 
@@ -2448,14 +2501,20 @@
             });
         }
 
-        function renderThreeMacroCharts(items) {
+        function renderCompareCharts(items) {
             if (compareChartProteinInstance) compareChartProteinInstance.destroy();
             if (compareChartCarbsInstance) compareChartCarbsInstance.destroy();
             if (compareChartFatInstance) compareChartFatInstance.destroy();
+            if (compareChartLeuInstance) compareChartLeuInstance.destroy();
+            if (compareChartBcaaInstance) compareChartBcaaInstance.destroy();
+            if (compareChartEaaInstance) compareChartEaaInstance.destroy();
 
-            compareChartProteinInstance = createSingleMacroChart('compareChartProtein', items, 'calcP', 'Proteínas (g)');
-            compareChartCarbsInstance = createSingleMacroChart('compareChartCarbs', items, 'calcC', 'Carbohidratos (g)');
-            compareChartFatInstance = createSingleMacroChart('compareChartFat', items, 'calcF', 'Grasas (g)');
+            compareChartProteinInstance = createSingleCompareChart('compareChartProtein', items, 'calcP', 'Proteínas (g)');
+            compareChartCarbsInstance = createSingleCompareChart('compareChartCarbs', items, 'calcC', 'Carbohidratos (g)');
+            compareChartFatInstance = createSingleCompareChart('compareChartFat', items, 'calcF', 'Grasas (g)');
+            compareChartLeuInstance = createSingleCompareChart('compareChartLeu', items, 'calcLeu', 'Leucina (g)');
+            compareChartBcaaInstance = createSingleCompareChart('compareChartBcaa', items, 'calcBcaa', 'BCAA (g)');
+            compareChartEaaInstance = createSingleCompareChart('compareChartEaa', items, 'calcEaa', 'EAA (g)');
         }
 
         function addFoodFromCompare(foodId, grams) {
