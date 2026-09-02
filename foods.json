@@ -1358,5 +1358,25 @@
     "bcaa": 0.17,
     "eaa": 0.41
   }
- }
+ },
+ {
+  "id": 71,
+  "name": "Tortilla 51% Avena Carrefour (ud 60g)",
+  "p": 5.82,
+  "c": 26.4,
+  "f": 6.6,
+  "kcal": 196,
+  "unit": "u",
+  "fam": "CARBS",
+  "sub": "BREAD",
+  "icon": "🫓",
+  "qP": 1,
+  "qC": 2,
+  "qF": 2,
+  "aa": {
+    "leu": 0.41,
+    "bcaa": 0.85,
+    "eaa": 1.92
+  }
+}
 ]
