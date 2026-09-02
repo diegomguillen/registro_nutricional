@@ -1278,5 +1278,25 @@
       "bcaa": 15.46,
       "eaa": 34.15
     }
+  },
+  {
+  "id": 67,
+  "name": "Ecocesta Muesli Frutas 14% sin azúcares añadidos",
+  "p": 10.2,
+  "c": 64.0,
+  "f": 3.6,
+  "kcal": 346,
+  "unit": "g",
+  "fam": "CARBS",
+  "sub": "PASTA_RICE",
+  "icon": "🌾",
+  "qP": 1,
+  "qC": 3,
+  "qF": 2,
+  "aa": {
+    "leu": 0.71,
+    "bcaa": 1.48,
+    "eaa": 3.37
+   }
   }
 ]
