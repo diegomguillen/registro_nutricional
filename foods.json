@@ -354,9 +354,9 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 10.0,
-      "bcaa": 22.0,
-      "eaa": 45.0
+      "leu": 8,
+      "bcaa": 18,
+      "eaa": 42
     }
   },
   {
@@ -901,11 +901,11 @@
   },
   {
     "id": 48,
-    "name": "Whey 80% Concentrado (WPC 80)",
-    "p": 80,
-    "c": 8,
-    "f": 6,
-    "kcal": 406,
+    "name": "HSN EvoWhey 77%",
+    "p": 77,
+    "c": 6.9,
+    "f": 3.2,
+    "kcal": 365,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -914,18 +914,18 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 8.8,
-      "bcaa": 19.2,
-      "eaa": 40.0
+      "leu": 8.69,
+      "bcaa": 18.21,
+      "eaa": 38.24
     }
   },
   {
     "id": 49,
-    "name": "Whey 90% Aislado (Iso/CFM)",
-    "p": 90,
-    "c": 2,
-    "f": 1,
-    "kcal": 377,
+    "name": "HSN EvoLate 2.0 84% Aislado",
+    "p": 84,
+    "c": 4.4,
+    "f": 1.7,
+    "kcal": 368,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -934,18 +934,18 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 9.9,
-      "bcaa": 21.6,
-      "eaa": 45.0
+      "leu": 9.30,
+      "bcaa": 20.65,
+      "eaa": 42.28
     }
   },
   {
     "id": 50,
-    "name": "Caseína 78% Micelar",
-    "p": 78,
-    "c": 6,
-    "f": 2,
-    "kcal": 354,
+    "name": "HSN Evocasein 2.0 (caseína micelar 87%)",
+    "p": 87,
+    "c": 2.5,
+    "f": 1.5,
+    "kcal": 373,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -954,9 +954,9 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 7.41,
-      "bcaa": 16.38,
-      "eaa": 34.32
+      "leu": 8.38,
+      "bcaa": 18.59,
+      "eaa": 40.14
     }
   },
   {
@@ -1241,7 +1241,7 @@
   },
   {
     "id": 65,
-    "name": "Whey 83% Isolate",
+    "name": "Quamtrax Whey 83% Isolate",
     "p": 83,
     "c": 3.1,
     "f": 1.4,
@@ -1254,9 +1254,29 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 9.13,
-      "bcaa": 19.92,
-      "eaa": 41.5
+      "leu": 9.23,
+      "bcaa": 19.32,
+      "eaa": 40.20
+    }
+  },
+  {
+    "id": 66,
+    "name": "Quamtrax Whey 72%",
+    "p": 72,
+    "c": 7.6,
+    "f": 8,
+    "kcal": 395,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤",
+    "qP": 3,
+    "qC": 1,
+    "qF": 1,
+    "aa": {
+      "leu": 6.9,
+      "bcaa": 15.46,
+      "eaa": 34.15
     }
   }
 ]
