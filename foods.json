@@ -1318,5 +1318,25 @@
     "bcaa": 3.06,
     "eaa": 7.31
   }
+ },
+ {
+  "id": 69,
+  "name": "Champiñones / Setas",
+  "p": 3.1,
+  "c": 1.0,
+  "f": 0.3,
+  "kcal": 22,
+  "unit": "g",
+  "fam": "VEG",
+  "sub": "GREEN",
+  "icon": "🍄",
+  "qP": 1,
+  "qC": 3,
+  "qF": 3,
+  "aa": {
+    "leu": 0.17,
+    "bcaa": 0.37,
+    "eaa": 0.93
+  }
  }
 ]
