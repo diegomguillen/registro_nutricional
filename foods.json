@@ -1081,11 +1081,11 @@
   },
   {
     "id": 57,
-    "name": "Copos de avena",
-    "p": 12,
-    "c": 58,
-    "f": 7,
-    "kcal": 365,
+    "name": "Ecocesta copos finos de avena",
+    "p": 14,
+    "c": 56,
+    "f": 6,
+    "kcal": 353,
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE",
@@ -1094,9 +1094,9 @@
     "qC": 3,
     "qF": 2,
     "aa": {
-      "leu": 0.84,
-      "bcaa": 1.74,
-      "eaa": 3.96
+      "leu": 0.98,
+      "bcaa": 2.03,
+      "eaa": 4.62
     }
   },
   {
