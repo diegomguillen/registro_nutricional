@@ -358,6 +358,32 @@
                     </div>
                 </div>
 
+                <div class="mt-4 pt-3 border-t border-[#2c2c2e]">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] text-white/70 font-bold uppercase tracking-wider flex items-center gap-1">
+                            🧬 Aminoácidos FFM
+                        </span>
+                        <button type="button" onclick="openChartHelpModal('aminoAcidsHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Guía de Aminoácidos">❓</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-emerald-500/20 flex flex-col items-center justify-between">
+                            <div class="text-[10px] text-emerald-400 font-bold uppercase">LEU</div>
+                            <div id="homeLeu" class="text-xs font-mono font-bold text-white mt-0.5">0 / 0g</div>
+                            <div id="homeLeuBadge" class="mt-1"></div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-blue-500/20 flex flex-col items-center justify-between">
+                            <div class="text-[10px] text-blue-400 font-bold uppercase">BCAA</div>
+                            <div id="homeBcaa" class="text-xs font-mono font-bold text-white mt-0.5">0 / 0g</div>
+                            <div id="homeBcaaBadge" class="mt-1"></div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-purple-500/20 flex flex-col items-center justify-between">
+                            <div class="text-[10px] text-purple-400 font-bold uppercase">EAA</div>
+                            <div id="homeEaa" class="text-xs font-mono font-bold text-white mt-0.5">0 / 0g</div>
+                            <div id="homeEaaBadge" class="mt-1"></div>
+                        </div>
+                    </div>
+                </div>
+
                 <div
                     class="mt-6 pt-4 border-t border-[#2c2c2e] flex flex-col items-center justify-center animate-fade-in">
                     <div
@@ -752,7 +778,7 @@
                 <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
                     <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
                 </div>
-                <div id="historyTargetDiffContent" class="grid grid-cols-4 gap-2 text-center text-xs"></div>
+                <div id="historyTargetDiffContent" class="space-y-2 text-xs"></div>
             </div>
 
             <div class="premium-card overflow-hidden animate-fade-in-up" style="animation-delay: 0.1s">
@@ -3700,6 +3726,22 @@
                        "🟢 Control Visual / Eventos: Modera estos alimentos 24h antes si buscas lucir muy seco.\n" +
                        "🚴 Días de MTB / Calor: Úsalos para llegar con depósitos de fluidos y glucógeno óptimos.",
                 conclusiones: "✔ Estrategia Hídrica: Gestión táctica de fluidos según tus exigencias deportivas o estéticas."
+            },
+            aminoAcidsHelp: {
+                icon: "🧪",
+                title: "Guía de Aminoácidos: Rendimiento y Recuperación",
+                subtitle: "Requerimientos diarios basados en Masa Magra FFM",
+                purpose: "Las proteínas están compuestas por unidades básicas llamadas aminoácidos. Para optimizar la adaptación al entrenamiento, la preservación de la masa muscular y la recuperación celular, esta aplicación monitoriza tres parámetros esenciales.",
+                howTo: "⚡ LEUCINA (Leu):\n" +
+                       "• Qué es: Es el aminoácido clave y el principal activador celular del anabolismo muscular.\n" +
+                       "• Por qué importa: Funciona como el «interruptor» biológico que inicia la síntesis de nuevas proteínas musculares tras el ejercicio. Sin alcanzar un umbral mínimo de leucina en una comida, el cuerpo no aprovecha de forma óptima la proteína ingerida para la reparación de los tejidos.\n\n" +
+                       "🛡️ BCAA (Aminoácidos de Cadena Ramificada - Leucina, Isoleucina, Valina):\n" +
+                       "• Qué son: El grupo formado por Leucina, Isoleucina y Valina.\n" +
+                       "• Por qué importan: Representan una fracción directa de la estructura del músculo esquelético. Durante entrenamientos exigentes o prolongados, actúan como soporte frente al desgaste muscular, reducen la sensación de fatiga central y facilitan la regeneración de fibras dañadas.\n\n" +
+                       "🧱 EAA (Aminoácidos Esenciales):\n" +
+                       "• Qué son: Los 9 aminoácidos que el organismo no puede sintetizar por sí mismo y que deben obtenerse a través de la dieta.\n" +
+                       "• Por qué importan: La leucina activa la señal de construcción, pero los EAA son los «ladrillos» imprescindibles para edificarla. Consumir el espectro completo de aminoácidos esenciales asegura que el balance proteico neto sea positivo y favorece una recuperación muscular integral.",
+                conclusiones: "✔ Requerimientos calculados según FFM (Masa Magra en kg):\n• Leu_dia = 0.20 × FFM (g)\n• BCAA_dia = 0.45 × FFM (g)\n• EAA_dia = 1.00 × FFM (g)"
             }
         };
 
@@ -3785,6 +3827,10 @@
                 const deficitText = t.deficitKcal !== 0 ? `${t.deficitKcal > 0 ? '+' : ''}${t.deficitKcal} kcal` : '0 kcal';
                 const deficitClass = t.deficitKcal < 0 ? 'text-emerald-400 font-bold' : (t.deficitKcal > 0 ? 'text-amber-400 font-bold' : 'text-kcal font-bold');
 
+                const targetLeu = (0.20 * t.ffm);
+                const targetBcaa = (0.45 * t.ffm);
+                const targetEaa = (1.00 * t.ffm);
+
                 el.innerHTML = `
                     <div class="grid grid-cols-4 gap-2 my-1 text-center">
                         <div class="bg-prot-soft rounded-xl p-2 flex flex-col items-center justify-center">
@@ -3809,6 +3855,28 @@
                         </div>
                     </div>
                     ${carbWarning}
+                    <div class="mt-2 pt-2 border-t border-[#3a3a3c] text-center">
+                        <div class="flex items-center justify-between mb-1.5 px-1">
+                            <span class="text-[10px] text-white/70 font-bold uppercase tracking-wider flex items-center gap-1">
+                                🧬 Requerimientos Aminoácidos FFM (${t.ffm.toFixed(1)} kg)
+                            </span>
+                            <button type="button" onclick="openChartHelpModal('aminoAcidsHelp')" class="w-4 h-4 rounded-full bg-[#1c1c1e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Guía de Aminoácidos">❓</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-1.5 text-center">
+                            <div class="bg-[#1c1c1e] p-1.5 rounded-lg border border-emerald-500/20">
+                                <div class="text-[9px] text-emerald-400 font-bold uppercase">Leu (0.2x)</div>
+                                <div class="text-[11px] font-mono font-bold text-white mt-0.5">${targetLeu.toFixed(1)}g</div>
+                            </div>
+                            <div class="bg-[#1c1c1e] p-1.5 rounded-lg border border-blue-500/20">
+                                <div class="text-[9px] text-blue-400 font-bold uppercase">BCAA (0.45x)</div>
+                                <div class="text-[11px] font-mono font-bold text-white mt-0.5">${targetBcaa.toFixed(1)}g</div>
+                            </div>
+                            <div class="bg-[#1c1c1e] p-1.5 rounded-lg border border-purple-500/20">
+                                <div class="text-[9px] text-purple-400 font-bold uppercase">EAA (1.0x)</div>
+                                <div class="text-[11px] font-mono font-bold text-white mt-0.5">${targetEaa.toFixed(1)}g</div>
+                            </div>
+                        </div>
+                    </div>
                 `;
             }
         }
@@ -6426,7 +6494,22 @@
 
         function selectApiItem(name, p, c, f, kcal, unit = 'g') {
             const newId = 1000 + foodData.length + Math.floor(Math.random() * 1000);
-            foodData.push({ id: newId, name: `[WEB] ${name}`, p: Number(p), c: Number(c), f: Number(f), kcal: Number(kcal), unit: unit, icon: '🌐' });
+            const numP = Number(p) || 0;
+            foodData.push({
+                id: newId,
+                name: `[WEB] ${name}`,
+                p: numP,
+                c: Number(c) || 0,
+                f: Number(f) || 0,
+                kcal: Number(kcal) || 0,
+                unit: unit,
+                icon: '🌐',
+                aa: {
+                    leu: Number((numP * 0.08).toFixed(2)),
+                    bcaa: Number((numP * 0.18).toFixed(2)),
+                    eaa: Number((numP * 0.42).toFixed(2))
+                }
+            });
             populateSelect();
 
             // Usar fecha del filtro activo y cantidad para items web
@@ -6659,6 +6742,7 @@
             const food = foodData.find(f => f.id === foodId);
             const factor = food.unit === 'g' ? amount / 100 : amount;
 
+            const aa = food.aa || { leu: 0, bcaa: 0, eaa: 0 };
             globalLog.push({
                 id: Date.now(),
                 date: dateInput.value,
@@ -6671,7 +6755,10 @@
                 p: parseFloat((food.p * factor).toFixed(1)),
                 c: parseFloat((food.c * factor).toFixed(1)),
                 f: parseFloat((food.f * factor).toFixed(1)),
-                kcal: Math.round(food.kcal * factor)
+                kcal: Math.round(food.kcal * factor),
+                leu: parseFloat(((aa.leu || 0) * factor).toFixed(2)),
+                bcaa: parseFloat(((aa.bcaa || 0) * factor).toFixed(2)),
+                eaa: parseFloat(((aa.eaa || 0) * factor).toFixed(2))
             });
 
             saveData();
@@ -6849,32 +6936,26 @@
         }
 
         function getEmbeddedFallbackFoods() {
-            return [{"id":2,"name":"Aceite de Oliva (AOVE)","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"OIL","icon":"🫒","qP":1,"qC":1,"qF":3},{"id":3,"name":"Aguacate","p":2,"c":8.5,"f":15,"kcal":160,"unit":"g","fam":"LIPID","sub":"FRUIT_FAT","icon":"🥑","qP":1,"qC":1,"qF":3},{"id":4,"name":"Mix Frutos Secos","p":4.7,"c":9.4,"f":60,"kcal":615,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🌰","qP":2,"qC":1,"qF":3},{"id":5,"name":"Pollo/Pavo Magro (Pechuga)","p":23,"c":0,"f":1.5,"kcal":106,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🐓","qP":3,"qC":1,"qF":2},{"id":6,"name":"Carne Roja (Ternera)","p":20,"c":0,"f":10,"kcal":170,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🥩","qP":3,"qC":1,"qF":2},{"id":7,"name":"Queso Curado/Semicurado","p":25,"c":1,"f":33,"kcal":400,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀","qP":3,"qC":1,"qF":2},{"id":8,"name":"Leche Semidesnatada","p":3.1,"c":4.7,"f":1.6,"kcal":46,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛","qP":3,"qC":1,"qF":2},{"id":9,"name":"Yogur Natural / Kéfir","p":3.5,"c":4.5,"f":3,"kcal":60,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣","qP":3,"qC":1,"qF":2},{"id":10,"name":"Pescado Blanco (Merluza/Bacalao)","p":18,"c":0,"f":1.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐","qP":3,"qC":1,"qF":2},{"id":11,"name":"Pescado Azul (Salmón/Atún)","p":20,"c":0,"f":12,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🐟","qP":3,"qC":1,"qF":3},{"id":12,"name":"Huevo (Clase L ~60g)","p":7,"c":0.3,"f":5.8,"kcal":80,"unit":"u","fam":"PROTEIN","sub":"EGG","icon":"🥚","qP":3,"qC":1,"qF":2},{"id":13,"name":"Arroz / Cereales (Cocido)","p":2.3,"c":26,"f":0.3,"kcal":120,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🍚","qP":1,"qC":2,"qF":3},{"id":14,"name":"Pan Blanco / Integral","p":9,"c":50,"f":2,"kcal":260,"unit":"g","fam":"CARBS","sub":"BREAD","icon":"🥖","qP":1,"qC":2,"qF":2},{"id":15,"name":"Pasta Trigo (Cocido)","p":4.8,"c":28,"f":0.6,"kcal":140,"unit":"g","fam":"CARBS","sub":"PASTA_RICE","icon":"🌾","qP":1,"qC":2,"qF":3},{"id":16,"name":"Fruta Variada (Genérica)","p":0.5,"c":12,"f":0.2,"kcal":55,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍎","qP":1,"qC":3,"qF":3},{"id":17,"name":"Verdura Hoja / Calabacín","p":1.5,"c":3,"f":0.2,"kcal":25,"unit":"g","fam":"VEG","sub":"GREEN","icon":"🥬","qP":1,"qC":3,"qF":3},{"id":18,"name":"Garbanzo cocido (Bote)","p":5.4,"c":12,"f":2,"kcal":95,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫","qP":2,"qC":3,"qF":3},{"id":19,"name":"Proteína macro","p":100,"c":0,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"💪","qP":3,"qC":1,"qF":1},{"id":20,"name":"Carbohidrato macro","p":0,"c":100,"f":0,"kcal":400,"unit":"g","fam":"PURE","sub":"P_CARB","icon":"⚡","qP":1,"qC":3,"qF":1},{"id":21,"name":"Mantecas","p":0,"c":0,"f":100,"kcal":900,"unit":"g","fam":"LIPID","sub":"ANIMAL_FAT","icon":"🧈","qP":1,"qC":1,"qF":2},{"id":22,"name":"Ñoquis (Gnocchi)","p":3.5,"c":36,"f":0.5,"kcal":165,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔","qP":1,"qC":3,"qF":2},{"id":23,"name":"Patata / Batata (Cocido)","p":1.9,"c":19,"f":0.1,"kcal":84,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🥔","qP":1,"qC":3,"qF":3},{"id":24,"name":"Aceituna (ud 4gr)","p":0.03,"c":0,"f":0.6,"kcal":6,"unit":"u","fam":"LIPID","sub":"FRUIT_FAT","icon":"🫒","qP":1,"qC":1,"qF":3},{"id":25,"name":"Nuez (Grano)","p":15,"c":14,"f":65,"kcal":650,"unit":"g","fam":"LIPID","sub":"NUT","icon":"🥜","qP":2,"qC":1,"qF":3},{"id":26,"name":"Tomate / Pimiento","p":1,"c":3.5,"f":0.2,"kcal":20,"unit":"g","fam":"VEG","sub":"COLOR","icon":"🍅","qP":1,"qC":3,"qF":3},{"id":28,"name":"Plátano / Banana","p":1.1,"c":23,"f":0.3,"kcal":90,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍌","qP":1,"qC":3,"qF":3},{"id":29,"name":"Jamón Serrano (Sin grasa)","p":30,"c":0,"f":8,"kcal":190,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷","qP":3,"qC":1,"qF":2},{"id":30,"name":"Queso Fresco Batido / Skyr","p":8,"c":3.5,"f":0.1,"kcal":46,"unit":"g","fam":"DAIRY","sub":"YOGURT","icon":"🥣","qP":3,"qC":1,"qF":2},{"id":31,"name":"Legumbres Secas (Lenteja/Garbanzo)","p":22,"c":55,"f":1.5,"kcal":330,"unit":"g","fam":"LEGUME","sub":"DRY","icon":"🫘","qP":2,"qC":3,"qF":3},{"id":32,"name":"Cerdo Graso (Costilla/Secreto)","p":16,"c":0,"f":25,"kcal":290,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐷","qP":3,"qC":1,"qF":2},{"id":33,"name":"Remolacha (Cruda)","p":1.6,"c":9.6,"f":0.2,"kcal":43,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍠","qP":1,"qC":3,"qF":3},{"id":34,"name":"Cerdo Magro (Lomo/Solomillo)","p":21,"c":0,"f":3.5,"kcal":120,"unit":"g","fam":"PROTEIN","sub":"MEAT_RED","icon":"🐗","qP":3,"qC":1,"qF":2},{"id":35,"name":"Tomate Cherry (Unidad)","p":0.12,"c":0.42,"f":0.02,"kcal":2.5,"unit":"u","fam":"VEG","sub":"COLOR","icon":"🍒","qP":1,"qC":3,"qF":3},{"id":36,"name":"Leche Desnatada","p":3.2,"c":4.8,"f":0.5,"kcal":37,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛","qP":3,"qC":1,"qF":2},{"id":37,"name":"Frutos Rojos / Sandía","p":0.6,"c":7,"f":0.2,"kcal":32,"unit":"g","fam":"FRUIT","sub":"FRESH","icon":"🍉","qP":1,"qC":3,"qF":3},{"id":38,"name":"Lata 56gr atún natural","p":23,"c":0,"f":0.7,"kcal":98,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":39,"name":"Lata 52gr atún aove","p":22,"c":0,"f":12,"kcal":196,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":40,"name":"Lata 65gr caballa al natural","p":23,"c":0,"f":3.3,"kcal":122,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":41,"name":"Lata 65gr sardinilla aove crf","p":12.09,"c":0,"f":18.85,"kcal":220,"unit":"u","fam":"PROTEIN","sub":"FISH_BLUE","icon":"🥫","qP":3,"qC":1,"qF":3},{"id":42,"name":"Pollo/Pavo Graso (Muslo/Ala)","p":17,"c":0,"f":14,"kcal":195,"unit":"g","fam":"PROTEIN","sub":"MEAT_WHITE","icon":"🍗","qP":3,"qC":1,"qF":2},{"id":43,"name":"Queso Fresco (Burgos)","p":11,"c":4,"f":14,"kcal":185,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🧀","qP":3,"qC":1,"qF":2},{"id":44,"name":"Leche Entera","p":3.1,"c":4.7,"f":3.6,"kcal":64,"unit":"g","fam":"DAIRY","sub":"MILK","icon":"🥛","qP":3,"qC":1,"qF":2},{"id":45,"name":"Marisco Magro (Gamba/Langostino)","p":21,"c":0,"f":1,"kcal":93,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦐","qP":3,"qC":1,"qF":2},{"id":46,"name":"Cefalópodos (Calamar/Sepia/Pulpo)","p":17,"c":0.5,"f":1.5,"kcal":82,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦑","qP":3,"qC":1,"qF":2},{"id":47,"name":"Moluscos (Mejillón/Almeja)","p":12,"c":3.5,"f":2.5,"kcal":85,"unit":"g","fam":"PROTEIN","sub":"FISH_WHITE","icon":"🦪","qP":3,"qC":1,"qF":2},{"id":48,"name":"Whey 80% Concentrado (WPC 80)","p":80,"c":8,"f":6,"kcal":406,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":49,"name":"Whey 90% Aislado (Iso/CFM)","p":90,"c":2,"f":1,"kcal":377,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":50,"name":"Caseína 78% Micelar","p":78,"c":6,"f":2,"kcal":354,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":51,"name":"Whey Hidrolizado (Hydro)","p":92,"c":1,"f":0.5,"kcal":376,"unit":"g","fam":"PURE","sub":"P_PROT","icon":"🥤","qP":3,"qC":1,"qF":1},{"id":52,"name":"Requesón (Cottage)","p":12,"c":3,"f":4,"kcal":96,"unit":"g","fam":"DAIRY","sub":"CHEESE","icon":"🥣","qP":3,"qC":1,"qF":2},{"id":53,"name":"Lenteja cocida (Bote)","p":6.6,"c":13,"f":0,"kcal":88,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫","qP":2,"qC":3,"qF":3},{"id":54,"name":"Alubia cocida (Bote)","p":5.3,"c":12,"f":0,"kcal":85,"unit":"g","fam":"LEGUME","sub":"COOKED","icon":"🥫","qP":2,"qC":3,"qF":3},{"id":55,"name":"Patata cogelada airfryer","p":2.7,"c":24,"f":5.4,"kcal":161,"unit":"g","fam":"CARBS","sub":"TUBER","icon":"🍟","qP":1,"qC":3,"qF":3}];
+            return [{"id": 2, "name": "Aceite de Oliva (AOVE)", "p": 0, "c": 0, "f": 100, "kcal": 900, "unit": "g", "fam": "LIPID", "sub": "OIL", "icon": "🫒", "qP": 1, "qC": 1, "qF": 3, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 3, "name": "Aguacate", "p": 2, "c": 8.5, "f": 15, "kcal": 160, "unit": "g", "fam": "LIPID", "sub": "FRUIT_FAT", "icon": "🥑", "qP": 1, "qC": 1, "qF": 3, "aa": {"leu": 0.12, "bcaa": 0.26, "eaa": 0.62}}, {"id": 4, "name": "Mix Frutos Secos", "p": 4.7, "c": 9.4, "f": 60, "kcal": 615, "unit": "g", "fam": "LIPID", "sub": "NUT", "icon": "🌰", "qP": 2, "qC": 1, "qF": 3, "aa": {"leu": 0.31, "bcaa": 0.66, "eaa": 1.5}}, {"id": 5, "name": "Pollo/Pavo Magro (Pechuga)", "p": 23, "c": 0, "f": 1.5, "kcal": 106, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_WHITE", "icon": "🐓", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.89, "bcaa": 4.14, "eaa": 9.89}}, {"id": 6, "name": "Carne Roja (Ternera)", "p": 20, "c": 0, "f": 10, "kcal": 170, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_RED", "icon": "🥩", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.64, "bcaa": 3.6, "eaa": 8.6}}, {"id": 7, "name": "Queso Curado/Semicurado", "p": 25, "c": 1, "f": 33, "kcal": 400, "unit": "g", "fam": "DAIRY", "sub": "CHEESE", "icon": "🧀", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 2.38, "bcaa": 5.25, "eaa": 11.0}}, {"id": 8, "name": "Leche Semidesnatada", "p": 3.1, "c": 4.7, "f": 1.6, "kcal": 46, "unit": "g", "fam": "DAIRY", "sub": "MILK", "icon": "🥛", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.29, "bcaa": 0.65, "eaa": 1.36}}, {"id": 9, "name": "Yogur Natural / Kéfir", "p": 3.5, "c": 4.5, "f": 3, "kcal": 60, "unit": "g", "fam": "DAIRY", "sub": "YOGURT", "icon": "🥣", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.33, "bcaa": 0.73, "eaa": 1.54}}, {"id": 10, "name": "Pescado Blanco (Merluza/Bacalao)", "p": 18, "c": 0, "f": 1.5, "kcal": 85, "unit": "g", "fam": "PROTEIN", "sub": "FISH_WHITE", "icon": "🦐", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.46, "bcaa": 3.15, "eaa": 7.56}}, {"id": 11, "name": "Pescado Azul (Salmón/Atún)", "p": 20, "c": 0, "f": 12, "kcal": 190, "unit": "g", "fam": "PROTEIN", "sub": "FISH_BLUE", "icon": "🐟", "qP": 3, "qC": 1, "qF": 3, "aa": {"leu": 1.62, "bcaa": 3.5, "eaa": 8.4}}, {"id": 12, "name": "Huevo (Clase L ~60g)", "p": 7, "c": 0.3, "f": 5.8, "kcal": 80, "unit": "u", "fam": "PROTEIN", "sub": "EGG", "icon": "🥚", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.6, "bcaa": 1.4, "eaa": 3.36}}, {"id": 13, "name": "Arroz / Cereales (Cocido)", "p": 2.3, "c": 26, "f": 0.3, "kcal": 120, "unit": "g", "fam": "CARBS", "sub": "PASTA_RICE", "icon": "🍚", "qP": 1, "qC": 2, "qF": 1, "aa": {"leu": 0.16, "bcaa": 0.33, "eaa": 0.76}}, {"id": 14, "name": "Pan Blanco / Integral", "p": 9, "c": 50, "f": 2, "kcal": 260, "unit": "g", "fam": "CARBS", "sub": "BREAD", "icon": "🥖", "qP": 1, "qC": 2, "qF": 2, "aa": {"leu": 0.63, "bcaa": 1.3, "eaa": 2.97}}, {"id": 15, "name": "Pasta Trigo (Cocido)", "p": 4.8, "c": 28, "f": 0.6, "kcal": 140, "unit": "g", "fam": "CARBS", "sub": "PASTA_RICE", "icon": "🌾", "qP": 1, "qC": 2, "qF": 1, "aa": {"leu": 0.34, "bcaa": 0.7, "eaa": 1.58}}, {"id": 16, "name": "Fruta Variada (Genérica)", "p": 0.5, "c": 12, "f": 0.2, "kcal": 55, "unit": "g", "fam": "FRUIT", "sub": "FRESH", "icon": "🍎", "qP": 1, "qC": 3, "qF": 1, "aa": {"leu": 0.03, "bcaa": 0.06, "eaa": 0.15}}, {"id": 17, "name": "Verdura Hoja / Calabacín", "p": 1.5, "c": 3, "f": 0.2, "kcal": 25, "unit": "g", "fam": "VEG", "sub": "GREEN", "icon": "🥬", "qP": 1, "qC": 3, "qF": 1, "aa": {"leu": 0.08, "bcaa": 0.18, "eaa": 0.45}}, {"id": 18, "name": "Garbanzo cocido (Bote)", "p": 5.4, "c": 12, "f": 2, "kcal": 95, "unit": "g", "fam": "LEGUME", "sub": "COOKED", "icon": "🥫", "qP": 2, "qC": 3, "qF": 3, "aa": {"leu": 0.41, "bcaa": 0.89, "eaa": 2.05}}, {"id": 19, "name": "Proteína macro", "p": 100, "c": 0, "f": 0, "kcal": 400, "unit": "g", "fam": "PURE", "sub": "P_PROT", "icon": "💪", "qP": 3, "qC": 1, "qF": 1, "aa": {"leu": 10.0, "bcaa": 22.0, "eaa": 45.0}}, {"id": 20, "name": "Carbohidrato macro qC=3", "p": 0, "c": 100, "f": 0, "kcal": 400, "unit": "g", "fam": "PURE", "sub": "P_CARB", "icon": "⚡", "qP": 1, "qC": 3, "qF": 1, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 21, "name": "Mantecas", "p": 0, "c": 0, "f": 100, "kcal": 900, "unit": "g", "fam": "LIPID", "sub": "ANIMAL_FAT", "icon": "🧈", "qP": 1, "qC": 1, "qF": 1, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 22, "name": "Ñoquis (Gnocchi)", "p": 3.5, "c": 36, "f": 0.5, "kcal": 165, "unit": "g", "fam": "CARBS", "sub": "TUBER", "icon": "🥔", "qP": 1, "qC": 2, "qF": 2, "aa": {"leu": 0.19, "bcaa": 0.42, "eaa": 1.05}}, {"id": 23, "name": "Patata / Batata (Cocido)", "p": 1.9, "c": 19, "f": 0.1, "kcal": 84, "unit": "g", "fam": "CARBS", "sub": "TUBER", "icon": "🥔", "qP": 1, "qC": 3, "qF": 1, "aa": {"leu": 0.1, "bcaa": 0.23, "eaa": 0.57}}, {"id": 24, "name": "Aceituna (ud 4gr)", "p": 0.03, "c": 0, "f": 0.6, "kcal": 6, "unit": "u", "fam": "LIPID", "sub": "FRUIT_FAT", "icon": "🫒", "qP": 1, "qC": 1, "qF": 3, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.01}}, {"id": 25, "name": "Nuez (Grano)", "p": 15, "c": 14, "f": 65, "kcal": 650, "unit": "g", "fam": "LIPID", "sub": "NUT", "icon": "🥜", "qP": 2, "qC": 1, "qF": 3, "aa": {"leu": 0.98, "bcaa": 2.1, "eaa": 4.8}}, {"id": 26, "name": "Tomate / Pimiento", "p": 1, "c": 3.5, "f": 0.2, "kcal": 20, "unit": "g", "fam": "VEG", "sub": "COLOR", "icon": "🍅", "qP": 1, "qC": 3, "qF": 3, "aa": {"leu": 0.06, "bcaa": 0.12, "eaa": 0.3}}, {"id": 28, "name": "Plátano / Banana", "p": 1.1, "c": 23, "f": 0.3, "kcal": 90, "unit": "g", "fam": "FRUIT", "sub": "FRESH", "icon": "🍌", "qP": 1, "qC": 3, "qF": 3, "aa": {"leu": 0.06, "bcaa": 0.13, "eaa": 0.33}}, {"id": 29, "name": "Jamón Serrano (Sin grasa)", "p": 30, "c": 0, "f": 8, "kcal": 190, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_RED", "icon": "🐷", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 2.46, "bcaa": 5.4, "eaa": 12.9}}, {"id": 30, "name": "Queso Fresco Batido / Skyr", "p": 8, "c": 3.5, "f": 0.1, "kcal": 46, "unit": "g", "fam": "DAIRY", "sub": "YOGURT", "icon": "🥣", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.76, "bcaa": 1.68, "eaa": 3.52}}, {"id": 31, "name": "Legumbres Secas (Lenteja/Garbanzo)", "p": 22, "c": 55, "f": 1.5, "kcal": 330, "unit": "g", "fam": "LEGUME", "sub": "DRY", "icon": "🫘", "qP": 2, "qC": 3, "qF": 3, "aa": {"leu": 1.67, "bcaa": 3.63, "eaa": 8.36}}, {"id": 32, "name": "Cerdo Graso (Costilla/Secreto)", "p": 16, "c": 0, "f": 25, "kcal": 290, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_RED", "icon": "🐷", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.31, "bcaa": 2.88, "eaa": 6.88}}, {"id": 33, "name": "Remolacha (Cruda)", "p": 1.6, "c": 9.6, "f": 0.2, "kcal": 43, "unit": "g", "fam": "CARBS", "sub": "TUBER", "icon": "🍠", "qP": 1, "qC": 3, "qF": 1, "aa": {"leu": 0.09, "bcaa": 0.19, "eaa": 0.48}}, {"id": 34, "name": "Cerdo Magro (Lomo/Solomillo)", "p": 21, "c": 0, "f": 3.5, "kcal": 120, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_RED", "icon": "🐗", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.72, "bcaa": 3.78, "eaa": 9.03}}, {"id": 35, "name": "Tomate Cherry (Unidad)", "p": 0.12, "c": 0.42, "f": 0.02, "kcal": 2.5, "unit": "u", "fam": "VEG", "sub": "COLOR", "icon": "🍒", "qP": 1, "qC": 3, "qF": 3, "aa": {"leu": 0.01, "bcaa": 0.01, "eaa": 0.04}}, {"id": 36, "name": "Leche Desnatada", "p": 3.2, "c": 4.8, "f": 0.5, "kcal": 37, "unit": "g", "fam": "DAIRY", "sub": "MILK", "icon": "🥛", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.3, "bcaa": 0.67, "eaa": 1.41}}, {"id": 37, "name": "Frutos Rojos / Sandía", "p": 0.6, "c": 7, "f": 0.2, "kcal": 32, "unit": "g", "fam": "FRUIT", "sub": "FRESH", "icon": "🍉", "qP": 1, "qC": 3, "qF": 3, "aa": {"leu": 0.03, "bcaa": 0.07, "eaa": 0.18}}, {"id": 38, "name": "Lata 56gr atún natural", "p": 23, "c": 0, "f": 0.7, "kcal": 98, "unit": "u", "fam": "PROTEIN", "sub": "FISH_BLUE", "icon": "🥫", "qP": 3, "qC": 1, "qF": 3, "aa": {"leu": 1.86, "bcaa": 4.02, "eaa": 9.66}}, {"id": 39, "name": "Lata 52gr atún aove", "p": 22, "c": 0, "f": 12, "kcal": 196, "unit": "u", "fam": "PROTEIN", "sub": "FISH_BLUE", "icon": "🥫", "qP": 3, "qC": 1, "qF": 3, "aa": {"leu": 1.78, "bcaa": 3.85, "eaa": 9.24}}, {"id": 40, "name": "Lata 65gr caballa al natural", "p": 23, "c": 0, "f": 3.3, "kcal": 122, "unit": "u", "fam": "PROTEIN", "sub": "FISH_BLUE", "icon": "🥫", "qP": 3, "qC": 1, "qF": 3, "aa": {"leu": 1.86, "bcaa": 4.02, "eaa": 9.66}}, {"id": 41, "name": "Lata 65gr sardinilla aove crf", "p": 12.09, "c": 0, "f": 18.85, "kcal": 220, "unit": "u", "fam": "PROTEIN", "sub": "FISH_BLUE", "icon": "🥫", "qP": 3, "qC": 1, "qF": 3, "aa": {"leu": 0.98, "bcaa": 2.12, "eaa": 5.08}}, {"id": 42, "name": "Pollo/Pavo Graso (Muslo/Ala)", "p": 17, "c": 0, "f": 14, "kcal": 195, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_WHITE", "icon": "🍗", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.39, "bcaa": 3.06, "eaa": 7.31}}, {"id": 43, "name": "Queso Fresco (Burgos)", "p": 11, "c": 4, "f": 14, "kcal": 185, "unit": "g", "fam": "DAIRY", "sub": "CHEESE", "icon": "🧀", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.04, "bcaa": 2.31, "eaa": 4.84}}, {"id": 44, "name": "Leche Entera", "p": 3.1, "c": 4.7, "f": 3.6, "kcal": 64, "unit": "g", "fam": "DAIRY", "sub": "MILK", "icon": "🥛", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.29, "bcaa": 0.65, "eaa": 1.36}}, {"id": 45, "name": "Marisco Magro (Gamba/Langostino)", "p": 21, "c": 0, "f": 1, "kcal": 93, "unit": "g", "fam": "PROTEIN", "sub": "FISH_WHITE", "icon": "🦐", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.7, "bcaa": 3.67, "eaa": 8.82}}, {"id": 46, "name": "Cefalópodos (Calamar/Sepia/Pulpo)", "p": 17, "c": 0.5, "f": 1.5, "kcal": 82, "unit": "g", "fam": "PROTEIN", "sub": "FISH_WHITE", "icon": "🦑", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.38, "bcaa": 2.97, "eaa": 7.14}}, {"id": 47, "name": "Moluscos (Mejillón/Almeja)", "p": 12, "c": 3.5, "f": 2.5, "kcal": 85, "unit": "g", "fam": "PROTEIN", "sub": "FISH_WHITE", "icon": "🦪", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 0.97, "bcaa": 2.1, "eaa": 5.04}}, {"id": 48, "name": "Whey 80% Concentrado (WPC 80)", "p": 80, "c": 8, "f": 6, "kcal": 406, "unit": "g", "fam": "PURE", "sub": "P_PROT", "icon": "🥤", "qP": 3, "qC": 1, "qF": 1, "aa": {"leu": 8.8, "bcaa": 19.2, "eaa": 40.0}}, {"id": 49, "name": "Whey 90% Aislado (Iso/CFM)", "p": 90, "c": 2, "f": 1, "kcal": 377, "unit": "g", "fam": "PURE", "sub": "P_PROT", "icon": "🥤", "qP": 3, "qC": 1, "qF": 1, "aa": {"leu": 9.9, "bcaa": 21.6, "eaa": 45.0}}, {"id": 50, "name": "Caseína 78% Micelar", "p": 78, "c": 6, "f": 2, "kcal": 354, "unit": "g", "fam": "PURE", "sub": "P_PROT", "icon": "🥤", "qP": 3, "qC": 1, "qF": 1, "aa": {"leu": 7.41, "bcaa": 16.38, "eaa": 34.32}}, {"id": 51, "name": "Whey 92%Hidrolizado (Hydro)", "p": 92, "c": 1, "f": 0.5, "kcal": 376, "unit": "g", "fam": "PURE", "sub": "P_PROT", "icon": "🥤", "qP": 3, "qC": 1, "qF": 1, "aa": {"leu": 10.12, "bcaa": 22.08, "eaa": 46.0}}, {"id": 52, "name": "Requesón (Cottage)", "p": 12, "c": 3, "f": 4, "kcal": 96, "unit": "g", "fam": "DAIRY", "sub": "CHEESE", "icon": "🥣", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.14, "bcaa": 2.52, "eaa": 5.28}}, {"id": 53, "name": "Lenteja cocida (Bote)", "p": 6.6, "c": 13, "f": 0, "kcal": 88, "unit": "g", "fam": "LEGUME", "sub": "COOKED", "icon": "🥫", "qP": 2, "qC": 3, "qF": 3, "aa": {"leu": 0.5, "bcaa": 1.09, "eaa": 2.51}}, {"id": 54, "name": "Alubia cocida (Bote)", "p": 5.3, "c": 12, "f": 0, "kcal": 85, "unit": "g", "fam": "LEGUME", "sub": "COOKED", "icon": "🥫", "qP": 2, "qC": 3, "qF": 3, "aa": {"leu": 0.4, "bcaa": 0.87, "eaa": 2.01}}, {"id": 55, "name": "Patata cogelada airfryer", "p": 2.7, "c": 24, "f": 5.4, "kcal": 161, "unit": "g", "fam": "CARBS", "sub": "TUBER", "icon": "🍟", "qP": 1, "qC": 3, "qF": 1, "aa": {"leu": 0.15, "bcaa": 0.32, "eaa": 0.81}}, {"id": 56, "name": "Ecocesta 5 cereales", "p": 10.2, "c": 66.9, "f": 3.3, "kcal": 357, "unit": "g", "fam": "CARBS", "sub": "PASTA_RICE", "icon": "🌾", "qP": 1, "qC": 3, "qF": 2, "aa": {"leu": 0.71, "bcaa": 1.48, "eaa": 3.37}}, {"id": 57, "name": "Copos de avena", "p": 12, "c": 58, "f": 7, "kcal": 365, "unit": "g", "fam": "CARBS", "sub": "PASTA_RICE", "icon": "🌾", "qP": 1, "qC": 3, "qF": 2, "aa": {"leu": 0.84, "bcaa": 1.74, "eaa": 3.96}}, {"id": 58, "name": "Yogur Griego Semidesnatado", "p": 10.5, "c": 6, "f": 3, "kcal": 110, "unit": "g", "fam": "DAIRY", "sub": "YOGURT", "icon": "🥣", "qP": 3, "qC": 1, "qF": 2, "aa": {"leu": 1.0, "bcaa": 2.21, "eaa": 4.62}}, {"id": 59, "name": "Carbohidrato macro qC=1", "p": 0, "c": 100, "f": 0, "kcal": 400, "unit": "g", "fam": "PURE", "sub": "P_CARB", "icon": "⚡", "qP": 1, "qC": 1, "qF": 1, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 60, "name": "Grasa macro qF=1", "p": 0, "c": 100, "f": 0, "kcal": 900, "unit": "g", "fam": "PURE", "sub": "P_FAT", "icon": "🧈", "qP": 1, "qC": 1, "qF": 1, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 61, "name": "Grasa macro qF=2", "p": 0, "c": 100, "f": 0, "kcal": 900, "unit": "g", "fam": "PURE", "sub": "P_FAT", "icon": "🧈", "qP": 1, "qC": 1, "qF": 2, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 62, "name": "Grasa macro qF=3", "p": 0, "c": 100, "f": 0, "kcal": 900, "unit": "g", "fam": "PURE", "sub": "P_FAT", "icon": "🧈", "qP": 1, "qC": 1, "qF": 3, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 63, "name": "Carbohidrato macro qC=2", "p": 0, "c": 100, "f": 0, "kcal": 400, "unit": "g", "fam": "PURE", "sub": "P_CARB", "icon": "⚡", "qP": 1, "qC": 2, "qF": 1, "aa": {"leu": 0.0, "bcaa": 0.0, "eaa": 0.0}}, {"id": 64, "name": "Lacon Carrefour Ahumado", "p": 17, "c": 1, "f": 9, "kcal": 153, "unit": "g", "fam": "PROTEIN", "sub": "MEAT_RED", "icon": "🐷", "qP": 2, "qC": 1, "qF": 1, "aa": {"leu": 1.39, "bcaa": 3.06, "eaa": 7.31}}, {"id": 65, "name": "Whey 83% Isolate", "p": 83, "c": 3.1, "f": 1.4, "kcal": 361, "unit": "g", "fam": "PURE", "sub": "P_PROT", "icon": "🥤", "qP": 3, "qC": 1, "qF": 1, "aa": {"leu": 9.13, "bcaa": 19.92, "eaa": 41.5}}];
         }
 
         async function initApp() {
             try {
-                let remoteFoods = [];
-                if (window.location.protocol === 'file:') {
+                try {
+                    // 1. Pedimos los archivos al servidor / disco local (foods.json y structure.json)
+                    const [foodsRes, structRes] = await Promise.all([
+                        fetch('./foods.json'),
+                        fetch('./structure.json')
+                    ]);
+
+                    if (!foodsRes.ok || !structRes.ok) throw new Error("HTTP / File load error");
+
+                    remoteFoods = await foodsRes.json();
+                    FOOD_STRUCTURE = await structRes.json();
+                } catch (e) {
+                    console.warn("Fetch de foods.json no disponible. Usando base de datos embebida.", e);
                     remoteFoods = getEmbeddedFallbackFoods();
                     FOOD_STRUCTURE = getEmbeddedFallbackStructure();
-                } else {
-                    try {
-                        // 1. Pedimos los archivos al servidor (GitHub Pages / HTTP)
-                        const [foodsRes, structRes] = await Promise.all([
-                            fetch('./foods.json'),
-                            fetch('./structure.json')
-                        ]);
-
-                        if (!foodsRes.ok || !structRes.ok) throw new Error("No se pudieron cargar los archivos JSON vía HTTP");
-
-                        remoteFoods = await foodsRes.json();
-                        FOOD_STRUCTURE = await structRes.json();
-                    } catch (e) {
-                        console.warn("Fetch de foods.json no disponible. Usando base de datos embebida.", e);
-                        remoteFoods = getEmbeddedFallbackFoods();
-                        FOOD_STRUCTURE = getEmbeddedFallbackStructure();
-                    }
                 }
 
                 // 2. Cargamos el historial, recetas y estado consumido del usuario (LocalStorage)
@@ -7631,32 +7712,161 @@
         } else {
             initTableDragAndDrop();
         }
+        function getFoodForLogItem(i) {
+            if (!i) return null;
+            if (i.foodId !== undefined && i.foodId !== null) {
+                const found = foodData.find(fd => String(fd.id) === String(i.foodId));
+                if (found) return found;
+            }
+            const name = i.foodName || i.name;
+            if (name) {
+                const cleanName = String(name).trim().toLowerCase();
+                const found = foodData.find(fd => String(fd.name).trim().toLowerCase() === cleanName);
+                if (found) return found;
+                const foundPartial = foodData.find(fd => cleanName.includes(String(fd.name).trim().toLowerCase()) || String(fd.name).trim().toLowerCase().includes(cleanName));
+                if (foundPartial) return foundPartial;
+            }
+            if (i.id !== undefined && i.id !== null && Number(i.id) < 1000) {
+                const found = foodData.find(fd => String(fd.id) === String(i.id));
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function getRecipeForLogItem(i) {
+            if (!i) return null;
+            if (i.foodId !== undefined && i.foodId !== null) {
+                const found = recipeData.find(rd => String(rd.id) === String(i.foodId));
+                if (found) return found;
+            }
+            const name = i.foodName || i.name;
+            if (name) {
+                const cleanName = String(name).trim().toLowerCase();
+                const found = recipeData.find(rd => String(rd.name).trim().toLowerCase() === cleanName);
+                if (found) return found;
+            }
+            return null;
+        }
+
+        function formatAminoBadge(consumed, target) {
+            const diff = consumed - target;
+            const isOk = diff >= 0;
+            const badgeClass = isOk 
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
+                : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
+            const sign = diff >= 0 ? '+' : '';
+            return `<span class="text-[10px] ${badgeClass} border px-2 py-0.5 rounded-full font-bold whitespace-nowrap">${sign}${diff.toFixed(1)}g</span>`;
+        }
+
         function calcTotals(items) {
-            let p = 0, c = 0, f = 0, k = 0; items.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
+            let p = 0, c = 0, f = 0, k = 0;
+            let leu = 0, bcaa = 0, eaa = 0;
+
+            items.forEach(i => {
+                p += i.p; c += i.c; f += i.f; k += i.kcal;
+                let itemLeu = i.leu, itemBcaa = i.bcaa, itemEaa = i.eaa;
+                if (itemLeu === undefined || itemBcaa === undefined || itemEaa === undefined) {
+                    const amt = i.amount !== undefined ? i.amount : (i.qty || 0);
+                    if (i.type === 'recipe') {
+                        const recipe = getRecipeForLogItem(i);
+                        if (recipe && recipe.ingredients) {
+                            let rLeu = 0, rBcaa = 0, rEaa = 0;
+                            recipe.ingredients.forEach(ing => {
+                                const ingFood = getFoodForLogItem(ing);
+                                if (ingFood && ingFood.aa) {
+                                    const factor = ingFood.unit === 'g' ? (ing.amount || 0) / 100 : (ing.amount || 0);
+                                    rLeu += (ingFood.aa.leu || 0) * factor;
+                                    rBcaa += (ingFood.aa.bcaa || 0) * factor;
+                                    rEaa += (ingFood.aa.eaa || 0) * factor;
+                                } else if (ing.p) {
+                                    rLeu += ing.p * 0.08;
+                                    rBcaa += ing.p * 0.18;
+                                    rEaa += ing.p * 0.42;
+                                }
+                            });
+                            const recipeAmount = amt || 1;
+                            itemLeu = rLeu * recipeAmount;
+                            itemBcaa = rBcaa * recipeAmount;
+                            itemEaa = rEaa * recipeAmount;
+                        } else if (i.p) {
+                            itemLeu = i.p * 0.08;
+                            itemBcaa = i.p * 0.18;
+                            itemEaa = i.p * 0.42;
+                        }
+                    } else {
+                        const food = getFoodForLogItem(i);
+                        if (food && food.aa) {
+                            const factor = food.unit === 'g' ? amt / 100 : amt;
+                            itemLeu = (food.aa.leu || 0) * factor;
+                            itemBcaa = (food.aa.bcaa || 0) * factor;
+                            itemEaa = (food.aa.eaa || 0) * factor;
+                        } else if (i.p) {
+                            itemLeu = i.p * 0.08;
+                            itemBcaa = i.p * 0.18;
+                            itemEaa = i.p * 0.42;
+                        }
+                    }
+                }
+                leu += (itemLeu || 0);
+                bcaa += (itemBcaa || 0);
+                eaa += (itemEaa || 0);
+            });
+
             const targets = getTargetMacros();
+            const ffm = targets.ffm || 68;
+            const targetLeu = 0.20 * ffm;
+            const targetBcaa = 0.45 * ffm;
+            const targetEaa = 1.00 * ffm;
 
             const historyDiffEl = document.getElementById('historyTargetDiffContent');
             if (historyDiffEl) {
                 historyDiffEl.innerHTML = `
-                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
-                        <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                    <div class="grid grid-cols-4 gap-2 mb-2">
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
+                            <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
+                            <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
+                            <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
+                            <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                        </div>
                     </div>
-                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
-                        <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
-                    </div>
-                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
-                        <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
-                    </div>
-                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
-                        <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                    <div class="bg-[#1c1c1e] p-2.5 rounded-xl border border-[#2c2c2e] mt-2">
+                        <div class="flex items-center justify-between mb-2 px-1">
+                            <span class="text-[10px] font-bold text-white/70 uppercase tracking-wider flex items-center gap-1">
+                                🧬 Aminoácidos FFM (${ffm.toFixed(1)} kg)
+                            </span>
+                            <button type="button" onclick="openChartHelpModal('aminoAcidsHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Guía de Aminoácidos">❓</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center">
+                            <div class="bg-[#2c2c2e] p-2 rounded-xl border border-emerald-500/20 flex flex-col items-center justify-between">
+                                <span class="text-[10px] text-emerald-400 font-bold uppercase">LEU (0.2x)</span>
+                                <span class="text-[11px] font-mono font-bold text-white mt-0.5">${leu.toFixed(1)} / ${targetLeu.toFixed(1)}g</span>
+                                <div class="mt-1">${formatAminoBadge(leu, targetLeu)}</div>
+                            </div>
+                            <div class="bg-[#2c2c2e] p-2 rounded-xl border border-blue-500/20 flex flex-col items-center justify-between">
+                                <span class="text-[10px] text-blue-400 font-bold uppercase">BCAA (0.45x)</span>
+                                <span class="text-[11px] font-mono font-bold text-white mt-0.5">${bcaa.toFixed(1)} / ${targetBcaa.toFixed(1)}g</span>
+                                <div class="mt-1">${formatAminoBadge(bcaa, targetBcaa)}</div>
+                            </div>
+                            <div class="bg-[#2c2c2e] p-2 rounded-xl border border-purple-500/20 flex flex-col items-center justify-between">
+                                <span class="text-[10px] text-purple-400 font-bold uppercase">EAA (1.0x)</span>
+                                <span class="text-[11px] font-mono font-bold text-white mt-0.5">${eaa.toFixed(1)} / ${targetEaa.toFixed(1)}g</span>
+                                <div class="mt-1">${formatAminoBadge(eaa, targetEaa)}</div>
+                            </div>
+                        </div>
                     </div>
                 `;
             }
@@ -7678,6 +7888,19 @@
                     <div class="text-xs font-medium text-white">${k} <span class="text-[9px] text-white">/ ${targets.k}</span></div>
                     <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
                 `;
+
+                if (document.getElementById('homeLeu')) {
+                    document.getElementById('homeLeu').innerHTML = `${leu.toFixed(1)} <span class="text-[9px] text-white/70">/ ${targetLeu.toFixed(1)}g</span>`;
+                    document.getElementById('homeLeuBadge').innerHTML = formatAminoBadge(leu, targetLeu);
+                }
+                if (document.getElementById('homeBcaa')) {
+                    document.getElementById('homeBcaa').innerHTML = `${bcaa.toFixed(1)} <span class="text-[9px] text-white/70">/ ${targetBcaa.toFixed(1)}g</span>`;
+                    document.getElementById('homeBcaaBadge').innerHTML = formatAminoBadge(bcaa, targetBcaa);
+                }
+                if (document.getElementById('homeEaa')) {
+                    document.getElementById('homeEaa').innerHTML = `${eaa.toFixed(1)} <span class="text-[9px] text-white/70">/ ${targetEaa.toFixed(1)}g</span>`;
+                    document.getElementById('homeEaaBadge').innerHTML = formatAminoBadge(eaa, targetEaa);
+                }
             }
             if (document.getElementById('footKcal')) {
                 document.getElementById('footKcal').innerHTML = `${k} <span class="text-xs font-normal text-white">kcal</span>`;
