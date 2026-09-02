@@ -1495,7 +1495,7 @@
                 <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
                     <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
                 </div>
-                <div id="editAmountTargetDiffContent" class="grid grid-cols-4 gap-2 text-center text-xs"></div>
+                <div id="editAmountTargetDiffContent" class="space-y-2 text-xs"></div>
             </div>
 
             <!-- Slider para Ajustar Cantidad -->
@@ -7463,6 +7463,9 @@
             item.c = parseFloat((item.c * ratio).toFixed(1));
             item.f = parseFloat((item.f * ratio).toFixed(1));
             item.kcal = Math.round(item.kcal * ratio);
+            if (item.leu !== undefined) item.leu = parseFloat((item.leu * ratio).toFixed(2));
+            if (item.bcaa !== undefined) item.bcaa = parseFloat((item.bcaa * ratio).toFixed(2));
+            if (item.eaa !== undefined) item.eaa = parseFloat((item.eaa * ratio).toFixed(2));
 
             const unit = item.unit || 'g';
             const displayVal = document.getElementById('editAmountDisplayVal');
@@ -7483,29 +7486,111 @@
             if (s && e) filtered = filtered.filter(i => i.date >= s && i.date <= e);
 
             let p = 0, c = 0, f = 0, k = 0;
-            filtered.forEach(i => { p += i.p; c += i.c; f += i.f; k += i.kcal; });
+            let leu = 0, bcaa = 0, eaa = 0;
+
+            filtered.forEach(i => {
+                p += i.p; c += i.c; f += i.f; k += i.kcal;
+                let itemLeu = i.leu, itemBcaa = i.bcaa, itemEaa = i.eaa;
+                if (itemLeu === undefined || itemBcaa === undefined || itemEaa === undefined) {
+                    const amt = i.amount !== undefined ? i.amount : (i.qty || 0);
+                    if (i.type === 'recipe') {
+                        const recipe = getRecipeForLogItem(i);
+                        if (recipe && recipe.ingredients) {
+                            let rLeu = 0, rBcaa = 0, rEaa = 0;
+                            recipe.ingredients.forEach(ing => {
+                                const ingFood = getFoodForLogItem(ing);
+                                if (ingFood && ingFood.aa) {
+                                    const factor = ingFood.unit === 'g' ? (ing.amount || 0) / 100 : (ing.amount || 0);
+                                    rLeu += (ingFood.aa.leu || 0) * factor;
+                                    rBcaa += (ingFood.aa.bcaa || 0) * factor;
+                                    rEaa += (ingFood.aa.eaa || 0) * factor;
+                                } else if (ing.p) {
+                                    rLeu += ing.p * 0.08;
+                                    rBcaa += ing.p * 0.18;
+                                    rEaa += ing.p * 0.42;
+                                }
+                            });
+                            const recipeAmount = amt || 1;
+                            itemLeu = rLeu * recipeAmount;
+                            itemBcaa = rBcaa * recipeAmount;
+                            itemEaa = rEaa * recipeAmount;
+                        } else if (i.p) {
+                            itemLeu = i.p * 0.08;
+                            itemBcaa = i.p * 0.18;
+                            itemEaa = i.p * 0.42;
+                        }
+                    } else {
+                        const food = getFoodForLogItem(i);
+                        if (food && food.aa) {
+                            const factor = food.unit === 'g' ? amt / 100 : amt;
+                            itemLeu = (food.aa.leu || 0) * factor;
+                            itemBcaa = (food.aa.bcaa || 0) * factor;
+                            itemEaa = (food.aa.eaa || 0) * factor;
+                        } else if (i.p) {
+                            itemLeu = i.p * 0.08;
+                            itemBcaa = i.p * 0.18;
+                            itemEaa = i.p * 0.42;
+                        }
+                    }
+                }
+                leu += (itemLeu || 0);
+                bcaa += (itemBcaa || 0);
+                eaa += (itemEaa || 0);
+            });
+
             const targets = getTargetMacros();
+            const ffm = targets.ffm || 68;
+            const targetLeu = 0.20 * ffm;
+            const targetBcaa = 0.45 * ffm;
+            const targetEaa = 1.00 * ffm;
 
             modalDiffEl.innerHTML = `
-                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                    <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
-                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
-                    <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                <div class="grid grid-cols-4 gap-2 mb-2">
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
+                        <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
+                        <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
+                        <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
+                    </div>
+                    <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                        <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
+                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
+                        <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                    </div>
                 </div>
-                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                    <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
-                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
-                    <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
-                </div>
-                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                    <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
-                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
-                    <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
-                </div>
-                <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                    <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
-                    <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
-                    <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
+                <div class="bg-[#1c1c1e] p-2.5 rounded-xl border border-[#2c2c2e] mt-2">
+                    <div class="flex items-center justify-between mb-2 px-1">
+                        <span class="text-[10px] font-bold text-white/70 uppercase tracking-wider flex items-center gap-1">
+                            🧬 Aminoácidos FFM (${ffm.toFixed(1)} kg)
+                        </span>
+                        <button type="button" onclick="openChartHelpModal('aminoAcidsHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Guía de Aminoácidos">❓</button>
+                    </div>
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-emerald-500/20 flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase">LEU (0.2x)</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${leu.toFixed(1)} / ${targetLeu.toFixed(1)}g</span>
+                            <div class="mt-1">${formatAminoBadge(leu, targetLeu)}</div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-blue-500/20 flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-blue-400 font-bold uppercase">BCAA (0.45x)</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${bcaa.toFixed(1)} / ${targetBcaa.toFixed(1)}g</span>
+                            <div class="mt-1">${formatAminoBadge(bcaa, targetBcaa)}</div>
+                        </div>
+                        <div class="bg-[#2c2c2e] p-2 rounded-xl border border-purple-500/20 flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-purple-400 font-bold uppercase">EAA (1.0x)</span>
+                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${eaa.toFixed(1)} / ${targetEaa.toFixed(1)}g</span>
+                            <div class="mt-1">${formatAminoBadge(eaa, targetEaa)}</div>
+                        </div>
+                    </div>
                 </div>
             `;
         }
