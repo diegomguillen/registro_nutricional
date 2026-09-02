@@ -1378,5 +1378,25 @@
     "bcaa": 0.85,
     "eaa": 1.92
   }
-}
+ },
+ {
+  "id": 72,
+  "name": "Anchoa en Aceite (Filete ~5g)",
+  "p": 1.4,
+  "c": 0.0,
+  "f": 0.6,
+  "kcal": 11,
+  "unit": "u",
+  "fam": "PROTEIN",
+  "sub": "FISH_BLUE",
+  "icon": "🐟",
+  "qP": 3,
+  "qC": 1,
+  "qF": 3,
+  "aa": {
+    "leu": 0.11,
+    "bcaa": 0.25,
+    "eaa": 0.59
+  }
+ }
 ]
