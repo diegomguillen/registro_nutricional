@@ -2273,6 +2273,8 @@
             const statusBadge = document.getElementById('compareModeStatusBadge');
             const btnCard = document.getElementById('btnToggleCompareMode');
             const tray = document.getElementById('compareTray');
+            const subModalContent = document.querySelector('#subCategoryModal > div');
+            const catModalContent = document.querySelector('#categoryModal > div');
 
             if (isCompareMode) {
                 if (statusBadge) {
@@ -2281,6 +2283,8 @@
                 }
                 if (btnCard) btnCard.classList.add('border-emerald-500', 'bg-emerald-900/30');
                 if (tray) tray.classList.remove('hidden');
+                if (subModalContent) subModalContent.classList.add('pb-36');
+                if (catModalContent) catModalContent.classList.add('pb-36');
                 if (typeof showToast === 'function') showToast('⚖️ Modo Comparador activo: selecciona hasta 3 alimentos');
             } else {
                 if (statusBadge) {
@@ -2289,6 +2293,8 @@
                 }
                 if (btnCard) btnCard.classList.remove('border-emerald-500', 'bg-emerald-900/30');
                 if (tray) tray.classList.add('hidden');
+                if (subModalContent) subModalContent.classList.remove('pb-36');
+                if (catModalContent) catModalContent.classList.remove('pb-36');
             }
             updateCompareTrayUI();
             refreshCurrentCategoryGrid();
@@ -2738,6 +2744,14 @@
                 <span class="text-[9px] font-medium text-white uppercase text-center leading-tight">OCR / Etiqueta</span>`;
             grid.appendChild(ocrBtn);
 
+            const catModalContent = document.querySelector('#categoryModal > div');
+            if (catModalContent) {
+                if (typeof isCompareMode !== 'undefined' && isCompareMode) {
+                    catModalContent.classList.add('pb-36');
+                } else {
+                    catModalContent.classList.remove('pb-36');
+                }
+            }
             document.getElementById('categoryModal').classList.remove('hidden');
         }
 
@@ -2798,6 +2812,14 @@
                 grid.appendChild(emptyBtn);
             }
 
+            const subModalContent = document.querySelector('#subCategoryModal > div');
+            if (subModalContent) {
+                if (typeof isCompareMode !== 'undefined' && isCompareMode) {
+                    subModalContent.classList.add('pb-36');
+                } else {
+                    subModalContent.classList.remove('pb-36');
+                }
+            }
             document.getElementById('subCategoryModal').classList.remove('hidden');
         }
 
@@ -2907,6 +2929,14 @@
                 }
             }
 
+            const subModalContent = document.querySelector('#subCategoryModal > div');
+            if (subModalContent) {
+                if (typeof isCompareMode !== 'undefined' && isCompareMode) {
+                    subModalContent.classList.add('pb-36');
+                } else {
+                    subModalContent.classList.remove('pb-36');
+                }
+            }
             document.getElementById('subCategoryModal').classList.remove('hidden');
         }
 
