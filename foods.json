@@ -1398,5 +1398,25 @@
     "bcaa": 0.25,
     "eaa": 0.59
   }
+ },
+ {
+  "id": 73,
+  "name": "Lindahls Protein Piña y Coco (Tarrina 160g)",
+  "p": 15.0,
+  "c": 11.0,
+  "f": 0.3,
+  "kcal": 107,
+  "unit": "u",
+  "fam": "PURE",
+  "sub": "P_PROT",
+  "icon": "🥤",
+  "qP": 3,
+  "qC": 2,
+  "qF": 2,
+  "aa": {
+    "leu": 1.43,
+    "bcaa": 3.15,
+    "eaa": 6.6
+  }
  }
 ]
