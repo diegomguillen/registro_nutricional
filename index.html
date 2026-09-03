@@ -2237,17 +2237,20 @@
     <div id="recipeGridModal"
         class="fixed inset-0 bg-black/80 hidden z-[70] flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div
-            class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
-            <div class="flex justify-between items-center mb-4">
-                <h3 class="text-lg font-medium text-white">Mis Recetas</h3>
+            class="bg-[#1c1c1e] w-full sm:max-w-xl rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-4 pb-2 border-b border-[#2c2c2e]">
+                <div class="flex items-center gap-2">
+                    <span class="text-xl">📖</span>
+                    <h3 class="text-lg font-medium text-white">Mis Recetas</h3>
+                </div>
                 <button onclick="document.getElementById('recipeGridModal').classList.add('hidden')"
-                    class="text-white hover:text-white bg-[#2c2c2e] p-1 rounded-full"><svg class="w-6 h-6" fill="none"
+                    class="text-white hover:text-white bg-[#2c2c2e] p-1.5 rounded-full border border-white/10"><svg class="w-5 h-5" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
                     </svg></button>
             </div>
-            <div id="recipeGrid" class="grid grid-cols-3 gap-3"></div>
+            <div id="recipeGrid" class="space-y-3"></div>
         </div>
     </div>
 
@@ -2573,55 +2576,72 @@
 
         function openRecipeGrid() {
             const grid = document.getElementById('recipeGrid');
+            if (!grid) return;
             grid.innerHTML = '';
+            grid.className = "space-y-3";
 
             if (recipeData.length === 0) {
-                grid.innerHTML = '<p class="col-span-3 text-center text-white italic py-4">No hay recetas guardadas.</p>';
+                grid.innerHTML = '<p class="text-center text-white/50 italic py-8 text-sm">No hay recetas guardadas.</p>';
             } else {
                 [...recipeData].sort((a, b) => a.name.localeCompare(b.name)).forEach(r => {
-                    const wrapper = document.createElement('div');
-                    wrapper.className = "relative group";
+                    const card = document.createElement('div');
+                    card.className = "relative group bg-[#2c2c2e] hover:bg-[#343438] border border-[#3a3a3c] hover:border-emerald-500/50 rounded-2xl p-4 transition-all active:scale-[0.99] flex items-start justify-between gap-3 shadow-md cursor-pointer";
+                    card.onclick = () => selectRecipeFromGrid(r.id);
 
-                    const btn = document.createElement('button');
-                    btn.className = "w-full h-full flex flex-col items-center justify-center p-3 rounded-xl bg-[#2c2c2e] border border-[#3a3a3c] hover:bg-[#3a3a3c] transition-all active:scale-95 min-h-[5rem]";
-                    btn.onclick = () => selectRecipeFromGrid(r.id);
-                    btn.innerHTML = `
-                        <div class="text-2xl mb-1">📖</div>
-                        <span class="text-[9px] font-medium text-white uppercase text-center leading-tight line-clamp-2">${r.name}</span>
-                        <span class="text-[8px] text-white/50 bg-black/30 px-1.5 rounded-full mt-1">${Math.round(r.kcal)} kcal</span>
-                    `;
+                    const hasDesc = r.description && r.description.trim().length > 0;
+                    let formattedDesc = '';
+                    if (hasDesc) {
+                        const rawDesc = r.description.trim();
+                        formattedDesc = rawDesc.charAt(0).toUpperCase() + rawDesc.slice(1);
+                    }
 
-                    const editBtn = document.createElement('button');
-                    editBtn.className = "absolute -top-2 -left-2 z-10 w-8 h-8 bg-blue-500/20 text-blue-500 border border-blue-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
-                    editBtn.onclick = (e) => editRecipeName(e, r.id);
-                    editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
+                    const ingredientsText = (r.ingredients && Array.isArray(r.ingredients) && r.ingredients.length > 0)
+                        ? r.ingredients.map(i => `${i.amount}${i.unit || 'g'} ${i.name}`).join(' • ')
+                        : '';
 
-                    const delBtn = document.createElement('button');
-                    delBtn.className = "absolute -top-2 -right-2 z-10 w-8 h-8 bg-red-500/20 text-red-500 border border-red-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
-                    delBtn.onclick = (e) => deleteRecipeFromGrid(e, r.id);
-                    delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
+                    let detailsHtml = '';
+                    if (ingredientsText) {
+                        const mbClass = hasDesc ? 'mb-1' : 'mb-2';
+                        detailsHtml += `<p class="text-[11px] text-white/50 leading-relaxed break-words ${mbClass}">${ingredientsText}</p>`;
+                    }
+                    if (hasDesc) {
+                        detailsHtml += `<p class="text-[11px] text-white/50 leading-relaxed break-words mb-2">${formattedDesc}</p>`;
+                    }
+                    if (!ingredientsText && !hasDesc) {
+                        detailsHtml += `<p class="text-[11px] text-white/40 italic leading-relaxed break-words mb-2">Sin ingredientes especificados</p>`;
+                    }
 
-                    wrapper.appendChild(btn);
-                    wrapper.appendChild(editBtn);
-                    wrapper.appendChild(delBtn);
-                    grid.appendChild(wrapper);
-                });
-
-                // Completar fila (múltiplo de 3)
-                const remaining = (3 - (recipeData.length % 3)) % 3;
-                for (let i = 0; i < remaining; i++) {
-                    const emptyBtn = document.createElement('button');
-                    emptyBtn.className = "bg-[#2c2c2e]/50 border border-[#3a3a3c]/50 rounded-xl p-3 flex flex-col items-center gap-2 text-center opacity-40 cursor-default";
-                    emptyBtn.innerHTML = `
-                        <div class="w-12 h-12 rounded-full bg-[#1c1c1e]/50 border border-[#3a3a3c]/50 shadow-sm flex items-center justify-center text-2xl">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
+                    card.innerHTML = `
+                        <div class="flex items-start gap-3 flex-1 min-w-0 pr-16">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-2xl shrink-0 mt-0.5 shadow-sm">
+                                📖
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-bold text-white uppercase leading-tight break-words mb-1.5">${r.name}</h4>
+                                ${detailsHtml}
+                                <div class="flex items-center gap-2 text-[10.5px] font-mono whitespace-nowrap overflow-x-auto no-scrollbar pt-0.5">
+                                    <span class="text-emerald-400 font-bold">P: ${Math.round(r.p || 0)}g</span>
+                                    <span class="text-white/30">•</span>
+                                    <span class="text-amber-400 font-bold">C: ${Math.round(r.c || 0)}g</span>
+                                    <span class="text-white/30">•</span>
+                                    <span class="text-red-400 font-bold">G: ${Math.round(r.f || 0)}g</span>
+                                    <span class="text-white/30">•</span>
+                                    <span class="text-[#0a84ff] font-bold">${Math.round(r.kcal || 0)} kcal</span>
+                                </div>
+                            </div>
                         </div>
-                        <span class="text-[10px] font-medium text-white leading-tight">...</span>
+                        <div class="absolute top-3.5 right-3.5 flex items-center gap-1.5">
+                            <button onclick="editRecipeName(event, ${r.id})" class="p-1.5 rounded-xl bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 border border-blue-500/30 transition-all active:scale-90" title="Editar nombre">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                            <button onclick="deleteRecipeFromGrid(event, ${r.id})" class="p-1.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/30 transition-all active:scale-90" title="Eliminar receta">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
                     `;
-                    grid.appendChild(emptyBtn);
-                }
+
+                    grid.appendChild(card);
+                });
             }
             document.getElementById('recipeGridModal').classList.remove('hidden');
         }
