@@ -659,14 +659,14 @@
 
                     <!-- Rankings Top 5 (3 Columnas) -->
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-                        <!-- Columna 1: Top 5 Anabólicos -->
+                        <!-- Columna 1: Top 5 Músculo & Suplementos (Tendencia 14d) -->
                         <div class="bg-[#2c2c2e]/60 border border-[#3a3a3c] rounded-xl p-3 space-y-2 flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between border-b border-[#3a3a3c] pb-1.5 mb-2">
-                                    <span class="text-[11px] font-bold text-emerald-400 uppercase flex items-center gap-1">💪 Top 5 Músculo Seco (a las 24h)</span>
+                                    <span class="text-[11px] font-bold text-emerald-400 uppercase flex items-center gap-1">💪 Top 5 Músculo & Suplementos</span>
                                     <div class="flex items-center gap-1">
                                         <button onclick="openChartHelpModal('topAnabolicHelp')" class="w-4 h-4 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
-                                        <span class="text-[9px] text-white/50">Anabólicos</span>
+                                        <span class="text-[9px] text-emerald-400/80 font-medium px-1.5 py-0.2 rounded bg-emerald-500/10 border border-emerald-500/20">Tendencia 14d</span>
                                     </div>
                                 </div>
                                 <div id="listTopAnabolic" class="space-y-1.5 min-h-[6rem] text-xs">
@@ -678,14 +678,14 @@
                             </div>
                         </div>
 
-                        <!-- Columna 2: Top 5 Pérdida Grasa -->
+                        <!-- Columna 2: Top 5 Pérdida Grasa (Tendencia 14d) -->
                         <div class="bg-[#2c2c2e]/60 border border-[#3a3a3c] rounded-xl p-3 space-y-2 flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between border-b border-[#3a3a3c] pb-1.5 mb-2">
-                                    <span class="text-[11px] font-bold text-amber-400 uppercase flex items-center gap-1">🔥 Top 5 Pérdida Grasa (a las 24h)</span>
+                                    <span class="text-[11px] font-bold text-amber-400 uppercase flex items-center gap-1">🔥 Top 5 Pérdida Grasa</span>
                                     <div class="flex items-center gap-1">
                                         <button onclick="openChartHelpModal('topLipolyticHelp')" class="w-4 h-4 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
-                                        <span class="text-[9px] text-white/50">Déficit</span>
+                                        <span class="text-[9px] text-amber-400/80 font-medium px-1.5 py-0.2 rounded bg-amber-500/10 border border-amber-500/20">Tendencia 14d</span>
                                     </div>
                                 </div>
                                 <div id="listTopLipolytic" class="space-y-1.5 min-h-[6rem] text-xs">
@@ -697,14 +697,14 @@
                             </div>
                         </div>
 
-                        <!-- Columna 3: Top 5 Retención Hídrica -->
+                        <!-- Columna 3: Top 5 Retención Hídrica (Agudo 24h) -->
                         <div class="bg-[#2c2c2e]/60 border border-[#3a3a3c] rounded-xl p-3 space-y-2 flex flex-col justify-between">
                             <div>
                                 <div class="flex items-center justify-between border-b border-[#3a3a3c] pb-1.5 mb-2">
-                                    <span class="text-[11px] font-bold text-blue-400 uppercase flex items-center gap-1">💧 Top 5 Retención Agua (a las 24h)</span>
+                                    <span class="text-[11px] font-bold text-blue-400 uppercase flex items-center gap-1">💧 Top 5 Retención Agua (24h)</span>
                                     <div class="flex items-center gap-1">
                                         <button onclick="openChartHelpModal('topWaterHelp')" class="w-4 h-4 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[9px] font-bold transition-all active:scale-95" title="Ayuda e Interpretación">❓</button>
-                                        <span class="text-[9px] text-white/50">Hídricos</span>
+                                        <span class="text-[9px] text-blue-400/80 font-medium px-1.5 py-0.2 rounded bg-blue-500/10 border border-blue-500/20">Agudo 24h</span>
                                     </div>
                                 </div>
                                 <div id="listTopWater" class="space-y-1.5 min-h-[6rem] text-xs">
@@ -1521,7 +1521,7 @@
             <!-- Cabecera -->
             <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-3 shrink-0">
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
-                    📊 Ranking Completo de Alimentos e Impacto (24h)
+                    📊 Ranking Completo de Alimentos y Suplementos
                 </h3>
                 <button type="button" onclick="closeFullRankingModal()" class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center" title="Cerrar">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1533,13 +1533,13 @@
             <!-- Pestañas del Ranking -->
             <div class="flex bg-[#2c2c2e] p-1 rounded-xl border border-[#3a3a3c] gap-1 shrink-0 text-xs font-medium">
                 <button id="tabRankAnabolic" onclick="switchFullRankingTab('anabolic')" class="flex-1 py-2 rounded-lg text-center transition-all bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30">
-                    💪 Músculo Seco
+                    💪 Músculo (14d)
                 </button>
                 <button id="tabRankLipolytic" onclick="switchFullRankingTab('lipolytic')" class="flex-1 py-2 rounded-lg text-center transition-all text-white/60 hover:text-white">
-                    🔥 Pérdida Grasa
+                    🔥 Grasa (14d)
                 </button>
                 <button id="tabRankWater" onclick="switchFullRankingTab('water')" class="flex-1 py-2 rounded-lg text-center transition-all text-white/60 hover:text-white">
-                    💧 Retención Agua
+                    💧 Agua (24h)
                 </button>
             </div>
 
@@ -3780,41 +3780,40 @@
             },
             topAnabolicHelp: {
                 icon: "💪",
-                title: "Top 5 Músculo Seco (a las 24h)",
-                subtitle: "Alimentos anabólicos estrella para masa magra",
-                purpose: "Muestra los alimentos de tu historial con mayor asociación en preservación y aumento de masa muscular seca pura a las 24h.",
-                howTo: "🤖 MODELO ML UTILIZADO:\n" +
-                       "• Modelo EMA + Covarianza Muscular a 24h: Mide el cambio medio estimado en masa muscular seca normalizada a las 24h de consumir el alimento.\n" +
-                       "• Confianza Sigmoidal (%): Precisión matemática calculada según los días emparejados con báscula.\n\n" +
+                title: "Top 5 Músculo & Suplementos (Tendencia 14d)",
+                subtitle: "Alimentos y suplementos correlacionados con crecimiento magro sostenido",
+                purpose: "Identifica qué alimentos y suplementos (incluyendo los de 0 kcal como la creatina) han estado presentes de forma regular durante tus períodos de mayor crecimiento de masa magra real.",
+                howTo: "📈 MODELO DE TENDENCIA ACUMULADA (14 días):\n" +
+                       "• En lugar de medir oscilaciones de 24h (que solo reflejan agua y glucógeno), evalúa la pendiente de tu media móvil de masa muscular (EMA) en bloques de hasta 14-28 días.\n" +
+                       "• Métrica (+180g / 14d): Tasa media quincenal de ganancia magra asociada a los períodos con presencia de dicho alimento o suplemento.\n" +
+                       "• Compatible con 0 kcal: La creatina y suplementos sin calorías se contabilizan por su constancia y frecuencia en tus fases de progresión.\n\n" +
                        "📊 DECISIÓN NUTRICIONAL:\n" +
-                       "🟢 Días de Fuerza / WOD: Coloca estos alimentos como prioritarios en el entorno de tus entrenamientos (Pre y Post-WOD) para maximizar la síntesis proteica.",
-                conclusiones: "✔ Estrategia Magra: Asegura raciones de estos alimentos en tus ventanas peri-entreno para proteger el músculo contráctil."
+                       "🟢 Prioridad Anabólica: Mantén estos alimentos y suplementos como base habitual en tus fases de ganancia muscular o recomposición.",
+                conclusiones: "✔ Rigor Tisular: La hipertrofia real requiere semanas de estímulo acumulado, no de 24 horas."
             },
             topLipolyticHelp: {
                 icon: "🔥",
-                title: "Top 5 Pérdida Grasa (a las 24h)",
-                subtitle: "Alimentos aliados en días de déficit calórico",
-                purpose: "Identifica los alimentos presentes de forma más habitual en tus mejores días de pérdida de masa grasa a las 24h.",
-                howTo: "🤖 MODELO ML UTILIZADO:\n" +
-                       "• Regresión y Filtro de Asociación de Grasa: Identifica correlaciones entre alimentos e ingesta saciante que conducen a balances calóricos negativos sin pérdida magra.\n" +
-                       "• Métrica en gramos (-100g, -85g): Reducción media de masa grasa a las 24h de ingerir el alimento.\n\n" +
+                title: "Top 5 Pérdida Grasa (Tendencia 14d)",
+                subtitle: "Alimentos presentes en tus fases de definición sostenida",
+                purpose: "Identifica los alimentos habituales en tus etapas de pérdida de grasa corporal acumulada y exitosa.",
+                howTo: "📈 MODELO DE TENDENCIA DE GRASA (14 días):\n" +
+                       "• Correlaciona la ingesta de alimentos con la pendiente quincenal de pérdida de grasa corporal neta (EMA).\n" +
+                       "• Métrica (-350g / 14d): Tasa media de reducción de masa grasa quincenal asociada a la presencia recurrente de dicho alimento.\n\n" +
                        "📊 DECISIÓN NUTRICIONAL:\n" +
-                       "🟢 Menús en Definición: Convierte estos alimentos en la columna vertebral de tus almuerzos y cenas cuando busques apretar el déficit.",
-                conclusiones: "✔ Estrategia de Definición: Sostenibilidad del déficit con alta saciedad y sin picar entre horas."
+                       "🟢 Dieta de Definición: Utiliza estos alimentos saciantes y de alta densidad de nutrientes como pilar en tus etapas de pérdida de grasa.",
+                conclusiones: "✔ Sostenibilidad Real: Evalúa hábitos que funcionan a medio plazo sin efecto rebote."
             },
             topWaterHelp: {
                 icon: "💧",
-                title: "Top 5 Retención Agua (a las 24h)",
-                subtitle: "Impacto hídrico y digestivo a las 24 horas",
-                purpose: "Refleja la fluctuación media en litros/gramos de agua corporal (TBW) a las 24h tras consumir dicho alimento.",
-                howTo: "🤖 MODELO ML UTILIZADO:\n" +
-                       "• Descomposición de Vectores Hídricos (TBW Delta): Aisla la oscilación de fluidos gastrointestinales e intracelulares.\n" +
-                       "• Métrica positiva (+388g): Aumento medio de volumen de agua a las 24h (hidratación/retención digestiva o celular).\n" +
-                       "• Métrica negativa (-180g): Vaciado hídrico o sudoración en la sesión deportiva.\n\n" +
+                title: "Top 5 Retención Agua (Agudo a 24h)",
+                subtitle: "Impacto hídrico, digestivo y de electrolitos en 24 horas",
+                purpose: "Refleja la fluctuación media en litros/gramos de agua corporal total a las 24h tras consumir dicho alimento.",
+                howTo: "⚡ MODELO AGUDO INMEDIATO (24h):\n" +
+                       "• Los fluidos, el sodio y el glucógeno responden en 12 a 24 horas, siendo la ventana ideal para detectar retención de líquidos.\n" +
+                       "• Métrica (+250g / -150g): Cambio medio de peso hídrico al día siguiente de consumir el alimento.\n\n" +
                        "📊 DECISIÓN NUTRICIONAL:\n" +
-                       "🟢 Control Visual / Eventos: Modera estos alimentos 24h antes si buscas lucir muy seco.\n" +
-                       "🚴 Días de MTB / Calor: Úsalos para llegar con depósitos de fluidos y glucógeno óptimos.",
-                conclusiones: "✔ Estrategia Hídrica: Gestión táctica de fluidos según tus exigencias deportivas o estéticas."
+                       "🟢 Control Visual / Días Clave: Modera los alimentos altos en retención 24h antes si buscas un aspecto más definido.",
+                conclusiones: "✔ Gestión Hídrica: Control táctico de fluidos según tus objetivos deportivos y de hidratación."
             },
             aminoAcidsHelp: {
                 icon: "🧪",
@@ -5436,7 +5435,7 @@
                 if (scoreDescEl) scoreDescEl.textContent = 'Ligera tendencia catabólica o superávit no deseado';
             }
 
-            // 2. RANKINGS TOP 5 DE ALIMENTOS
+            // 2. RANKINGS TOP 5 DE ALIMENTOS (MODELO HÍBRIDO: TENDENCIA 14d MÚSCULO/GRASA + AGUDO 24h AGUA)
             const foodStats = {};
             const compMap = {};
 
@@ -5445,10 +5444,19 @@
                 const waterKg = l.weight * (l.waterPct / 100);
                 const prevWaterKg = prev.weight * (prev.waterPct / 100);
 
+                // Ventana de tendencia deslizante de hasta 14 días para masa magra y grasa
+                const windowStart = Math.max(0, idx - 14);
+                const daySpan = Math.max(1, idx - windowStart);
+                const rateMultiplier = 14 / daySpan; // Normalizado a tasa quincenal (14 días)
+
+                const diffMuscleTrend = (smmSecaEmaData[idx] - smmSecaEmaData[windowStart]) * rateMultiplier;
+                const diffFatTrend = (fatKgEmaData[idx] - fatKgEmaData[windowStart]) * rateMultiplier;
+                const diffWaterAcute = waterKg - prevWaterKg;
+
                 compMap[l.date] = {
-                    diffMuscle: smmSecaEmaData[idx] - smmSecaEmaData[Math.max(0, idx - 1)],
-                    diffFat: fatKgEmaData[idx] - fatKgEmaData[Math.max(0, idx - 1)],
-                    diffWater: waterKg - prevWaterKg
+                    diffMuscle: diffMuscleTrend,
+                    diffFat: diffFatTrend,
+                    diffWater: diffWaterAcute
                 };
             });
 
@@ -5486,17 +5494,17 @@
             const validFoods = Object.values(foodStats).filter(f => f.pairedCount >= minRep);
             cachedValidFoods = validFoods;
 
-            // A) TOP 5 ANABÓLICOS
+            // A) TOP 5 MÚSCULO & SUPLEMENTOS (TENDENCIA 14d)
             const topAnabolic = [...validFoods]
                 .sort((a, b) => (b.totalMuscleDelta / b.pairedCount) - (a.totalMuscleDelta / a.pairedCount))
                 .slice(0, 5);
 
-            // B) TOP 5 DÍAS PÉRDIDA GRASA
+            // B) TOP 5 PÉRDIDA GRASA (TENDENCIA 14d)
             const topLipolytic = [...validFoods]
                 .sort((a, b) => (a.totalFatDelta / a.pairedCount) - (b.totalFatDelta / b.pairedCount))
                 .slice(0, 5);
 
-            // C) TOP 5 RETENCIÓN HÍDRICA
+            // C) TOP 5 RETENCIÓN HÍDRICA (AGUDO 24h)
             const topWater = [...validFoods]
                 .sort((a, b) => (b.totalWaterDelta / b.pairedCount) - (a.totalWaterDelta / a.pairedCount))
                 .slice(0, 5);
@@ -5530,7 +5538,7 @@
                 topAnabolic,
                 f => {
                     const avg = f.totalMuscleDelta / f.pairedCount;
-                    return (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g';
+                    return (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / 14d';
                 },
                 'text-emerald-400 border-emerald-500/30'
             );
@@ -5540,7 +5548,7 @@
                 topLipolytic,
                 f => {
                     const avg = f.totalFatDelta / f.pairedCount;
-                    return (avg <= 0 ? '' : '+') + (avg * 1000).toFixed(0) + 'g';
+                    return (avg <= 0 ? '' : '+') + (avg * 1000).toFixed(0) + 'g / 14d';
                 },
                 'text-amber-400 border-amber-500/30'
             );
@@ -5663,15 +5671,15 @@
 
                 if (currentRankingTab === 'anabolic') {
                     avg = f.totalMuscleDelta / f.pairedCount;
-                    valStr = (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / día';
+                    valStr = (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / 14d';
                     badgeStyle = avg >= 0 ? 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30' : 'text-red-400 bg-red-500/20 border-red-500/30';
                 } else if (currentRankingTab === 'lipolytic') {
                     avg = f.totalFatDelta / f.pairedCount;
-                    valStr = (avg <= 0 ? '' : '+') + (avg * 1000).toFixed(0) + 'g / día';
+                    valStr = (avg <= 0 ? '' : '+') + (avg * 1000).toFixed(0) + 'g / 14d';
                     badgeStyle = avg <= 0 ? 'text-emerald-400 bg-emerald-500/20 border-emerald-500/30' : 'text-amber-400 bg-amber-500/20 border-amber-500/30';
                 } else if (currentRankingTab === 'water') {
                     avg = f.totalWaterDelta / f.pairedCount;
-                    valStr = (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / día';
+                    valStr = (avg >= 0 ? '+' : '') + (avg * 1000).toFixed(0) + 'g / 24h';
                     badgeStyle = 'text-blue-400 bg-blue-500/20 border-blue-500/30';
                 }
 
