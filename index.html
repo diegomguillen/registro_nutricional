@@ -2089,7 +2089,7 @@
     <div id="subCategoryModal"
         class="fixed inset-0 bg-black/80 hidden z-[80] flex items-end sm:items-center justify-center backdrop-blur-sm">
         <div
-            class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
+            class="bg-[#1c1c1e] w-full sm:max-w-xl rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-4">
                 <div class="flex items-center gap-2">
                     <button onclick="document.getElementById('subCategoryModal').classList.add('hidden')"
@@ -2878,9 +2878,10 @@
         }
         function openWebFoodsGrid() {
             const grid = document.getElementById('subCategoryGrid');
+            if (!grid) return;
             grid.innerHTML = '';
-            // Cambio de layout: grid simple
-            grid.className = "grid grid-cols-3 gap-3";
+            // Lista vertical de tarjetas a todo el ancho
+            grid.className = "space-y-3";
 
             document.getElementById('subCategoryTitle').textContent = "Resultados Web / Otros";
 
@@ -2888,65 +2889,56 @@
             const foods = foodData.filter(f => f.id >= 1000).sort((a, b) => a.name.localeCompare(b.name));
 
             if (foods.length === 0) {
-                grid.innerHTML = '<div class="col-span-3 text-center text-white py-4 italic text-sm">No hay alimentos web guardados.</div>';
+                grid.innerHTML = '<div class="text-center text-white/50 py-8 italic text-sm">No hay alimentos web guardados.</div>';
             } else {
                 foods.forEach(f => {
                     const isSelectedInCompare = typeof isCompareMode !== 'undefined' && isCompareMode && compareSelectedFoods.some(item => item.id == f.id);
                     const selectedIdx = isSelectedInCompare ? compareSelectedFoods.findIndex(item => item.id == f.id) : -1;
 
-                    const wrapper = document.createElement('div');
-                    wrapper.className = "relative group";
-
-                    const btn = document.createElement('button');
+                    const card = document.createElement('div');
                     const borderStyle = isSelectedInCompare 
                         ? "border-emerald-500 bg-emerald-500/20 shadow-[0_0_12px_rgba(50,215,75,0.4)]" 
-                        : "bg-[#2c2c2e] border-[#3a3a3c] hover:bg-[#3a3a3c]";
+                        : "bg-[#2c2c2e] hover:bg-[#343438] border-[#3a3a3c] hover:border-cyan-500/50";
 
-                    btn.className = `w-full h-full relative flex flex-col items-center justify-center p-2 rounded-xl border transition-all active:scale-95 min-h-[5rem] ${borderStyle}`;
-                    btn.onclick = () => selectFood(f.id);
+                    card.className = `relative group rounded-2xl p-4 transition-all active:scale-[0.99] flex items-start justify-between gap-3 shadow-md cursor-pointer border ${borderStyle}`;
+                    card.onclick = () => selectFood(f.id);
+
                     const displayName = f.name.replace(/^\[WEB\]\s*/, '');
-
                     const badgeHtml = isSelectedInCompare 
-                        ? `<div class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-emerald-500 text-black font-extrabold text-[11px] flex items-center justify-center shadow-md z-20">${selectedIdx + 1}</div>` 
+                        ? `<div class="absolute -top-1.5 -left-1.5 w-6 h-6 rounded-full bg-emerald-500 text-black font-extrabold text-xs flex items-center justify-center shadow-lg z-20">${selectedIdx + 1}</div>` 
                         : '';
 
-                    btn.innerHTML = `
+                    card.innerHTML = `
                         ${badgeHtml}
-                        <div class="text-2xl mb-1">🌐</div>
-                        <span class="text-[9px] font-medium text-white uppercase text-center leading-tight line-clamp-2">${displayName}</span>
-                    `;
-
-                    const editBtn = document.createElement('button');
-                    editBtn.className = "absolute -top-2 -left-2 z-10 w-8 h-8 bg-blue-500/20 text-blue-500 border border-blue-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
-                    editBtn.onclick = (e) => editWebFoodName(e, f.id);
-                    editBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>`;
-
-                    const delBtn = document.createElement('button');
-                    delBtn.className = "absolute -top-2 -right-2 z-10 w-8 h-8 bg-red-500/20 text-red-500 border border-red-500/30 rounded-full flex items-center justify-center shadow-md active:scale-90 transition-transform";
-                    delBtn.onclick = (e) => deleteWebFood(e, f.id);
-                    delBtn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>`;
-
-                    wrapper.appendChild(btn);
-                    wrapper.appendChild(editBtn);
-                    wrapper.appendChild(delBtn);
-                    grid.appendChild(wrapper);
-                });
-
-                // Completar fila (múltiplo de 3)
-                const remaining = (3 - (foods.length % 3)) % 3;
-                for (let i = 0; i < remaining; i++) {
-                    const emptyBtn = document.createElement('button');
-                    emptyBtn.className = "flex flex-col items-center justify-center p-2 rounded-xl bg-[#2c2c2e]/50 border border-[#3a3a3c]/50 opacity-40 cursor-default min-h-[5rem]";
-                    emptyBtn.innerHTML = `
-                        <div class="text-white mb-1">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
+                        <div class="flex items-start gap-3 flex-1 min-w-0 pr-16">
+                            <div class="w-10 h-10 rounded-xl bg-cyan-500/15 border border-cyan-500/30 flex items-center justify-center text-2xl shrink-0 mt-0.5 shadow-sm">
+                                ${f.icon || '🌐'}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-sm font-bold text-white uppercase leading-tight break-words mb-1.5">${displayName}</h4>
+                                <div class="flex items-center gap-2 text-[10.5px] font-mono whitespace-nowrap overflow-x-auto no-scrollbar pt-0.5">
+                                    <span class="text-emerald-400 font-bold">P: ${Math.round(f.p || 0)}g</span>
+                                    <span class="text-white/30">•</span>
+                                    <span class="text-amber-400 font-bold">C: ${Math.round(f.c || 0)}g</span>
+                                    <span class="text-white/30">•</span>
+                                    <span class="text-red-400 font-bold">G: ${Math.round(f.f || 0)}g</span>
+                                    <span class="text-white/30">•</span>
+                                    <span class="text-[#0a84ff] font-bold">${Math.round(f.kcal || 0)} kcal</span>
+                                </div>
+                            </div>
                         </div>
-                        <span class="text-[9px] font-medium text-white uppercase text-center leading-tight">...</span>
+                        <div class="absolute top-3.5 right-3.5 flex items-center gap-1.5">
+                            <button onclick="editWebFoodName(event, ${f.id})" class="p-1.5 rounded-xl bg-blue-500/15 text-blue-400 hover:bg-blue-500/25 border border-blue-500/30 transition-all active:scale-90" title="Editar nombre">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                            <button onclick="deleteWebFood(event, ${f.id})" class="p-1.5 rounded-xl bg-red-500/15 text-red-400 hover:bg-red-500/25 border border-red-500/30 transition-all active:scale-90" title="Eliminar alimento">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
                     `;
-                    grid.appendChild(emptyBtn);
-                }
+
+                    grid.appendChild(card);
+                });
             }
 
             const subModalContent = document.querySelector('#subCategoryModal > div');
