@@ -1418,5 +1418,25 @@
     "bcaa": 3.15,
     "eaa": 6.6
   }
+ },
+ {
+  "id": 74,
+  "name": "Queso Cottage Proteína Plus Carrefour",
+  "p": 12.3,
+  "c": 4.5,
+  "f": 0.19,
+  "kcal": 68,
+  "unit": "g",
+  "fam": "DAIRY",
+  "sub": "CHEESE",
+  "icon": "🥣",
+  "qP": 3,
+  "qC": 2,
+  "qF": 1,
+  "aa": {
+    "leu": 1.17,
+    "bcaa": 2.58,
+    "eaa": 5.41
+  }
  }
 ]
