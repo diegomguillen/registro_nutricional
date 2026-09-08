@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nutri-app-v2.7'
+const CACHE_NAME = 'nutri-app-v2.71'
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -16,8 +16,15 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => cache.addAll(ASSETS_TO_CACHE))
+    caches.open(CACHE_NAME).then(async (cache) => {
+      for (const asset of ASSETS_TO_CACHE) {
+        try {
+          await cache.add(asset);
+        } catch (err) {
+          console.warn('SW: Recurso no cacheado en install:', asset, err);
+        }
+      }
+    })
   );
 });
 
@@ -34,10 +41,12 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Interceptamos peticiones: Network-First para datos JSON (foods.json, structure.json), Cache-First para assets
+// Interceptamos peticiones: Network-First para HTML y datos JSON, Cache-First para assets estáticos
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
-  if (url.pathname.endsWith('foods.json') || url.pathname.endsWith('structure.json')) {
+  const isHtmlOrJson = url.pathname.endsWith('.html') || url.pathname === '/' || url.pathname.endsWith('/') || url.pathname.endsWith('.json');
+
+  if (isHtmlOrJson) {
     event.respondWith(
       fetch(event.request)
         .then((networkResponse) => {
@@ -57,3 +66,16 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+
+// Responder con la versión activa de CACHE_NAME a la app o forzar activación
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+  if (event.data && event.data.type === 'GET_VERSION') {
+    if (event.ports && event.ports[0]) {
+      event.ports[0].postMessage({ version: CACHE_NAME });
+    }
+  }
+});
+
