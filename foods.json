@@ -1598,5 +1598,25 @@
     "bcaa": 0.96,
     "eaa": 2.16
   }
- }
+ },
+  {
+    "id": 83,
+    "name": "HSN EvoEndurance",
+    "p": 0,
+    "c": 100,
+    "f": 0,
+    "kcal": 400,
+    "unit": "g",
+    "fam": "PURE",
+    "sub": "P_CARB",
+    "icon": "⚡",
+    "qP": 1,
+    "qC": 3,
+    "qF": 1,
+    "aa": {
+      "leu": 0.0,
+      "bcaa": 0.0,
+      "eaa": 0.0
+    }
+  }
 ]
