@@ -14,9 +14,9 @@
     "qC": 1,
     "qF": 3,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
@@ -25,7 +25,7 @@
     "p": 2,
     "c": 8.5,
     "f": 15,
-    "kcal": 160,
+    "kcal": 177,
     "unit": "g",
     "fam": "LIPID",
     "sub": "FRUIT_FAT",
@@ -45,7 +45,7 @@
     "p": 4.7,
     "c": 9.4,
     "f": 60,
-    "kcal": 615,
+    "kcal": 596,
     "unit": "g",
     "fam": "LIPID",
     "sub": "NUT",
@@ -105,7 +105,7 @@
     "p": 25,
     "c": 1,
     "f": 33,
-    "kcal": 400,
+    "kcal": 401,
     "unit": "g",
     "fam": "DAIRY",
     "sub": "CHEESE",
@@ -116,7 +116,7 @@
     "aa": {
       "leu": 2.38,
       "bcaa": 5.25,
-      "eaa": 11.0
+      "eaa": 11
     }
   },
   {
@@ -145,7 +145,7 @@
     "p": 3.5,
     "c": 4.5,
     "f": 3,
-    "kcal": 60,
+    "kcal": 59,
     "unit": "g",
     "fam": "DAIRY",
     "sub": "YOGURT",
@@ -165,7 +165,7 @@
     "p": 18,
     "c": 0,
     "f": 1.5,
-    "kcal": 85,
+    "kcal": 86,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "FISH_WHITE",
@@ -185,7 +185,7 @@
     "p": 20,
     "c": 0,
     "f": 12,
-    "kcal": 190,
+    "kcal": 188,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
@@ -205,7 +205,7 @@
     "p": 7,
     "c": 0.3,
     "f": 5.8,
-    "kcal": 80,
+    "kcal": 81,
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "EGG",
@@ -225,7 +225,7 @@
     "p": 2.3,
     "c": 26,
     "f": 0.3,
-    "kcal": 120,
+    "kcal": 116,
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE",
@@ -245,7 +245,7 @@
     "p": 9,
     "c": 50,
     "f": 2,
-    "kcal": 260,
+    "kcal": 254,
     "unit": "g",
     "fam": "CARBS",
     "sub": "BREAD",
@@ -265,7 +265,7 @@
     "p": 4.8,
     "c": 28,
     "f": 0.6,
-    "kcal": 140,
+    "kcal": 137,
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE",
@@ -285,7 +285,7 @@
     "p": 0.5,
     "c": 12,
     "f": 0.2,
-    "kcal": 55,
+    "kcal": 52,
     "unit": "g",
     "fam": "FRUIT",
     "sub": "FRESH",
@@ -305,7 +305,7 @@
     "p": 1.5,
     "c": 3,
     "f": 0.2,
-    "kcal": 25,
+    "kcal": 20,
     "unit": "g",
     "fam": "VEG",
     "sub": "GREEN",
@@ -325,7 +325,7 @@
     "p": 5.4,
     "c": 12,
     "f": 2,
-    "kcal": 95,
+    "kcal": 88,
     "unit": "g",
     "fam": "LEGUME",
     "sub": "COOKED",
@@ -374,9 +374,9 @@
     "qC": 3,
     "qF": 1,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
@@ -394,9 +394,9 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
@@ -405,7 +405,7 @@
     "p": 3.5,
     "c": 36,
     "f": 0.5,
-    "kcal": 165,
+    "kcal": 163,
     "unit": "g",
     "fam": "CARBS",
     "sub": "TUBER",
@@ -425,7 +425,7 @@
     "p": 1.9,
     "c": 19,
     "f": 0.1,
-    "kcal": 84,
+    "kcal": 85,
     "unit": "g",
     "fam": "CARBS",
     "sub": "TUBER",
@@ -454,8 +454,8 @@
     "qC": 1,
     "qF": 3,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
+      "leu": 0,
+      "bcaa": 0,
       "eaa": 0.01
     }
   },
@@ -465,7 +465,7 @@
     "p": 15,
     "c": 14,
     "f": 65,
-    "kcal": 650,
+    "kcal": 701,
     "unit": "g",
     "fam": "LIPID",
     "sub": "NUT",
@@ -505,7 +505,7 @@
     "p": 1.1,
     "c": 23,
     "f": 0.3,
-    "kcal": 90,
+    "kcal": 99,
     "unit": "g",
     "fam": "FRUIT",
     "sub": "FRESH",
@@ -525,7 +525,7 @@
     "p": 30,
     "c": 0,
     "f": 8,
-    "kcal": 190,
+    "kcal": 192,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "MEAT_RED",
@@ -545,7 +545,7 @@
     "p": 8,
     "c": 3.5,
     "f": 0.1,
-    "kcal": 46,
+    "kcal": 47,
     "unit": "g",
     "fam": "DAIRY",
     "sub": "YOGURT",
@@ -565,7 +565,7 @@
     "p": 22,
     "c": 55,
     "f": 1.5,
-    "kcal": 330,
+    "kcal": 322,
     "unit": "g",
     "fam": "LEGUME",
     "sub": "DRY",
@@ -585,7 +585,7 @@
     "p": 16,
     "c": 0,
     "f": 25,
-    "kcal": 290,
+    "kcal": 289,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "MEAT_RED",
@@ -605,7 +605,7 @@
     "p": 1.6,
     "c": 9.6,
     "f": 0.2,
-    "kcal": 43,
+    "kcal": 47,
     "unit": "g",
     "fam": "CARBS",
     "sub": "TUBER",
@@ -625,7 +625,7 @@
     "p": 21,
     "c": 0,
     "f": 3.5,
-    "kcal": 120,
+    "kcal": 116,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "MEAT_RED",
@@ -645,7 +645,7 @@
     "p": 0.12,
     "c": 0.42,
     "f": 0.02,
-    "kcal": 2.5,
+    "kcal": 2,
     "unit": "u",
     "fam": "VEG",
     "sub": "COLOR",
@@ -765,7 +765,7 @@
     "p": 12.09,
     "c": 0,
     "f": 18.85,
-    "kcal": 220,
+    "kcal": 218,
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
@@ -785,7 +785,7 @@
     "p": 17,
     "c": 0,
     "f": 14,
-    "kcal": 195,
+    "kcal": 194,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "MEAT_WHITE",
@@ -805,7 +805,7 @@
     "p": 11,
     "c": 4,
     "f": 14,
-    "kcal": 185,
+    "kcal": 186,
     "unit": "g",
     "fam": "DAIRY",
     "sub": "CHEESE",
@@ -865,7 +865,7 @@
     "p": 17,
     "c": 0.5,
     "f": 1.5,
-    "kcal": 82,
+    "kcal": 84,
     "unit": "g",
     "fam": "PROTEIN",
     "sub": "FISH_WHITE",
@@ -905,7 +905,7 @@
     "p": 77,
     "c": 6.9,
     "f": 3.2,
-    "kcal": 365,
+    "kcal": 364,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -925,7 +925,7 @@
     "p": 84,
     "c": 4.4,
     "f": 1.7,
-    "kcal": 368,
+    "kcal": 369,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -934,7 +934,7 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 9.30,
+      "leu": 9.3,
       "bcaa": 20.65,
       "eaa": 42.28
     }
@@ -945,7 +945,7 @@
     "p": 87,
     "c": 2.5,
     "f": 1.5,
-    "kcal": 373,
+    "kcal": 372,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -965,7 +965,7 @@
     "p": 92,
     "c": 1,
     "f": 0.5,
-    "kcal": 376,
+    "kcal": 377,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -976,7 +976,7 @@
     "aa": {
       "leu": 10.12,
       "bcaa": 22.08,
-      "eaa": 46.0
+      "eaa": 46
     }
   },
   {
@@ -1005,7 +1005,7 @@
     "p": 6.6,
     "c": 13,
     "f": 0,
-    "kcal": 88,
+    "kcal": 78,
     "unit": "g",
     "fam": "LEGUME",
     "sub": "COOKED",
@@ -1025,7 +1025,7 @@
     "p": 5.3,
     "c": 12,
     "f": 0,
-    "kcal": 85,
+    "kcal": 69,
     "unit": "g",
     "fam": "LEGUME",
     "sub": "COOKED",
@@ -1045,7 +1045,7 @@
     "p": 2.7,
     "c": 24,
     "f": 5.4,
-    "kcal": 161,
+    "kcal": 155,
     "unit": "g",
     "fam": "CARBS",
     "sub": "TUBER",
@@ -1065,7 +1065,7 @@
     "p": 10.2,
     "c": 66.9,
     "f": 3.3,
-    "kcal": 357,
+    "kcal": 338,
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE",
@@ -1085,7 +1085,7 @@
     "p": 14,
     "c": 56,
     "f": 6,
-    "kcal": 353,
+    "kcal": 334,
     "unit": "g",
     "fam": "CARBS",
     "sub": "PASTA_RICE",
@@ -1105,7 +1105,7 @@
     "p": 10.5,
     "c": 6,
     "f": 3,
-    "kcal": 110,
+    "kcal": 93,
     "unit": "g",
     "fam": "DAIRY",
     "sub": "YOGURT",
@@ -1114,7 +1114,7 @@
     "qC": 1,
     "qF": 2,
     "aa": {
-      "leu": 1.0,
+      "leu": 1,
       "bcaa": 2.21,
       "eaa": 4.62
     }
@@ -1134,17 +1134,17 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
     "id": 60,
     "name": "Grasa macro qF=1",
     "p": 0,
-    "c": 100,
-    "f": 0,
+    "c": 0,
+    "f": 100,
     "kcal": 900,
     "unit": "g",
     "fam": "PURE",
@@ -1154,17 +1154,17 @@
     "qC": 1,
     "qF": 1,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
     "id": 61,
     "name": "Grasa macro qF=2",
     "p": 0,
-    "c": 100,
-    "f": 0,
+    "c": 0,
+    "f": 100,
     "kcal": 900,
     "unit": "g",
     "fam": "PURE",
@@ -1174,17 +1174,17 @@
     "qC": 1,
     "qF": 2,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
     "id": 62,
     "name": "Grasa macro qF=3",
     "p": 0,
-    "c": 100,
-    "f": 0,
+    "c": 0,
+    "f": 100,
     "kcal": 900,
     "unit": "g",
     "fam": "PURE",
@@ -1194,9 +1194,9 @@
     "qC": 1,
     "qF": 3,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
@@ -1214,9 +1214,9 @@
     "qC": 2,
     "qF": 1,
     "aa": {
-      "leu": 0.0,
-      "bcaa": 0.0,
-      "eaa": 0.0
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
     }
   },
   {
@@ -1245,7 +1245,7 @@
     "p": 83,
     "c": 3.1,
     "f": 1.4,
-    "kcal": 361,
+    "kcal": 357,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -1256,7 +1256,7 @@
     "aa": {
       "leu": 9.23,
       "bcaa": 19.32,
-      "eaa": 40.20
+      "eaa": 40.2
     }
   },
   {
@@ -1265,7 +1265,7 @@
     "p": 72,
     "c": 7.6,
     "f": 8,
-    "kcal": 395,
+    "kcal": 390,
     "unit": "g",
     "fam": "PURE",
     "sub": "P_PROT",
@@ -1280,163 +1280,163 @@
     }
   },
   {
-  "id": 67,
-  "name": "Ecocesta Muesli Frutas 14% sin azúcares añadidos",
-  "p": 10.2,
-  "c": 64.0,
-  "f": 3.6,
-  "kcal": 346,
-  "unit": "g",
-  "fam": "CARBS",
-  "sub": "PASTA_RICE",
-  "icon": "🌾",
-  "qP": 1,
-  "qC": 3,
-  "qF": 2,
-  "aa": {
-    "leu": 0.71,
-    "bcaa": 1.48,
-    "eaa": 3.37
-   }
+    "id": 67,
+    "name": "Ecocesta Muesli Frutas 14% sin azúcares añadidos",
+    "p": 10.2,
+    "c": 64,
+    "f": 3.6,
+    "kcal": 329,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "PASTA_RICE",
+    "icon": "🌾",
+    "qP": 1,
+    "qC": 3,
+    "qF": 2,
+    "aa": {
+      "leu": 0.71,
+      "bcaa": 1.48,
+      "eaa": 3.37
+    }
   },
   {
-  "id": 68,
-  "name": "Lacón Carrefour",
-  "p": 17,
-  "c": 1,
-  "f": 9,
-  "kcal": 153,
-  "unit": "g",
-  "fam": "PROTEIN",
-  "sub": "MEAT_RED",
-  "icon": "🐷",
-  "qP": 2,
-  "qC": 1,
-  "qF": 1,
-  "aa": {
-    "leu": 1.39,
-    "bcaa": 3.06,
-    "eaa": 7.31
+    "id": 68,
+    "name": "Lacón Carrefour",
+    "p": 17,
+    "c": 1,
+    "f": 9,
+    "kcal": 153,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "MEAT_RED",
+    "icon": "🐷",
+    "qP": 2,
+    "qC": 1,
+    "qF": 1,
+    "aa": {
+      "leu": 1.39,
+      "bcaa": 3.06,
+      "eaa": 7.31
+    }
+  },
+  {
+    "id": 69,
+    "name": "Champiñones / Setas",
+    "p": 3.1,
+    "c": 1,
+    "f": 0.3,
+    "kcal": 19,
+    "unit": "g",
+    "fam": "VEG",
+    "sub": "GREEN",
+    "icon": "🍄",
+    "qP": 1,
+    "qC": 3,
+    "qF": 3,
+    "aa": {
+      "leu": 0.17,
+      "bcaa": 0.37,
+      "eaa": 0.93
+    }
+  },
+  {
+    "id": 70,
+    "name": "Palito Surimi Carrefour (Ud ~15g)",
+    "p": 0.98,
+    "c": 2.7,
+    "f": 0.72,
+    "kcal": 21,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE",
+    "icon": "🦀",
+    "qP": 2,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 0.08,
+      "bcaa": 0.17,
+      "eaa": 0.41
+    }
+  },
+  {
+    "id": 71,
+    "name": "Tortilla 51% Avena Carrefour (ud 60g)",
+    "p": 5.82,
+    "c": 26.4,
+    "f": 6.6,
+    "kcal": 188,
+    "unit": "u",
+    "fam": "CARBS",
+    "sub": "BREAD",
+    "icon": "🫓",
+    "qP": 1,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 0.41,
+      "bcaa": 0.85,
+      "eaa": 1.92
+    }
+  },
+  {
+    "id": 72,
+    "name": "Anchoa en Aceite (Filete ~5g)",
+    "p": 1.4,
+    "c": 0,
+    "f": 0.6,
+    "kcal": 11,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE",
+    "icon": "🐟",
+    "qP": 3,
+    "qC": 1,
+    "qF": 3,
+    "aa": {
+      "leu": 0.11,
+      "bcaa": 0.25,
+      "eaa": 0.59
+    }
+  },
+  {
+    "id": 73,
+    "name": "Lindahls Protein Tarrina 150g",
+    "p": 15,
+    "c": 11,
+    "f": 0.3,
+    "kcal": 107,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤",
+    "qP": 3,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 1.43,
+      "bcaa": 3.15,
+      "eaa": 6.6
+    }
+  },
+  {
+    "id": 74,
+    "name": "Queso Cottage Proteína Plus Carrefour",
+    "p": 12.3,
+    "c": 4.5,
+    "f": 0.19,
+    "kcal": 69,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "CHEESE",
+    "icon": "🥣",
+    "qP": 3,
+    "qC": 2,
+    "qF": 1,
+    "aa": {
+      "leu": 1.17,
+      "bcaa": 2.58,
+      "eaa": 5.41
+    }
   }
- },
- {
-  "id": 69,
-  "name": "Champiñones / Setas",
-  "p": 3.1,
-  "c": 1.0,
-  "f": 0.3,
-  "kcal": 22,
-  "unit": "g",
-  "fam": "VEG",
-  "sub": "GREEN",
-  "icon": "🍄",
-  "qP": 1,
-  "qC": 3,
-  "qF": 3,
-  "aa": {
-    "leu": 0.17,
-    "bcaa": 0.37,
-    "eaa": 0.93
-  }
- },
- {
-  "id": 70,
-  "name": "Palito Surimi Carrefour (Ud ~15g)",
-  "p": 0.98,
-  "c": 2.7,
-  "f": 0.72,
-  "kcal": 21,
-  "unit": "u",
-  "fam": "PROTEIN",
-  "sub": "FISH_BLUE",
-  "icon": "🦀",
-  "qP": 2,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 0.08,
-    "bcaa": 0.17,
-    "eaa": 0.41
-  }
- },
- {
-  "id": 71,
-  "name": "Tortilla 51% Avena Carrefour (ud 60g)",
-  "p": 5.82,
-  "c": 26.4,
-  "f": 6.6,
-  "kcal": 196,
-  "unit": "u",
-  "fam": "CARBS",
-  "sub": "BREAD",
-  "icon": "🫓",
-  "qP": 1,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 0.41,
-    "bcaa": 0.85,
-    "eaa": 1.92
-  }
- },
- {
-  "id": 72,
-  "name": "Anchoa en Aceite (Filete ~5g)",
-  "p": 1.4,
-  "c": 0.0,
-  "f": 0.6,
-  "kcal": 11,
-  "unit": "u",
-  "fam": "PROTEIN",
-  "sub": "FISH_BLUE",
-  "icon": "🐟",
-  "qP": 3,
-  "qC": 1,
-  "qF": 3,
-  "aa": {
-    "leu": 0.11,
-    "bcaa": 0.25,
-    "eaa": 0.59
-  }
- },
- {
-  "id": 73,
-  "name": "Lindahls Protein Tarrina 150g",
-  "p": 15.0,
-  "c": 11.0,
-  "f": 0.3,
-  "kcal": 107,
-  "unit": "u",
-  "fam": "PURE",
-  "sub": "P_PROT",
-  "icon": "🥤",
-  "qP": 3,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 1.43,
-    "bcaa": 3.15,
-    "eaa": 6.6
-  }
- },
- {
-  "id": 74,
-  "name": "Queso Cottage Proteína Plus Carrefour",
-  "p": 12.3,
-  "c": 4.5,
-  "f": 0.19,
-  "kcal": 68,
-  "unit": "g",
-  "fam": "DAIRY",
-  "sub": "CHEESE",
-  "icon": "🥣",
-  "qP": 3,
-  "qC": 2,
-  "qF": 1,
-  "aa": {
-    "leu": 1.17,
-    "bcaa": 2.58,
-    "eaa": 5.41
-  }
- }
 ]
