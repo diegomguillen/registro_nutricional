@@ -1073,7 +1073,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
-                    <input type="file" id="importFile" accept=".json,application/json,text/plain" class="hidden" onchange="handleImport(this)">
+                    <input type="file" id="importFile" accept=".json,application/json,text/plain,.txt" class="hidden" onchange="handleImport(this)">
 
                     <div onclick="resetApp()"
                         class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer">
@@ -7517,22 +7517,36 @@
             const fileName = `backup_nutri_${new Date().toISOString().split('T')[0]}.json`;
 
             // 1. Intentar Web Share API (Móviles Android / iOS)
-            // En navegadores móviles (como Chrome en Android), 'application/json' suele ser rechazado por canShare.
-            // Si es así, usamos 'text/plain' manteniendo el nombre '.json' para que Android/iOS abran la hoja de compartir (Drive, Gmail, etc.)
+            // En Chromium Android / PWA, navigator.canShare() BLOQUEA archivos que terminen en '.json'.
+            // Para solucionarlo y que Android abra la hoja nativa de compartir (Drive, etc.),
+            // usamos la extensión '.txt' con tipo 'text/plain', compatible al 100% con la importación.
             if (navigator.canShare) {
-                let shareFile = new File([jsonString], fileName, { type: "application/json" });
-                if (!navigator.canShare({ files: [shareFile] })) {
-                    shareFile = new File([jsonString], fileName, { type: "text/plain" });
+                let shareFile = null;
+                try {
+                    const testFile = new File([jsonString], fileName, { type: "application/json" });
+                    if (navigator.canShare({ files: [testFile] })) {
+                        shareFile = testFile;
+                    }
+                } catch (e) { }
+
+                if (!shareFile) {
+                    try {
+                        const txtName = fileName.replace(/\.json$/, '.txt');
+                        const testTxtFile = new File([jsonString], txtName, { type: "text/plain" });
+                        if (navigator.canShare({ files: [testTxtFile] })) {
+                            shareFile = testTxtFile;
+                        }
+                    } catch (e) { }
                 }
 
-                if (navigator.canShare({ files: [shareFile] })) {
+                if (shareFile) {
                     try {
                         await navigator.share({
                             files: [shareFile],
                             title: 'Backup NutriApp',
                             text: 'Copia de seguridad NutriApp'
                         });
-                        showToast("Copia compartida");
+                        showToast("Copia compartida con éxito");
                         return;
                     } catch (e) {
                         // Si el usuario cerró o canceló la hoja nativa de compartir, no forzamos descarga automática
