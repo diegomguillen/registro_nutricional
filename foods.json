@@ -1449,7 +1449,7 @@
   "unit": "u",
   "fam": "PURE",
   "sub": "P_PROT",
-  "icon": "💊"
+  "icon": "💊",
   "qP": 0,
   "qC": 0,
   "qF": 0,
@@ -1469,7 +1469,7 @@
   "unit": "u",
   "fam": "PURE",
   "sub": "P_PROT",
-  "icon": "💊"
+  "icon": "💊",
   "qP": 0,
   "qC": 0,
   "qF": 0,
