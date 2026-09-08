@@ -5476,6 +5476,8 @@
 
             globalLog.forEach(item => {
                 if (item.type !== 'food' && item.type !== 'recipe') return;
+                // Ignorar días marcados como registro incompleto o día libre
+                if (dayFlags[item.date]?.isIncomplete) return;
                 const comp = compMap[item.date];
                 // Ignorar registros huérfanos sin medición corporal
                 if (!comp) return;
