@@ -535,12 +535,9 @@
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
                         <h4 class="text-xs font-bold text-white uppercase tracking-wider">WEIGHT VS FAT VS WATER VS MUSCLE</h4>
-                        <div class="flex items-center gap-2">
-                            <div id="badgeWeightFatMuscle" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r) entre Grasa y Músculo Seco"></div>
-                            <button onclick="openChartHelpModal('weightFatMuscle')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                                ❓
-                            </button>
-                        </div>
+                        <button onclick="openChartHelpModal('weightFatMuscle')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                            ❓
+                        </button>
                     </div>
                     <div class="h-44 w-full relative">
                         <canvas id="chartWeightFatMuscle"></canvas>
@@ -550,84 +547,66 @@
                         <div>
                             <span class="text-[8px] sm:text-[9px] text-white/50 block font-bold uppercase tracking-wider">Δ Peso</span>
                             <span id="deltaWeight" class="font-bold text-white text-[10px] sm:text-[11px]">-</span>
+                            <span id="rateWeight" class="text-[7.5px] sm:text-[8.5px] text-white/40 block font-medium mt-0.5" title="Tasa media por día">-</span>
                         </div>
                         <div>
                             <span class="text-[8px] sm:text-[9px] text-fat/80 block font-bold uppercase tracking-wider">Δ Grasa</span>
                             <span id="deltaFat" class="font-bold text-fat text-[10px] sm:text-[11px]">-</span>
+                            <span id="rateFat" class="text-[7.5px] sm:text-[8.5px] text-fat/60 block font-medium mt-0.5" title="Tasa media por día">-</span>
                         </div>
                         <div>
                             <span class="text-[8px] sm:text-[9px] text-cyan-400/80 block font-bold uppercase tracking-wider">Δ Agua</span>
                             <span id="deltaWater" class="font-bold text-cyan-400 text-[10px] sm:text-[11px]">-</span>
+                            <span id="rateWater" class="text-[7.5px] sm:text-[8.5px] text-cyan-400/60 block font-medium mt-0.5" title="Tasa media por día">-</span>
                         </div>
                         <div>
                             <span class="text-[8px] sm:text-[9px] text-emerald-400/80 block font-bold uppercase tracking-wider">Δ Músculo</span>
                             <span id="deltaSmmSeca" class="font-bold text-emerald-400 text-[10px] sm:text-[11px]">-</span>
+                            <span id="rateSmmSeca" class="text-[7.5px] sm:text-[8.5px] text-emerald-400/60 block font-medium mt-0.5" title="Tasa media por día">-</span>
                         </div>
                         <div>
                             <span class="text-[8px] sm:text-[9px] text-purple-400/80 block font-bold uppercase tracking-wider">Δ Glucógeno</span>
                             <span id="deltaGlycogen" class="font-bold text-purple-400 text-[10px] sm:text-[11px]">-</span>
+                            <span id="rateGlycogen" class="text-[7.5px] sm:text-[8.5px] text-purple-400/60 block font-medium mt-0.5" title="Tasa media por día">-</span>
+                        </div>
+                    </div>
+                    <!-- Micro-barra de Fiabilidad / Nivel de Confianza -->
+                    <div id="card1ConfidenceWrapper" class="px-3 py-2 bg-[#1c1c1e] rounded-xl border border-[#2c2c2e] flex flex-col gap-1.5 cursor-pointer" onclick="openChartHelpModal('weightFatMuscle')" title="Nivel de confianza: Tejido (Grasa/Músculo, α=0.25) se consolida entre 7-14 días; el Agua de Fondo del Peso Tendencia (α=0.08) completa su ciclo a los 25 días. Pulsa para ver la ayuda.">
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="text-white/60 font-medium flex items-center gap-1.5">
+                                <span id="confDot" class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span>
+                                <span id="confLabel" class="text-white/90 font-semibold">Fiabilidad Alta</span>
+                            </span>
+                            <span id="confPctText" class="font-bold text-emerald-400">85%</span>
+                        </div>
+                        <div class="w-full bg-[#2c2c2e] h-1.5 rounded-full overflow-hidden">
+                            <div id="confProgressBar" class="h-full rounded-full transition-all duration-500 bg-emerald-400" style="width: 85%;"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tarjeta 2: Proteína Real vs Masa Magra -->
+                <!-- Tarjeta 2: Impacto Nutricional & Recomposición (Métricas Fisiológicas Directas) -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-prot uppercase tracking-wider">PROTEIN VS MUSCLE</h4>
                         <div class="flex items-center gap-2">
-                            <div id="badgeProtFFM" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
-                            <button onclick="openChartHelpModal('protFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                                ❓
-                            </button>
+                            <span class="text-base">🎯</span>
+                            <h4 class="text-xs font-bold text-white uppercase tracking-wider">IMPACTO NUTRICIONAL & RECOMPOSICIÓN</h4>
                         </div>
-                    </div>
-                    <div class="h-44 w-full relative">
-                        <canvas id="chartProtFFM"></canvas>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 3: Carbohidratos Reales vs Masa de Agua & Masa Magra -->
-                <div class="premium-card p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-carb uppercase tracking-wider">CARBS VS MUSCLE</h4>
-                        <div class="flex items-center gap-2">
-                            <div id="badgeCarbWater" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
-                            <button onclick="openChartHelpModal('carbWater')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                                ❓
-                            </button>
-                        </div>
-                    </div>
-                    <div class="h-44 w-full relative">
-                        <canvas id="chartCarbWater"></canvas>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 4: Déficit Real vs Masa Magra -->
-                <div class="premium-card p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-amber-400 uppercase tracking-wider">DEFICIT REAL VS MUSCLE</h4>
-                        <div class="flex items-center gap-2">
-                            <div id="badgeDeficitFFM" class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#2c2c2e] text-white/70 border border-[#3a3a3c] flex items-center gap-1.5" title="Coeficiente de correlación de Pearson (r)"></div>
-                            <button onclick="openChartHelpModal('deficitFFM')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                                ❓
-                            </button>
-                        </div>
-                    </div>
-                    <div class="h-44 w-full relative">
-                        <canvas id="chartDeficitFFM"></canvas>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 5: Impacto de la Actividad -->
-                <div class="premium-card p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <h4 class="text-xs font-bold text-purple-400 uppercase tracking-wider">IMPACTO ACTIVIDAD</h4>
-                        <button onclick="openChartHelpModal('actImpactHelp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                        <button onclick="openChartHelpModal('nutriImpactHelp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
                             ❓
                         </button>
                     </div>
-                    <div class="h-44 w-full relative">
-                        <canvas id="chartActivityImpact"></canvas>
+
+                    <div class="h-56 w-full relative">
+                        <canvas id="chartNutriImpact"></canvas>
+                    </div>
+
+                    <!-- Diagnóstico / Semáforo de las 4 variables directas -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 border-t border-[#3a3a3c]/60">
+                        <div id="badgeProtFFM" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Cumplimiento Proteico Medio 7D"></div>
+                        <div id="badgeCarbWater" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Repleción de Carbohidratos N-1"></div>
+                        <div id="badgeDeficitFFM" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Déficit Calórico Real Medio 7D"></div>
+                        <div id="badgeRecompMatrix" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Partición de Recomposición (% Grasa Perdida)"></div>
                     </div>
                 </div>
 
@@ -3103,10 +3082,7 @@
         let bodyCompLog = [];
         let bodyCompTimeframe = 'all';
         let chartInstanceWeightFatMuscle = null;
-        let chartInstanceProtFFM = null;
-        let chartInstanceCarbWater = null;
-        let chartInstanceDeficitFFM = null;
-        let chartInstanceActivityImpact = null;
+        let chartInstanceNutriImpact = null;
 
         function getGarminCalculatedTargets() {
             const w = parseFloat(userGarmin.weightKg) || 80;
@@ -3707,20 +3683,27 @@
                 subtitle: "Evolución real de la composición corporal filtrando el ruido diario",
                 purpose: "Separa las fluctuaciones puntuales de agua y glucógeno de los cambios reales en grasa y músculo.",
                 howTo: "📈 LÍNEAS DEL GRÁFICO:\n" +
-                       "• Peso Tendencia (Blanco Sólido): Tu peso real filtrado a 7 días (EMA α=0.25). Filtra los picos de agua y marca tu dirección corporal real.\n" +
+                       "• Tendencia Peso EMA (Blanco Sólido): Tu peso real filtrado a 24 días (EMA α=0.08 para agua de fondo + α=0.25 para masa seca). Evita que deshidrataciones o retenciones agudas de 24h alteren bruscamente el peso de referencia.\n" +
                        "• Peso Bruto (Gris Punteado): La lectura puntual de tu báscula cada mañana.\n" +
-                       "• Grasa EMA (Rojo): Masa grasa suavizada a 7 días.\n" +
-                       "• Agua (Azul): Litros/kg de agua corporal total.\n" +
-                       "• Músculo Seco EMA (Verde): Músculo esquelético puro (libre de agua).\n\n" +
-                       "📊 RESUMEN INFERIOR (5 CASILLAS):\n" +
-                       "• Δ Peso: Cambio en tendencia real acumulada.\n" +
-                       "• Δ Grasa: Grasa corporal pura quemada o ganada.\n" +
-                       "• Δ Agua: Líquido hídrico liberado o retenido.\n" +
-                       "• Δ Músculo: Músculo esquelético real (Si está en ~0.00 kg, tu músculo está 100% intacto).\n" +
-                       "• Δ Glucógeno: Vaciado de reservas de carbohidratos en músculo e hígado.\n\n" +
-                       "💡 ¿POR QUÉ LA TENDENCIA VA MÁS LENTA QUE LA BÁSCULA?\n" +
-                       "Si un día el peso bruto cae o sube 1.5 kg de golpe, la línea de tendencia no se lanza inmediatamente: comprueba durante 2-3 días si es un cambio real o simple ruido de agua/glucógeno.",
-                conclusiones: "🚦 REGLA DE ORO:\n🟢 Peso baja + Grasa baja + Músculo plano (0.00 kg) = Definición perfecta (conservas tu músculo)."
+                       "• Tendencia Grasa EMA (Rojo): Masa grasa suavizada a 7 días (α=0.25).\n" +
+                       "• Masa de Agua (Azul): Litros/kg de agua corporal total bruta diaria.\n" +
+                       "• Tendencia Masa Muscular Seca EMA (Verde): Músculo esquelético puro libre de agua normalizado a la mediana hídrica (%TBW_ref) y filtrado a 7 días (α=0.25).\n\n" +
+                       "📊 RESUMEN INFERIOR (5 CASILLAS CON TASA DIARIA EN g/d):\n" +
+                       "• Cada casilla muestra el cambio total acumulado (en kg) y debajo la velocidad media diaria (en g/d).\n" +
+                       "• Δ Peso: Variación neta de tendencia (kg) y tasa diaria (g/d).\n" +
+                       "• Δ Grasa: Grasa corporal quemada o ganada (kg) y quema diaria media (g/d).\n" +
+                       "• Δ Agua: Líquido liberado o retenido (kg) y tasa hídrica diaria (g/d).\n" +
+                       "• Δ Músculo: Músculo esquelético real (kg y g/d). Si ronda ~0 g/d, tu músculo está 100% intacto.\n" +
+                       "• Δ Glucógeno: Vaciado o llenado de reservas glucídicas.\n\n" +
+                       "🎯 MICRO-BARRA DE FIABILIDAD (0% a 100%):\n" +
+                       "El gráfico combina dos constantes de tiempo matemáticas distintas:\n" +
+                       "1. Filtro de Tejido (α=0.25): Ventana de 7 días (estabilizado al 98% a los 14 días).\n" +
+                       "2. Filtro de Agua de Fondo (α=0.08): Ventana de 24 días para anclar la línea blanca de Peso Tendencia.\n" +
+                       "• < 7 días (15% - 48%): 🔴 Fiabilidad Baja. El ruido diario aún influye en la trayectoria.\n" +
+                       "• 7 a 13 días (50% - 65%): 🟡 Fiabilidad Moderada. La tendencia de tejido ya es sólida, pero el agua de fondo continúa adaptándose.\n" +
+                       "• 14 a 24 días (70% - 95%): 🟢 Fiabilidad Alta. El tejido está 100% consolidado y el agua de fondo supera el 70%-90% de su ciclo.\n" +
+                       "• ≥ 25 días (100%): 💎 Fiabilidad Óptima. Ambos filtros han completado su ciclo completo (~4 semanas) con máxima precisión.",
+                conclusiones: "🚦 REGLA DE ORO:\n🟢 Peso baja + Grasa baja + Músculo plano (~0.00 kg) = Definición perfecta (conservas tu músculo sin engaños por agua)."
             },
             bodyComp: {
                 icon: "📈",
@@ -3729,6 +3712,36 @@
                 purpose: "Evalúa la calidad general de tu recomposición corporal a lo largo del tiempo.",
                 howTo: "• Masa Magra (Verde): Tejido libre de grasa.\n• Masa Grasa (Rojo): Kilos totales de grasa.\n• Masa de Agua (Azul): Agua corporal total.\n\n📊 LECTURA RÁPIDA:\n🟢 Verde sube / Rojo baja: Recomposición ideal.\n⚖️ Verde plano / Rojo baja: Definición limpia conservando músculo.\n⚠️ Verde cae / Rojo cae: Pérdida muscular. Eleva la proteína.",
                 conclusiones: "🚦 SEMÁFORO (r):\n🟢 Recomposición (r < -0.40): Perdiendo grasa manteniendo músculo.\n🔴 Variación Conjunta (r > +0.40): Ambas variables se mueven juntas."
+            },
+            nutriImpactHelp: {
+                icon: "🎯",
+                title: "Impacto Nutricional & Recomposición (Métricas Directas)",
+                subtitle: "Semáforo fisiológico de cumplimiento de objetivos y partición magra",
+                purpose: "Evalúa de forma directa y transparente (sin distorsiones estadísticas) el cumplimiento de tus objetivos nutricionales y la calidad real de tu recomposición corporal.",
+                howTo: "📊 GUÍA DE LAS 4 MÉTRICAS DIRECTAS:\n\n" +
+                       "🥩 PROTEÍNA MEDIA (7 DÍAS):\n" +
+                       "• Mide: % de cumplimiento de tu objetivo proteico diario promedio en la última semana.\n" +
+                       "• 🟢 Verde (≥ 90%): Proteína Óptima. Blindaje muscular y síntesis proteica garantizados.\n" +
+                       "• 🟡 Amarillo (75% - 89%): Proteína Moderada. Cubre requerimientos basales.\n" +
+                       "• 🔴 Rojo (< 75%): Proteína Insuficiente. Riesgo de degradación magra en déficit.\n\n" +
+                       "🍚 CARBOHIDRATOS N-1 (24 HORAS):\n" +
+                       "• Mide: % de carbohidratos consumidos ayer respecto a tu objetivo diario.\n" +
+                       "• 🟢 Verde (75% - 115%): Repleción Óptima. Depósitos de glucógeno cargados para rendir.\n" +
+                       "• 🟡 Amarillo (50% - 74% o 116% - 130%): Carga Moderada / Elevada.\n" +
+                       "• 🔴 Rojo (< 50% o > 130%): Vaciado Glucídico Severo o Superávit Excesivo.\n\n" +
+                       "🔥 DÉFICIT REAL MEDIO (7 DÍAS):\n" +
+                       "• Mide: % de cumplimiento de tu déficit calórico objetivo diario sostenido en 7 días.\n" +
+                       "• 🟢 Verde (80% - 120%): Déficit en Diana. Quema de grasa a ritmo óptimo y seguro.\n" +
+                       "• 🟡 Amarillo (50% - 79% o 121% - 135%): Déficit Ligero o Intenso.\n" +
+                       "• 🔴 Rojo (< 50% o > 135%): Sin Apenas Déficit o Déficit Demasiado Agresivo.\n\n" +
+                       "⚖️ RECOMPOSICIÓN TISULAR (Partición Magra):\n" +
+                       "• Mide: % del tejido perdido en el periodo que corresponde a Masa Grasa pura.\n" +
+                       "• 🟢 Verde (≥ 80% Grasa): Definición Limpia. Casi todo lo perdido es grasa pura, manteniendo el músculo intacto.\n" +
+                       "• 🟡 Amarillo (65% - 79% Grasa): Recomposición Aceptable.\n" +
+                       "• 🔴 Rojo (< 65% Grasa): Pérdida Muscular Excesiva. El déficit es agresivo o falta proteína.",
+                conclusiones: "✔ REGLA DE ÉXITO:\n" +
+                              "• El 100% de la barra representa el punto óptimo de cada métrica (línea vertical verde a 100%).\n" +
+                              "• Mantener las 4 barras en Verde o Amarillo garantiza que estás quemando grasa de forma sostenida con tu masa muscular 100% protegida."
             },
             protFFM: {
                 icon: "🥩",
@@ -3753,14 +3766,6 @@
                 purpose: "Mide si tu déficit calórico diario pone en riesgo tu proteína muscular contráctil.",
                 howTo: "• Déficit N-1 (Rojo): Balance calórico diario en kcal (Ingesta - Gasto).\n• Músculo Seco EMA (Verde): Masa muscular seca pura.\n\n📊 LECTURA RÁPIDA:\n🟢 Déficit alto (-800 kcal) + Músculo plano: Déficit perfecto y seguro (solo quemas grasa).\n⚠️ Músculo cae sostenidamente: Déficit demasiado agresivo. Reduce el déficit.",
                 conclusiones: "🚦 SEMÁFORO (r):\n🟢 Conservación Magra (r ≤ +0.30): Déficit seguro con músculo protegido."
-            },
-            actImpactHelp: {
-                icon: "🏃",
-                title: "Impacto del Entrenamiento (WOD, MTB, Descanso)",
-                subtitle: "Respuesta de tu masa seca según la disciplina",
-                purpose: "Compara cómo responde tu masa muscular seca a medio plazo tras días de WOD, MTB o Descanso.",
-                howTo: "• 🏋️ WOD: Estímulo de fuerza y reparación tisular.\n• 🚴 MTB: Gasto glucídico elevado y sudoración (el filtro aisla la falsa caída muscular).\n• 🛋️ Descanso: Período de recuperación y síntesis muscular.\n\n📊 LECTURA RÁPIDA:\n🟢 Barra Verde (r ≥ +0.30): Disciplina que favorece la masa seca.\n🔴 Barra Roja: Tendencia a menor masa seca (se estabiliza acumulando semanas).",
-                conclusiones: "🚦 SEMÁFORO (r):\n🟢 Barra Verde: Disciplina estimuladora/protectora de masa seca."
             },
             ocrHelp: {
                 icon: "📷",
@@ -4792,8 +4797,8 @@
                     textColorClass = "text-emerald-400";
                     label = "Recomposición Limpia";
                 } else if (rValue >= 0.35) {
-                    dotColorClass = "bg-cyan-400";
-                    textColorClass = "text-cyan-400";
+                    dotColorClass = "bg-red-500";
+                    textColorClass = "text-red-400";
                     label = "Tendencia Paralela";
                 } else {
                     dotColorClass = "bg-yellow-400";
@@ -4801,13 +4806,13 @@
                     label = "Estable / Neutro";
                 }
             } else if (type === 'protein') {
-                varPairs = "Prot N-1 / Músculo";
-                varFullDesc = "entre Proteína Ingerida N-1 (g) y Masa Muscular Seca EMA (kg)";
-                if (rValue >= 0.30) {
+                varPairs = "Prot 7D / Músculo";
+                varFullDesc = "entre Ingesta Proteica Media en 7 Días (g) y Masa Muscular Seca EMA (kg)";
+                if (rValue >= 0.20) {
                     dotColorClass = "bg-emerald-400";
                     textColorClass = "text-emerald-400";
                     label = "Protección Proteica";
-                } else if (rValue <= -0.30) {
+                } else if (rValue <= -0.20) {
                     dotColorClass = "bg-red-500";
                     textColorClass = "text-red-400";
                     label = "Baja Proteína";
@@ -4824,8 +4829,8 @@
                     textColorClass = "text-emerald-400";
                     label = "Repleción Glucídica";
                 } else if (rValue <= -0.30) {
-                    dotColorClass = "bg-purple-400";
-                    textColorClass = "text-purple-400";
+                    dotColorClass = "bg-red-500";
+                    textColorClass = "text-red-400";
                     label = "Vaciado de Hidratos";
                 } else {
                     dotColorClass = "bg-yellow-400";
@@ -4833,15 +4838,15 @@
                     label = "Ingesta Neutra";
                 }
             } else if (type === 'deficit') {
-                varPairs = "Déficit N-1 / Músculo";
-                varFullDesc = "entre Déficit Calórico Real N-1 (kcal) y Masa Muscular Seca EMA (kg)";
+                varPairs = "Déficit 7D / Músculo";
+                varFullDesc = "entre Déficit Calórico Medio en 7 Días (kcal) y Masa Muscular Seca EMA (kg)";
                 if (rValue <= +0.30) {
                     dotColorClass = "bg-emerald-400";
                     textColorClass = "text-emerald-400";
                     label = "Conservación Magra";
                 } else {
-                    dotColorClass = "bg-yellow-400";
-                    textColorClass = "text-yellow-400";
+                    dotColorClass = "bg-red-500";
+                    textColorClass = "text-red-400";
                     label = "Sensibilidad al Déficit";
                 }
             } else {
@@ -4867,12 +4872,9 @@
 
         function updateBodyCompCharts() {
             const ctx1 = document.getElementById('chartWeightFatMuscle');
-            const ctx2 = document.getElementById('chartProtFFM');
-            const ctx3 = document.getElementById('chartCarbWater');
-            const ctx4 = document.getElementById('chartDeficitFFM');
-            const ctx5 = document.getElementById('chartActivityImpact');
+            const ctxNutri = document.getElementById('chartNutriImpact');
 
-            if (!ctx1 || !ctx2 || !ctx3 || !ctx4 || !ctx5) return;
+            if (!ctx1 || !ctxNutri) return;
 
             let sortedLogs = [...bodyCompLog].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -4958,21 +4960,35 @@
             // Procesar modelo biofísico de corrección (mediana de %TBW_ref, aislamiento del 27% seco y EMA α=0.25)
             const { tbwRef, smmNormData, smmSecaNormData, smmSecaEmaData } = processSmmBiophysicalModel(sortedLogs);
 
-            // Mapeo con el Desfase Fisiológico 24h (Ingesta del día N-1 enfrentada al pesaje 6am del día N)
-            const protEatenData = sortedLogs.map(l => {
-                const prevDate = getPreviousDateStr(l.date);
-                if (dayFlags[prevDate]?.isIncomplete) return null;
-                let logsToUse = globalLog.filter(item => item.date === prevDate);
-                // Si el día anterior (N-1) no tiene registros (ej. el primer día del historial), usar el propio día como fallback inicial
-                if (!logsToUse.length) {
-                    logsToUse = globalLog.filter(item => item.date === l.date);
+            // Mapeo de Ingesta Proteica Media Acumulada a 7 Días (ventana móvil previa al pesaje 6am del día N)
+            const prot7dData = sortedLogs.map(l => {
+                let cur = l.date;
+                let sumProt = 0;
+                let countDays = 0;
+                for (let step = 1; step <= 7; step++) {
+                    cur = getPreviousDateStr(cur);
+                    if (!cur) break;
+                    if (dayFlags[cur]?.isIncomplete) continue;
+                    const dayLogs = globalLog.filter(item => item.date === cur);
+                    if (dayLogs.length > 0) {
+                        let dayP = 0;
+                        dayLogs.forEach(item => dayP += (item.p || 0));
+                        sumProt += dayP;
+                        countDays++;
+                    }
                 }
-                if (!logsToUse.length || dayFlags[l.date]?.isIncomplete) return null;
-                let sum = 0;
-                logsToUse.forEach(i => sum += (i.p || 0));
-                return Math.round(sum);
+                if (countDays === 0) {
+                    if (dayFlags[l.date]?.isIncomplete) return null;
+                    const sameDay = globalLog.filter(item => item.date === l.date);
+                    if (!sameDay.length) return null;
+                    let p = 0;
+                    sameDay.forEach(item => p += (item.p || 0));
+                    return Math.round(p);
+                }
+                return Math.round(sumProt / countDays);
             });
 
+            // Mapeo con el Desfase Fisiológico 24h para Carbohidratos (Repleción aguda de glucógeno)
             const carbEatenData = sortedLogs.map(l => {
                 const prevDate = getPreviousDateStr(l.date);
                 if (dayFlags[prevDate]?.isIncomplete) return null;
@@ -4986,23 +5002,36 @@
                 return Math.round(sum);
             });
 
-            const realDeficitData = sortedLogs.map(l => {
-                const prevDate = getPreviousDateStr(l.date);
-                if (dayFlags[prevDate]?.isIncomplete) return null;
-                let logsToUse = globalLog.filter(item => item.date === prevDate);
-                if (!logsToUse.length) {
-                    logsToUse = globalLog.filter(item => item.date === l.date);
-                }
-                if (!logsToUse.length || dayFlags[l.date]?.isIncomplete) return null;
-                let eaten = 0;
-                logsToUse.forEach(i => eaten += (i.kcal || 0));
+            // Mapeo del Déficit Calórico Medio Sostenido a 7 Días (eaten - refKcal acumulado)
+            const realDeficit7dData = sortedLogs.map(l => {
+                let cur = l.date;
+                let sumDef = 0;
+                let countDays = 0;
                 const refKcal = parseFloat(userGarmin.yesterdayKcal) || 2000;
-                return Math.round(eaten - refKcal);
+                for (let step = 1; step <= 7; step++) {
+                    cur = getPreviousDateStr(cur);
+                    if (!cur) break;
+                    if (dayFlags[cur]?.isIncomplete) continue;
+                    const dayLogs = globalLog.filter(item => item.date === cur);
+                    if (dayLogs.length > 0) {
+                        let dayKcal = 0;
+                        dayLogs.forEach(item => dayKcal += (item.kcal || 0));
+                        sumDef += (dayKcal - refKcal);
+                        countDays++;
+                    }
+                }
+                if (countDays === 0) {
+                    if (dayFlags[l.date]?.isIncomplete) return null;
+                    const sameDay = globalLog.filter(item => item.date === l.date);
+                    if (!sameDay.length) return null;
+                    let eaten = 0;
+                    sameDay.forEach(item => eaten += (item.kcal || 0));
+                    return Math.round(eaten - refKcal);
+                }
+                return Math.round(sumDef / countDays);
             });
 
-            // Actualizar Badges de Correlación evaluados respecto a SMM_seca_norm_EMA con etiquetas fisiológicas 24h
-            const rFatMuscle = calculatePearsonR(fatKgEmaData, smmSecaEmaData);
-            renderCorrelationBadge('badgeWeightFatMuscle', rFatMuscle, 'recomp');
+
 
             // Actualizar resumen de variaciones netas (Δ) en la primera tarjeta (5 compartimentos)
             if (sortedLogs.length >= 2) {
@@ -5019,6 +5048,17 @@
                     return (v > 0 ? `+${v.toFixed(2)}` : `${v.toFixed(2)}`) + ' kg';
                 };
 
+                // Días transcurridos entre la primera y última medición del periodo visible
+                const firstDate = new Date(sortedLogs[0].date);
+                const lastDate = new Date(sortedLogs[sortedLogs.length - 1].date);
+                const elapsedDays = Math.max(1, Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24)));
+
+                const fmtRate = (vKg) => {
+                    const gPerDay = Math.round((vKg * 1000) / elapsedDays);
+                    if (Math.abs(gPerDay) === 0) return '0 g/d';
+                    return (gPerDay > 0 ? `+${gPerDay}` : `${gPerDay}`) + ' g/d';
+                };
+
                 const dW = document.getElementById('deltaWeight');
                 const dF = document.getElementById('deltaFat');
                 const dH2O = document.getElementById('deltaWater');
@@ -5030,16 +5070,84 @@
                 if (dH2O) dH2O.textContent = fmtDelta(diffWater);
                 if (dS) dS.textContent = fmtDelta(diffSmm, true);
                 if (dG) dG.textContent = fmtDelta(diffGlycogen);
+
+                const rW = document.getElementById('rateWeight');
+                const rF = document.getElementById('rateFat');
+                const rH2O = document.getElementById('rateWater');
+                const rS = document.getElementById('rateSmmSeca');
+                const rG = document.getElementById('rateGlycogen');
+
+                if (rW) rW.textContent = fmtRate(diffWeight);
+                if (rF) rF.textContent = fmtRate(diffFat);
+                if (rH2O) rH2O.textContent = fmtRate(diffWater);
+                if (rS) rS.textContent = fmtRate(diffSmm);
+                if (rG) rG.textContent = fmtRate(diffGlycogen);
             }
 
-            const rProt = calculatePearsonR(protEatenData, smmSecaEmaData);
-            renderCorrelationBadge('badgeProtFFM', rProt, 'protein');
+            // Actualizar Micro-barra de Fiabilidad / Nivel de Confianza según número de mediciones en la ventana
+            const confEl = document.getElementById('card1ConfidenceWrapper');
+            if (confEl) {
+                const n = sortedLogs.length;
+                let confPct = 0;
+                let confLabel = "";
+                let confColor = "";
+                let confBg = "";
 
-            const rCarb = calculatePearsonR(carbEatenData, smmSecaEmaData);
-            renderCorrelationBadge('badgeCarbWater', rCarb, 'carbs');
+                if (n <= 1) {
+                    confPct = 15;
+                    confLabel = `Fiabilidad Insuficiente (${n} medición)`;
+                    confColor = "text-red-400";
+                    confBg = "bg-red-500";
+                } else if (n === 2) {
+                    confPct = 25;
+                    confLabel = `Fiabilidad Muy Baja (2 mediciones)`;
+                    confColor = "text-red-400";
+                    confBg = "bg-red-500";
+                } else if (n === 3) {
+                    confPct = 35;
+                    confLabel = `Fiabilidad Baja (3 mediciones)`;
+                    confColor = "text-red-400";
+                    confBg = "bg-red-500";
+                } else if (n < 7) {
+                    confPct = Math.round(40 + ((n - 4) / 2) * 8);
+                    confLabel = `Fiabilidad Baja (${n} mediciones)`;
+                    confColor = "text-red-400";
+                    confBg = "bg-red-500";
+                } else if (n < 14) {
+                    confPct = Math.round(50 + ((n - 7) / 6) * 15);
+                    confLabel = `Fiabilidad Moderada (${n} mediciones)`;
+                    confColor = "text-yellow-400";
+                    confBg = "bg-yellow-400";
+                } else if (n < 25) {
+                    confPct = Math.min(95, Math.round(70 + ((n - 14) / 10) * 25));
+                    confLabel = `Fiabilidad Alta (${n} mediciones)`;
+                    confColor = "text-emerald-400";
+                    confBg = "bg-emerald-400";
+                } else {
+                    confPct = 100;
+                    confLabel = `Fiabilidad Óptima (${n} mediciones)`;
+                    confColor = "text-emerald-400";
+                    confBg = "bg-emerald-400";
+                }
 
-            const rDeficit = calculatePearsonR(realDeficitData, smmSecaEmaData);
-            renderCorrelationBadge('badgeDeficitFFM', rDeficit, 'deficit');
+                const dot = document.getElementById('confDot');
+                const lbl = document.getElementById('confLabel');
+                const txt = document.getElementById('confPctText');
+                const bar = document.getElementById('confProgressBar');
+
+                if (dot) dot.className = `w-1.5 h-1.5 rounded-full ${confBg} inline-block animate-pulse`;
+                if (lbl) lbl.textContent = confLabel;
+                if (txt) {
+                    txt.textContent = `${confPct}%`;
+                    txt.className = `font-bold ${confColor}`;
+                }
+                if (bar) {
+                    bar.style.width = `${confPct}%`;
+                    bar.className = `h-full rounded-full transition-all duration-500 ${confBg}`;
+                }
+            }
+
+
 
             // Valores de ejes Y (+1 máx y -1 mín) para Peso, Masa Magra Bruta, Grasa y Agua
             const weightMax = Math.max(...weightData, ...weightEmaData);
@@ -5061,30 +5169,6 @@
             const waterKgMin = Math.min(...waterKgData);
             const waterKgYMax = parseFloat((waterKgMax + 1).toFixed(1));
             const waterKgYMin = parseFloat((waterKgMin - 1).toFixed(1));
-
-            // Escala Y proporcional para Carbohidratos (evita el "efecto lupa" en pequeñas variaciones)
-            const carbValid = carbEatenData.filter(v => typeof v === 'number' && !isNaN(v));
-            const carbMax = carbValid.length ? Math.max(...carbValid) : 250;
-            const carbMin = carbValid.length ? Math.min(...carbValid) : 100;
-            const carbSpan = Math.max(40, carbMax - carbMin);
-            const carbYMin = Math.max(0, Math.floor(carbMin - carbSpan * 0.5));
-            const carbYMax = Math.ceil(carbMax + carbSpan * 0.5);
-
-            // Escala Y proporcional para Proteína
-            const protValid = protEatenData.filter(v => typeof v === 'number' && !isNaN(v));
-            const protMax = protValid.length ? Math.max(...protValid) : 180;
-            const protMin = protValid.length ? Math.min(...protValid) : 80;
-            const protSpan = Math.max(30, protMax - protMin);
-            const protYMin = Math.max(0, Math.floor(protMin - protSpan * 0.5));
-            const protYMax = Math.ceil(protMax + protSpan * 0.5);
-
-            // Escala Y proporcional para Déficit
-            const defValid = realDeficitData.filter(v => typeof v === 'number' && !isNaN(v));
-            const defMax = defValid.length ? Math.max(...defValid) : 0;
-            const defMin = defValid.length ? Math.min(...defValid) : -1000;
-            const defSpan = Math.max(300, defMax - defMin);
-            const defYMin = Math.floor(defMin - defSpan * 0.2);
-            const defYMax = Math.ceil(defMax + defSpan * 0.2);
 
             // Eje Y derecho dinámico de alta resolución exclusivo para Masa Muscular Seca EMA (kg)
             const smmSecaEmaMax = Math.max(...smmSecaEmaData);
@@ -5119,8 +5203,6 @@
                 }));
             };
 
-
-
             // 1. Gráfico Peso vs Masa Grasa vs Masa Muscular Seca (EMA)
             if (chartInstanceWeightFatMuscle) chartInstanceWeightFatMuscle.destroy();
             if (ctx1) {
@@ -5129,15 +5211,21 @@
                     data: {
                         labels,
                         datasets: [
-                            { label: 'Peso Tendencia EMA (kg)', data: weightEmaData, borderColor: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderWidth: 2, spanGaps: true, tension: 0.3, yAxisID: 'y' },
-                            { label: 'Peso Bruto (kg)', data: weightData, borderColor: 'rgba(229, 229, 234, 0.35)', backgroundColor: 'transparent', borderDash: [3, 3], pointRadius: 3, pointBackgroundColor: 'rgba(229, 229, 234, 0.6)', spanGaps: true, tension: 0.1, yAxisID: 'y' },
-                            { label: 'Masa Grasa EMA (kg)', data: fatKgEmaData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'yFat' },
-                            { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', spanGaps: true, tension: 0.3, yAxisID: 'yWater' },
-                            { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
+                            { label: 'Tendencia Peso EMA (kg)', data: weightEmaData, borderColor: '#ffffff', backgroundColor: 'rgba(255, 255, 255, 0.08)', borderWidth: 2, pointRadius: 0, pointHoverRadius: 4, spanGaps: true, tension: 0.3, yAxisID: 'y' },
+                            { label: 'Peso Bruto (kg)', data: weightData, borderColor: 'rgba(229, 229, 234, 0.35)', backgroundColor: 'transparent', borderDash: [3, 3], pointRadius: 0, pointHoverRadius: 4, spanGaps: true, tension: 0.1, yAxisID: 'y' },
+                            { label: 'Tendencia Grasa EMA (kg)', data: fatKgEmaData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', pointRadius: 0, pointHoverRadius: 4, spanGaps: true, tension: 0.3, yAxisID: 'yFat' },
+                            { label: 'Masa de Agua (kg)', data: waterKgData, borderColor: '#32ade6', backgroundColor: 'rgba(50, 173, 230, 0.1)', pointRadius: 0, pointHoverRadius: 4, spanGaps: true, tension: 0.3, yAxisID: 'yWater' },
+                            { label: 'Tendencia Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', pointRadius: 0, pointHoverRadius: 4, spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
                         ]
                     },
                     options: {
                         responsive: true, maintainAspectRatio: false,
+                        elements: {
+                            point: {
+                                radius: 0,
+                                hoverRadius: 4
+                            }
+                        },
                         scales: {
                             x: xAxisConfig,
                             y: { position: 'left', min: weightYMin, max: weightYMax, ticks: { color: '#e5e5ea', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
@@ -5160,152 +5248,258 @@
                 });
             }
 
-            // 2. Gráfico Proteína vs Masa Muscular Seca Real (EMA)
-            if (chartInstanceProtFFM) chartInstanceProtFFM.destroy();
-            chartInstanceProtFFM = new Chart(ctx2, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Proteína (g) N-1', data: protEatenData, borderColor: '#af52de', backgroundColor: 'rgba(175, 82, 222, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: xAxisConfig,
-                        y: { position: 'left', min: protYMin, max: protYMax, ticks: { color: '#af52de', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                boxWidth: 0,
-                                boxHeight: 0,
-                                padding: 12,
-                                font: { size: 10, weight: 'bold' },
-                                generateLabels: createColoredLegend
-                            }
+            // 2. Gráfico Unificado: Impacto Nutricional & Recomposición (Métricas Fisiológicas Directas)
+            if (chartInstanceNutriImpact) chartInstanceNutriImpact.destroy();
+            if (ctxNutri) {
+                const targets = getGarminCalculatedTargets();
+                const targetProt = Math.round(targets.p || 160);
+                const targetCarb = Math.round(targets.c || 200);
+                const targetDef = Math.abs(parseFloat(userGarmin.deficitKcal)) || calculateMaxSafeDeficit(targets) || 400;
+
+                // 1. Proteína Media 7D
+                const validProt = prot7dData.filter(v => v !== null && !isNaN(v));
+                const currentAvgProt = validProt.length ? validProt[validProt.length - 1] : 0;
+                const protPct = targetProt > 0 ? Math.round((currentAvgProt / targetProt) * 100) : 100;
+
+                // 2. Carbohidratos N-1 (24h)
+                const validCarb = carbEatenData.filter(v => v !== null && !isNaN(v));
+                const currentCarb = validCarb.length ? validCarb[validCarb.length - 1] : 0;
+                const carbPct = targetCarb > 0 ? Math.round((currentCarb / targetCarb) * 100) : 100;
+
+                // 3. Déficit Real Medio 7D
+                const validDef = realDeficit7dData.filter(v => v !== null && !isNaN(v));
+                const currentAvgDef = validDef.length ? validDef[validDef.length - 1] : 0;
+                const realDefVal = Math.max(0, -currentAvgDef);
+                const defPct = targetDef > 0 ? Math.round((realDefVal / targetDef) * 100) : 100;
+
+                // 4. Partición de Recomposición (% Grasa Perdida)
+                let recompSharePct = 100;
+                let recompDiagnosis = "Definición Limpia";
+                let recompColorClass = "text-emerald-400";
+                let recompDotClass = "bg-emerald-400";
+                let recompBarColor = 'rgba(48, 209, 88, 0.85)';
+
+                const diffW = (weightEmaData.length >= 2) ? (weightEmaData[weightEmaData.length - 1] - weightEmaData[0]) : 0;
+                const diffF = (fatKgEmaData.length >= 2) ? (fatKgEmaData[fatKgEmaData.length - 1] - fatKgEmaData[0]) : 0;
+                const diffS = (smmSecaEmaData.length >= 2) ? (smmSecaEmaData[smmSecaEmaData.length - 1] - smmSecaEmaData[0]) : 0;
+
+                if (diffW <= -0.15) { // Fase de pérdida de peso
+                    if (diffF < 0 && diffS >= -0.05) {
+                        recompSharePct = 100;
+                        recompDiagnosis = "Definición Limpia";
+                        recompColorClass = "text-emerald-400";
+                        recompDotClass = "bg-emerald-400";
+                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
+                    } else if (diffF < 0 && diffS < -0.05) {
+                        const totalLost = Math.abs(diffF) + Math.abs(diffS);
+                        recompSharePct = totalLost > 0 ? Math.round((Math.abs(diffF) / totalLost) * 100) : 80;
+                        if (recompSharePct >= 80) {
+                            recompDiagnosis = "Definición Limpia";
+                            recompColorClass = "text-emerald-400";
+                            recompDotClass = "bg-emerald-400";
+                            recompBarColor = 'rgba(48, 209, 88, 0.85)';
+                        } else if (recompSharePct >= 65) {
+                            recompDiagnosis = "Recomposición Aceptable";
+                            recompColorClass = "text-yellow-400";
+                            recompDotClass = "bg-yellow-400";
+                            recompBarColor = 'rgba(255, 214, 10, 0.85)';
+                        } else {
+                            recompDiagnosis = "Pérdida Muscular";
+                            recompColorClass = "text-red-400";
+                            recompDotClass = "bg-red-500";
+                            recompBarColor = 'rgba(255, 69, 58, 0.85)';
                         }
+                    } else if (diffF >= 0 && diffS < 0) {
+                        recompSharePct = 0;
+                        recompDiagnosis = "Pérdida Muscular";
+                        recompColorClass = "text-red-400";
+                        recompDotClass = "bg-red-500";
+                        recompBarColor = 'rgba(255, 69, 58, 0.85)';
+                    } else {
+                        recompSharePct = 100;
+                        recompDiagnosis = "Mantenimiento Óptimo";
+                        recompColorClass = "text-emerald-400";
+                        recompDotClass = "bg-emerald-400";
+                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
+                    }
+                } else if (diffW >= 0.15) { // Fase de volumen
+                    if (diffS > 0) {
+                        const totalGain = Math.max(0, diffF) + diffS;
+                        recompSharePct = totalGain > 0 ? Math.round((diffS / totalGain) * 100) : 100;
+                        if (recompSharePct >= 60) {
+                            recompDiagnosis = "Volumen Limpio";
+                            recompColorClass = "text-emerald-400";
+                            recompDotClass = "bg-emerald-400";
+                            recompBarColor = 'rgba(48, 209, 88, 0.85)';
+                        } else {
+                            recompDiagnosis = "Ganancia de Grasa";
+                            recompColorClass = "text-yellow-400";
+                            recompDotClass = "bg-yellow-400";
+                            recompBarColor = 'rgba(255, 214, 10, 0.85)';
+                        }
+                    } else {
+                        recompSharePct = 30;
+                        recompDiagnosis = "Ganancia Sin Músculo";
+                        recompColorClass = "text-red-400";
+                        recompDotClass = "bg-red-500";
+                        recompBarColor = 'rgba(255, 69, 58, 0.85)';
+                    }
+                } else { // Peso estable
+                    if (diffF <= 0 && diffS >= 0) {
+                        recompSharePct = 100;
+                        recompDiagnosis = "Recomposición Pura";
+                        recompColorClass = "text-emerald-400";
+                        recompDotClass = "bg-emerald-400";
+                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
+                    } else if (diffS < -0.1) {
+                        recompSharePct = 50;
+                        recompDiagnosis = "Pérdida Muscular Leve";
+                        recompColorClass = "text-yellow-400";
+                        recompDotClass = "bg-yellow-400";
+                        recompBarColor = 'rgba(255, 214, 10, 0.85)';
+                    } else {
+                        recompSharePct = 100;
+                        recompDiagnosis = "Estable y Protegido";
+                        recompColorClass = "text-emerald-400";
+                        recompDotClass = "bg-emerald-400";
+                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
                     }
                 }
-            });
 
-            // 3. Gráfico Carbohidratos vs Masa Muscular Seca Real (EMA)
-            if (chartInstanceCarbWater) chartInstanceCarbWater.destroy();
-            chartInstanceCarbWater = new Chart(ctx3, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Carbohidratos (g) N-1', data: carbEatenData, borderColor: '#ff9500', backgroundColor: 'rgba(255, 149, 0, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: xAxisConfig,
-                        y: { position: 'left', min: carbYMin, max: carbYMax, ticks: { color: '#ff9500', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                boxWidth: 0,
-                                boxHeight: 0,
-                                padding: 12,
-                                font: { size: 10, weight: 'bold' },
-                                generateLabels: createColoredLegend
-                            }
-                        }
-                    }
+                // Diagnóstico y Colores de Proteína (7D)
+                let protLabel = "Proteína Óptima";
+                let protColorClass = "text-emerald-400";
+                let protDotClass = "bg-emerald-400";
+                let protBarColor = 'rgba(48, 209, 88, 0.85)';
+                if (protPct >= 90) {
+                    protLabel = "Proteína Óptima";
+                    protColorClass = "text-emerald-400";
+                    protDotClass = "bg-emerald-400";
+                    protBarColor = 'rgba(48, 209, 88, 0.85)';
+                } else if (protPct >= 75) {
+                    protLabel = "Proteína Moderada";
+                    protColorClass = "text-yellow-400";
+                    protDotClass = "bg-yellow-400";
+                    protBarColor = 'rgba(255, 214, 10, 0.85)';
+                } else {
+                    protLabel = "Proteína Insuficiente";
+                    protColorClass = "text-red-400";
+                    protDotClass = "bg-red-500";
+                    protBarColor = 'rgba(255, 69, 58, 0.85)';
                 }
-            });
 
-            // 4. Gráfico Déficit Real vs Masa Muscular Seca Real (EMA)
-            if (chartInstanceDeficitFFM) chartInstanceDeficitFFM.destroy();
-            chartInstanceDeficitFFM = new Chart(ctx4, {
-                type: 'line',
-                data: {
-                    labels,
-                    datasets: [
-                        { label: 'Déficit Real (kcal) N-1', data: realDeficitData, borderColor: '#ff453a', backgroundColor: 'rgba(255, 69, 58, 0.1)', spanGaps: false, tension: 0.3, yAxisID: 'y' },
-                        { label: 'Masa Muscular Seca EMA (kg)', data: smmSecaEmaData, borderColor: '#30d158', backgroundColor: 'rgba(48, 209, 88, 0.15)', spanGaps: true, tension: 0.3, yAxisID: 'ySmmSeca' }
-                    ]
-                },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        x: xAxisConfig,
-                        y: { position: 'left', min: defYMin, max: defYMax, ticks: { color: '#ff453a', font: { size: 9 } }, grid: { color: '#2c2c2e' } },
-                        ySmmSeca: { position: 'right', min: smmSecaYMin, max: smmSecaYMax, ticks: { color: '#30d158', font: { size: 9 } }, grid: { drawOnChartArea: false } }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                boxWidth: 0,
-                                boxHeight: 0,
-                                padding: 12,
-                                font: { size: 10, weight: 'bold' },
-                                generateLabels: createColoredLegend
-                            }
-                        }
-                    }
+                // Diagnóstico y Colores de Carbohidratos N-1
+                let carbLabel = "Repleción Óptima";
+                let carbColorClass = "text-emerald-400";
+                let carbDotClass = "bg-emerald-400";
+                let carbBarColor = 'rgba(48, 209, 88, 0.85)';
+                if (carbPct >= 75 && carbPct <= 115) {
+                    carbLabel = "Repleción Óptima";
+                    carbColorClass = "text-emerald-400";
+                    carbDotClass = "bg-emerald-400";
+                    carbBarColor = 'rgba(48, 209, 88, 0.85)';
+                } else if ((carbPct >= 50 && carbPct < 75) || (carbPct > 115 && carbPct <= 130)) {
+                    carbLabel = carbPct < 75 ? "Carga Moderada" : "Carga Alta";
+                    carbColorClass = "text-yellow-400";
+                    carbDotClass = "bg-yellow-400";
+                    carbBarColor = 'rgba(255, 214, 10, 0.85)';
+                } else {
+                    carbLabel = carbPct < 50 ? "Vaciado Glucídico" : "Exceso Glucídico";
+                    carbColorClass = "text-red-400";
+                    carbDotClass = "bg-red-500";
+                    carbBarColor = 'rgba(255, 69, 58, 0.85)';
                 }
-            });
 
-            // 5. Gráfico Impacto Actividad: Correlación de Pearson por disciplina contra Masa Muscular Seca EMA
-            const ctxAct = document.getElementById('chartActivityImpact');
-            let rWod = null, rMtb = null, rRest = null;
-            if (ctxAct) {
-                if (chartInstanceActivityImpact) chartInstanceActivityImpact.destroy();
+                // Diagnóstico y Colores de Déficit (7D)
+                let defLabel = "Déficit en Diana";
+                let defColorClass = "text-emerald-400";
+                let defDotClass = "bg-emerald-400";
+                let defBarColor = 'rgba(48, 209, 88, 0.85)';
+                if (defPct >= 80 && defPct <= 120) {
+                    defLabel = "Déficit en Diana";
+                    defColorClass = "text-emerald-400";
+                    defDotClass = "bg-emerald-400";
+                    defBarColor = 'rgba(48, 209, 88, 0.85)';
+                } else if ((defPct >= 50 && defPct < 80) || (defPct > 120 && defPct <= 135)) {
+                    defLabel = defPct < 80 ? "Déficit Ligero" : "Déficit Fuerte";
+                    defColorClass = "text-yellow-400";
+                    defDotClass = "bg-yellow-400";
+                    defBarColor = 'rgba(255, 214, 10, 0.85)';
+                } else {
+                    defLabel = defPct < 50 ? "Sin Apenas Déficit" : "Déficit Catabólico";
+                    defColorClass = "text-red-400";
+                    defDotClass = "bg-red-500";
+                    defBarColor = 'rgba(255, 69, 58, 0.85)';
+                }
 
-                const isWod = sortedLogs.map(l => l.activityType === 'wod' ? 1 : 0);
-                const isMtb = sortedLogs.map(l => l.activityType === 'mtb' ? 1 : 0);
-                const isRest = sortedLogs.map(l => (!l.activityType || l.activityType === 'rest') ? 1 : 0);
+                // Actualizar Badges Inferiores con información directa en tiempo real
+                const bP = document.getElementById('badgeProtFFM');
+                if (bP) {
+                    bP.innerHTML = `<span class="w-2 h-2 rounded-full ${protDotClass} inline-block animate-pulse"></span><span class="${protColorClass} text-[10px] font-semibold">Prot 7D: ${currentAvgProt}g (${protPct}%) · ${protLabel}</span>`;
+                    bP.title = `Ingesta media 7D: ${currentAvgProt}g/día frente a objetivo de ${targetProt}g/día (${protPct}%)`;
+                }
 
-                rWod = calculatePearsonR(isWod, smmSecaEmaData);
-                rMtb = calculatePearsonR(isMtb, smmSecaEmaData);
-                rRest = calculatePearsonR(isRest, smmSecaEmaData);
+                const bC = document.getElementById('badgeCarbWater');
+                if (bC) {
+                    bC.innerHTML = `<span class="w-2 h-2 rounded-full ${carbDotClass} inline-block animate-pulse"></span><span class="${carbColorClass} text-[10px] font-semibold">Carbos N-1: ${currentCarb}g (${carbPct}%) · ${carbLabel}</span>`;
+                    bC.title = `Ingesta de ayer: ${currentCarb}g frente a objetivo de ${targetCarb}g (${carbPct}%)`;
+                }
 
-                const getBarColor = (rVal) => {
-                    if (rVal === null || rVal === undefined || isNaN(rVal)) return 'rgba(142, 142, 147, 0.6)';
-                    if (rVal >= 0.3) return 'rgba(52, 199, 89, 0.85)';
-                    if (rVal <= -0.3) return 'rgba(255, 69, 58, 0.85)';
-                    return 'rgba(255, 214, 10, 0.85)';
-                };
+                const bD = document.getElementById('badgeDeficitFFM');
+                if (bD) {
+                    bD.innerHTML = `<span class="w-2 h-2 rounded-full ${defDotClass} inline-block animate-pulse"></span><span class="${defColorClass} text-[10px] font-semibold">Déficit 7D: -${realDefVal} kcal (${defPct}%) · ${defLabel}</span>`;
+                    bD.title = `Déficit medio 7D: -${realDefVal} kcal/día frente a objetivo de ${targetDef} kcal/día (${defPct}%)`;
+                }
 
-                const valWod = rWod !== null ? rWod : 0;
-                const valMtb = rMtb !== null ? rMtb : 0;
-                const valRest = rRest !== null ? rRest : 0;
+                const bR = document.getElementById('badgeRecompMatrix');
+                if (bR) {
+                    bR.innerHTML = `<span class="w-2 h-2 rounded-full ${recompDotClass} inline-block animate-pulse"></span><span class="${recompColorClass} text-[10px] font-semibold">Recomp: ${recompSharePct}% Grasa · ${recompDiagnosis}</span>`;
+                    bR.title = `Calidad de recomposición tisular: el ${recompSharePct}% del cambio tisular es grasa`;
+                }
 
-                chartInstanceActivityImpact = new Chart(ctxAct, {
+                const maxX = Math.max(125, Math.ceil((Math.max(protPct, carbPct, defPct, recompSharePct) + 10) / 10) * 10);
+
+                chartInstanceNutriImpact = new Chart(ctxNutri, {
                     type: 'bar',
                     data: {
-                        labels: ['🏋️ WOD', '🚴 MTB', '🛋️ Descanso'],
+                        labels: ['🥩 Proteína (7D)', '🍚 Carbohidratos N-1', '🔥 Déficit Real (7D)', '⚖️ Recomposición'],
                         datasets: [
                             {
-                                label: 'Correlación con Masa Seca Real (r)',
-                                data: [valWod, valMtb, valRest],
-                                backgroundColor: [getBarColor(rWod), getBarColor(rMtb), getBarColor(rRest)],
+                                label: '% Cumplimiento / Calidad',
+                                data: [protPct, carbPct, defPct, recompSharePct],
+                                backgroundColor: [
+                                    protBarColor,
+                                    carbBarColor,
+                                    defBarColor,
+                                    recompBarColor
+                                ],
                                 borderRadius: 6,
-                                borderWidth: 0
+                                borderWidth: 0,
+                                barThickness: 20
                             }
                         ]
                     },
                     options: {
-                        responsive: true, maintainAspectRatio: false,
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
                         scales: {
-                            x: { ticks: { color: '#ffffff', font: { size: 11, weight: 'bold' } }, grid: { color: '#2c2c2e' } },
                             y: {
-                                min: -1.0, max: 1.0,
+                                ticks: { color: '#ffffff', font: { size: 10.5, weight: 'bold' } },
+                                grid: { display: false }
+                            },
+                            x: {
+                                min: 0,
+                                max: maxX,
                                 ticks: {
-                                    color: '#8e8e93', font: { size: 9 },
-                                    callback: v => (v > 0 ? '+' : '') + v.toFixed(2)
+                                    color: '#8e8e93',
+                                    font: { size: 9 },
+                                    callback: v => `${v}%`
                                 },
-                                grid: { color: '#2c2c2e' }
+                                grid: {
+                                    color: (context) => (context.tick && context.tick.value === 100) ? 'rgba(48, 209, 88, 0.45)' : '#2c2c2e',
+                                    lineWidth: (context) => (context.tick && context.tick.value === 100) ? 1.5 : 1
+                                }
                             }
                         },
                         plugins: {
@@ -5313,14 +5507,19 @@
                             tooltip: {
                                 callbacks: {
                                     label: function(context) {
-                                        const r = context.parsed.y;
-                                        const sign = r > 0 ? '+' : '';
-                                        let text = "Sin relación clara";
-                                        if (r >= 0.6) text = "Correlación fuerte positiva";
-                                        else if (r >= 0.3) text = "Correlación moderada positiva";
-                                        else if (r <= -0.6) text = "Correlación fuerte negativa";
-                                        else if (r <= -0.3) text = "Correlación moderada negativa";
-                                        return `Correlación Pearson r = ${sign}${r.toFixed(2)} (${text})`;
+                                        const val = context.parsed.x;
+                                        const idx = context.dataIndex;
+                                        if (idx === 0) {
+                                            return `Proteína 7D: ${currentAvgProt}g/d (${val}% de ${targetProt}g) [${protLabel}]`;
+                                        } else if (idx === 1) {
+                                            return `Carbohidratos N-1: ${currentCarb}g (${val}% de ${targetCarb}g) [${carbLabel}]`;
+                                        } else if (idx === 2) {
+                                            return `Déficit 7D: -${realDefVal} kcal/d (${val}% de ${targetDef} kcal) [${defLabel}]`;
+                                        } else {
+                                            const signF = diffF >= 0 ? `+${diffF.toFixed(2)}` : diffF.toFixed(2);
+                                            const signS = diffS >= 0 ? `+${diffS.toFixed(2)}` : diffS.toFixed(2);
+                                            return `Recomposición: ${val}% Grasa (${signF}kg Grasa vs ${signS}kg Músculo) [${recompDiagnosis}]`;
+                                        }
                                     }
                                 }
                             }
@@ -5330,7 +5529,7 @@
             }
 
             // Escuchar el evento doble clic para abrir la gráfica a pantalla completa en horizontal
-            [ctx1, ctx2, ctx3, ctx4, ctx5].forEach(c => {
+            [ctx1, ctxNutri].forEach(c => {
                 if (c && !c.getAttribute('data-zoom-listener')) {
                     c.setAttribute('data-zoom-listener', 'true');
                     c.addEventListener('dblclick', () => {
@@ -5377,10 +5576,10 @@
             }
 
             // Actualizar Panel de Recomposición Corporal
-            updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData, rWod, rMtb, rRest);
+            updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData);
         }
 
-        function updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData, rWod, rMtb, rRest) {
+        function updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData) {
             const panelEl = document.getElementById('panelRecompositionCard');
             if (!panelEl) return;
 
