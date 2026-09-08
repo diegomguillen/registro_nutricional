@@ -1518,5 +1518,85 @@
     "bcaa": 0,
     "eaa": 0
   }
+ },
+ {
+  "id": 79,
+  "name": "Chocolate 99% Cacao",
+  "p": 13.0,
+  "c": 8.0,
+  "f": 51.0,
+  "kcal": 590,
+  "unit": "g",
+  "fam": "LIPID",
+  "sub": "NUT",
+  "icon": "🍫",
+  "qP": 1,
+  "qC": 2,
+  "qF": 2,
+  "aa": {
+    "leu": 0.72,
+    "bcaa": 1.56,
+    "eaa": 3.50
+  }
+ },
+ {
+  "id": 80,
+  "name": "Chocolate 90% Cacao",
+  "p": 10.0,
+  "c": 14.0,
+  "f": 55.0,
+  "kcal": 592,
+  "unit": "g",
+  "fam": "LIPID",
+  "sub": "NUT",
+  "icon": "🍫",
+  "qP": 1,
+  "qC": 2,
+  "qF": 2,
+  "aa": {
+    "leu": 0.55,
+    "bcaa": 1.20,
+    "eaa": 2.70
+  }
+ },
+ {
+  "id": 81,
+  "name": "Chocolate 85% Cacao",
+  "p": 9.5,
+  "c": 19.0,
+  "f": 46.0,
+  "kcal": 584,
+  "unit": "g",
+  "fam": "LIPID",
+  "sub": "NUT",
+  "icon": "🍫",
+  "qP": 1,
+  "qC": 1,
+  "qF": 2,
+  "aa": {
+    "leu": 0.52,
+    "bcaa": 1.14,
+    "eaa": 2.56
+  }
+ },
+ {
+  "id": 82,
+  "name": "Chocolate 70% Cacao",
+  "p": 8.0,
+  "c": 34.0,
+  "f": 42.0,
+  "kcal": 566,
+  "unit": "g",
+  "fam": "LIPID",
+  "sub": "NUT",
+  "icon": "🍫",
+  "qP": 1,
+  "qC": 1,
+  "qF": 2,
+  "aa": {
+    "leu": 0.44,
+    "bcaa": 0.96,
+    "eaa": 2.16
+  }
  }
 ]
