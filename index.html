@@ -7517,43 +7517,24 @@
             const fileName = `backup_nutri_${new Date().toISOString().split('T')[0]}.json`;
 
             // 1. Intentar Web Share API (Móviles Android / iOS)
-            // En Chromium Android / PWA, navigator.canShare() BLOQUEA archivos que terminen en '.json'.
-            // Para solucionarlo y que Android abra la hoja nativa de compartir (Drive, etc.),
-            // usamos la extensión '.txt' con tipo 'text/plain', compatible al 100% con la importación.
-            if (navigator.canShare) {
-                let shareFile = null;
+            if (navigator.share) {
+                const txtName = fileName.replace(/\.json$/, '.txt');
+                const shareFile = new File([jsonString], txtName, { type: "text/plain" });
+                
                 try {
-                    const testFile = new File([jsonString], fileName, { type: "application/json" });
-                    if (navigator.canShare({ files: [testFile] })) {
-                        shareFile = testFile;
-                    }
-                } catch (e) { }
-
-                if (!shareFile) {
-                    try {
-                        const txtName = fileName.replace(/\.json$/, '.txt');
-                        const testTxtFile = new File([jsonString], txtName, { type: "text/plain" });
-                        if (navigator.canShare({ files: [testTxtFile] })) {
-                            shareFile = testTxtFile;
-                        }
-                    } catch (e) { }
+                    await navigator.share({
+                        files: [shareFile],
+                        title: 'Backup NutriApp',
+                        text: 'Copia de seguridad NutriApp'
+                    });
+                    showToast("Copia compartida con éxito");
+                    return;
+                } catch (e) {
+                    if (e.name === 'AbortError') return;
+                    alert("Aviso al compartir (" + e.name + "): " + e.message);
                 }
-
-                if (shareFile) {
-                    try {
-                        await navigator.share({
-                            files: [shareFile],
-                            title: 'Backup NutriApp',
-                            text: 'Copia de seguridad NutriApp'
-                        });
-                        showToast("Copia compartida con éxito");
-                        return;
-                    } catch (e) {
-                        // Si el usuario cerró o canceló la hoja nativa de compartir, no forzamos descarga automática
-                        if (e.name === 'AbortError') return;
-                        console.warn("Error en navigator.share:", e);
-                    }
-                }
+            } else {
+                alert("Web Share no disponible en este navegador. ¿Es HTTPS? " + window.isSecureContext);
             }
 
             // 2. Intentar File System Access API (Navegadores de escritorio Chromium: Chrome, Edge)
