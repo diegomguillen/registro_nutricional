@@ -1073,7 +1073,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
                         </svg>
                     </div>
-                    <input type="file" id="importFile" accept=".json" class="hidden" onchange="handleImport(this)">
+                    <input type="file" id="importFile" accept=".json,application/json,text/plain" class="hidden" onchange="handleImport(this)">
 
                     <div onclick="resetApp()"
                         class="action-card premium-card p-4 flex items-center gap-4 cursor-pointer">
@@ -7422,9 +7422,66 @@
                 dayFlags: dayFlags
             };
 
-            const f = new File([JSON.stringify(backupObject, null, 2)], `backup_nutri_${new Date().toISOString().split('T')[0]}.json`, { type: "application/json" });
-            if (navigator.canShare && navigator.canShare({ files: [f] })) { try { await navigator.share({ files: [f], title: 'Backup NutriApp' }); return; } catch (e) { } }
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(backupObject, null, 2)], { type: "application/json" })); a.download = f.name; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+            const jsonString = JSON.stringify(backupObject, null, 2);
+            const fileName = `backup_nutri_${new Date().toISOString().split('T')[0]}.json`;
+
+            // 1. Intentar Web Share API (Móviles Android / iOS)
+            // En navegadores móviles (como Chrome en Android), 'application/json' suele ser rechazado por canShare.
+            // Si es así, usamos 'text/plain' manteniendo el nombre '.json' para que Android/iOS abran la hoja de compartir (Drive, Gmail, etc.)
+            if (navigator.canShare) {
+                let shareFile = new File([jsonString], fileName, { type: "application/json" });
+                if (!navigator.canShare({ files: [shareFile] })) {
+                    shareFile = new File([jsonString], fileName, { type: "text/plain" });
+                }
+
+                if (navigator.canShare({ files: [shareFile] })) {
+                    try {
+                        await navigator.share({
+                            files: [shareFile],
+                            title: 'Backup NutriApp',
+                            text: 'Copia de seguridad NutriApp'
+                        });
+                        showToast("Copia compartida");
+                        return;
+                    } catch (e) {
+                        // Si el usuario cerró o canceló la hoja nativa de compartir, no forzamos descarga automática
+                        if (e.name === 'AbortError') return;
+                        console.warn("Error en navigator.share:", e);
+                    }
+                }
+            }
+
+            // 2. Intentar File System Access API (Navegadores de escritorio Chromium: Chrome, Edge)
+            // Permite elegir directamente la carpeta de destino (ej. Google Drive para escritorio, OneDrive, etc.)
+            if (window.showSaveFilePicker) {
+                try {
+                    const handle = await window.showSaveFilePicker({
+                        suggestedName: fileName,
+                        types: [{
+                            description: 'Copia de seguridad JSON',
+                            accept: { 'application/json': ['.json'] }
+                        }]
+                    });
+                    const writable = await handle.createWritable();
+                    await writable.write(jsonString);
+                    await writable.close();
+                    showToast("Copia guardada con éxito");
+                    return;
+                } catch (e) {
+                    if (e.name === 'AbortError') return;
+                    console.warn("Error en showSaveFilePicker:", e);
+                }
+            }
+
+            // 3. Fallback tradicional de descarga
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([jsonString], { type: "application/json" }));
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+            showToast("Copia descargada");
         }
 
         function handleImport(input) {
