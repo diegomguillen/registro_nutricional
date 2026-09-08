@@ -1458,5 +1458,25 @@
     "bcaa": 0,
     "eaa": 0
   }
+ },
+{
+  "id": 76,
+  "name": "DHEA 10mg",
+  "p": 0,
+  "c": 0,
+  "f": 0,
+  "kcal": 0,
+  "unit": "u",
+  "fam": "PURE",
+  "sub": "P_PROT",
+  "icon": "💊"
+  "qP": 0,
+  "qC": 0,
+  "qF": 0,
+  "aa": {
+    "leu": 0,
+    "bcaa": 0,
+    "eaa": 0
+  }
  }
 ]
