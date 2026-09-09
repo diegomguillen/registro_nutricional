@@ -1169,16 +1169,26 @@
         </button>
     </nav>
 
-    <div id="analyzeFab" class="fixed bottom-20 right-5 hidden z-50 animate-bounce-in">
+    <div id="analyzeFab" class="fixed bottom-20 right-4 sm:right-6 hidden z-50 animate-bounce-in items-center gap-2">
+        <button onclick="openCopySelectionModal()"
+            class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-4 rounded-full shadow-2xl flex items-center gap-2 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
+            title="Copiar selección a otra fecha">
+            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+            </svg>
+            <span id="fabCopyText" class="text-xs font-bold uppercase tracking-wider">Copiar</span>
+        </button>
         <button onclick="analyzeSelection()"
-            class="bg-primary hover:bg-primary-light text-white font-medium py-3.5 px-6 rounded-full shadow-2xl flex items-center gap-3 transition-all active:scale-95 border border-white/20">
-            <svg class="w-6 h-6 shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            class="bg-primary hover:bg-primary-light text-white font-medium py-3 px-4 rounded-full shadow-2xl flex items-center gap-2 transition-all active:scale-95 border border-white/20"
+            title="Analizar selección">
+            <svg class="w-4 h-4 shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
             </svg>
-            <span id="fabText" class="text-sm font-bold uppercase tracking-wider">Analizar</span>
+            <span id="fabText" class="text-xs font-bold uppercase tracking-wider">Analizar</span>
         </button>
     </div>
 
@@ -1541,6 +1551,99 @@
             <!-- Lista scrolleable de todos los alimentos -->
             <div id="fullRankingListContainer" class="flex-1 overflow-y-auto space-y-2 pr-1 text-xs min-h-[220px]">
                 <!-- Se rellenará dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Copiar Selección de Alimentos a Otra Fecha -->
+    <div id="copySelectionModal"
+        onclick="if (event.target === this) closeCopySelectionModal()"
+        class="fixed inset-0 bg-black/80 hidden z-[85] flex items-end sm:items-center justify-center backdrop-blur-md transition-all p-0 sm:p-4">
+        <div class="bg-[#1c1c1e] w-full sm:max-w-md max-h-[90vh] sm:max-h-[85vh] rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in relative flex flex-col space-y-4 overflow-hidden">
+            
+            <!-- Cabecera -->
+            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-3 shrink-0">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <span>📋</span> Copiar Alimentos Seleccionados
+                </h3>
+                <button type="button" onclick="closeCopySelectionModal()"
+                    class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center"
+                    title="Cerrar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Contenido desplazable -->
+            <div class="overflow-y-auto flex-1 space-y-4 pr-1">
+                <!-- Selector de Fecha de Destino -->
+                <div class="bg-[#2c2c2e] p-3.5 rounded-xl border border-[#3a3a3c] space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="text-xs font-bold text-white uppercase tracking-wider">Fecha de Destino:</label>
+                        <span id="copyTargetDayLabel" class="text-xs font-bold text-[#0a84ff]">Mañana</span>
+                    </div>
+
+                    <input type="date" id="copyTargetDate"
+                        class="w-full rounded-xl border-[#3a3a3c] bg-[#1c1c1e] p-2.5 text-sm font-medium text-white focus:border-primary"
+                        onchange="onCopyTargetDateChange(this.value)">
+
+                    <!-- Accesos Rápidos de Fecha -->
+                    <div class="flex gap-2 pt-1">
+                        <button type="button" onclick="setCopyTargetDateOffset(0)"
+                            class="flex-1 py-1.5 px-2 bg-[#1c1c1e] hover:bg-[#3a3a3c] text-white/90 text-xs font-medium rounded-lg border border-[#3a3a3c] active:scale-95 transition-all text-center">
+                            📅 Hoy
+                        </button>
+                        <button type="button" onclick="setCopyTargetDateOffset(1)"
+                            class="flex-1 py-1.5 px-2 bg-[#1c1c1e] hover:bg-[#3a3a3c] text-white/90 text-xs font-medium rounded-lg border border-[#3a3a3c] active:scale-95 transition-all text-center">
+                            ⏩ Mañana
+                        </button>
+                        <button type="button" onclick="setCopyTargetDateOffset(2)"
+                            class="flex-1 py-1.5 px-2 bg-[#1c1c1e] hover:bg-[#3a3a3c] text-white/90 text-xs font-medium rounded-lg border border-[#3a3a3c] active:scale-95 transition-all text-center">
+                            ➕ Pasado M.
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Opciones de Copia -->
+                <div class="bg-[#2c2c2e]/60 p-3 rounded-xl border border-[#3a3a3c] space-y-2.5">
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                        <input type="checkbox" id="copyAsConsumed" class="rounded text-primary focus:ring-primary h-4 w-4 bg-[#1c1c1e] border-[#3a3a3c]">
+                        <span class="text-xs text-white">Marcar como consumido(s) en el día de destino</span>
+                    </label>
+                    <p class="text-[10px] text-white/50 pl-6 leading-tight">Si lo dejas desmarcado, aparecerán pendientes para poder tacharlos conforme los comas.</p>
+
+                    <label class="flex items-center gap-2.5 cursor-pointer select-none pt-2 border-t border-[#3a3a3c]/60">
+                        <input type="checkbox" id="copyNavigateToTarget" checked class="rounded text-primary focus:ring-primary h-4 w-4 bg-[#1c1c1e] border-[#3a3a3c]">
+                        <span class="text-xs text-white">Ir a la fecha de destino en el Historial tras copiar</span>
+                    </label>
+                </div>
+
+                <!-- Resumen de Alimentos a Copiar -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs text-white/70 px-1">
+                        <span class="font-bold uppercase tracking-wider text-[10px]">Alimentos a copiar (<span id="copySelectedCount">0</span>)</span>
+                        <span id="copySelectedTotals" class="font-mono text-[10px] text-white">0 kcal</span>
+                    </div>
+                    <div id="copySelectedList" class="bg-[#1c1c1e] rounded-xl border border-[#2c2c2e] p-2 max-h-36 overflow-y-auto space-y-1.5">
+                        <!-- Items inyectados dinámicamente -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botones de Acción -->
+            <div class="pt-2 border-t border-[#2c2c2e] flex gap-3 shrink-0">
+                <button type="button" onclick="closeCopySelectionModal()"
+                    class="flex-1 py-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] text-white text-xs font-bold transition-all active:scale-95 border border-[#3a3a3c]">
+                    Cancelar
+                </button>
+                <button type="button" onclick="executeCopySelection()"
+                    class="flex-1 py-3 rounded-xl bg-primary hover:bg-primary-light text-white text-xs font-bold transition-all active:scale-95 shadow-lg flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span>Confirmar Copia</span>
+                </button>
             </div>
         </div>
     </div>
@@ -7678,8 +7781,208 @@
         function toggleAll(src) { document.querySelectorAll('.row-checkbox').forEach(c => { c.checked = src.checked; const id = parseFloat(c.dataset.id) || parseInt(c.dataset.id, 10); src.checked ? selectedIds.add(id) : selectedIds.delete(id); }); updateFab(); }
         function updateFab() {
             const fab = document.getElementById('analyzeFab');
-            if (selectedIds.size > 0) { fab.classList.remove('hidden'); fab.classList.add('flex'); document.getElementById('fabText').textContent = `Analizar (${selectedIds.size})`; }
-            else { fab.classList.add('hidden'); fab.classList.remove('flex'); }
+            if (selectedIds.size > 0) {
+                fab.classList.remove('hidden');
+                fab.classList.add('flex');
+                const count = selectedIds.size;
+                const textAnalizar = document.getElementById('fabText');
+                if (textAnalizar) textAnalizar.textContent = `Analizar (${count})`;
+                const textCopiar = document.getElementById('fabCopyText');
+                if (textCopiar) textCopiar.textContent = `Copiar (${count})`;
+            } else {
+                fab.classList.add('hidden');
+                fab.classList.remove('flex');
+            }
+        }
+
+        // --- COPIAR SELECCIÓN A OTRA FECHA ---
+        function openCopySelectionModal() {
+            if (!selectedIds || selectedIds.size === 0) {
+                showToast("⚠️ Selecciona al menos un alimento");
+                return;
+            }
+
+            const itemsToCopy = currentFilteredLog.length > 0
+                ? currentFilteredLog.filter(i => selectedIds.has(i.id))
+                : globalLog.filter(i => selectedIds.has(i.id));
+
+            if (itemsToCopy.length === 0) {
+                showToast("⚠️ No se encontraron alimentos seleccionados");
+                return;
+            }
+
+            const activeDate = getActiveFilterDate();
+            const today = new Date().toISOString().split('T')[0];
+            let defaultTargetDate = today;
+            if (activeDate === today) {
+                const tomorrow = new Date();
+                tomorrow.setDate(tomorrow.getDate() + 1);
+                defaultTargetDate = tomorrow.toISOString().split('T')[0];
+            } else {
+                defaultTargetDate = today;
+            }
+
+            const dateInput = document.getElementById('copyTargetDate');
+            if (dateInput) {
+                dateInput.value = defaultTargetDate;
+                onCopyTargetDateChange(defaultTargetDate);
+            }
+
+            const chkConsumed = document.getElementById('copyAsConsumed');
+            if (chkConsumed) chkConsumed.checked = false;
+
+            const chkNav = document.getElementById('copyNavigateToTarget');
+            if (chkNav) chkNav.checked = true;
+
+            const countEl = document.getElementById('copySelectedCount');
+            if (countEl) countEl.textContent = itemsToCopy.length;
+
+            let totalKcal = 0;
+            itemsToCopy.forEach(i => totalKcal += (i.kcal || 0));
+            const totalsEl = document.getElementById('copySelectedTotals');
+            if (totalsEl) totalsEl.textContent = `${totalKcal} kcal`;
+
+            const listEl = document.getElementById('copySelectedList');
+            if (listEl) {
+                listEl.innerHTML = itemsToCopy.map(i => {
+                    const isRecipe = i.type === 'recipe';
+                    const icon = isRecipe ? '📖 ' : (i.foodIcon || '🔹 ');
+                    const name = i.foodName || i.name || 'Alimento';
+                    const amt = i.amount !== undefined ? i.amount : (i.qty || 0);
+                    const unit = i.unit || (isRecipe ? 'u' : 'g');
+                    return `
+                        <div class="flex items-center justify-between text-xs py-1.5 px-2 bg-[#2c2c2e]/70 rounded-lg border border-white/5">
+                            <div class="flex items-center gap-1.5 truncate max-w-[70%]">
+                                <span class="shrink-0">${icon}</span>
+                                <span class="truncate text-white font-medium">${name}</span>
+                            </div>
+                            <div class="text-[11px] font-mono text-white/70 shrink-0">
+                                ${amt} ${unit} <span class="text-[10px] text-kcal font-semibold">(${i.kcal} kcal)</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            const modal = document.getElementById('copySelectionModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeCopySelectionModal() {
+            const modal = document.getElementById('copySelectionModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function setCopyTargetDateOffset(offsetDays) {
+            const d = new Date();
+            d.setDate(d.getDate() + offsetDays);
+            const dateStr = d.toISOString().split('T')[0];
+            const dateInput = document.getElementById('copyTargetDate');
+            if (dateInput) {
+                dateInput.value = dateStr;
+                onCopyTargetDateChange(dateStr);
+            }
+        }
+
+        function onCopyTargetDateChange(dateStr) {
+            const label = document.getElementById('copyTargetDayLabel');
+            if (!label || !dateStr) return;
+            const todayStr = new Date().toISOString().split('T')[0];
+            const tomorrow = new Date();
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            const tomorrowStr = tomorrow.toISOString().split('T')[0];
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+
+            if (dateStr === todayStr) {
+                label.textContent = "Hoy";
+                label.className = "text-xs font-bold text-emerald-400";
+            } else if (dateStr === tomorrowStr) {
+                label.textContent = "Mañana";
+                label.className = "text-xs font-bold text-[#0a84ff]";
+            } else if (dateStr === yesterdayStr) {
+                label.textContent = "Ayer";
+                label.className = "text-xs font-bold text-amber-400";
+            } else {
+                const days = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                const dt = new Date(dateStr + 'T12:00:00');
+                label.textContent = `${days[dt.getDay()]} ${dt.getDate()}/${dt.getMonth() + 1}`;
+                label.className = "text-xs font-medium text-white/70";
+            }
+        }
+
+        function executeCopySelection() {
+            const dateInput = document.getElementById('copyTargetDate');
+            const targetDate = dateInput ? dateInput.value : '';
+            if (!targetDate) {
+                showToast("⚠️ Selecciona una fecha válida");
+                return;
+            }
+
+            const itemsToCopy = currentFilteredLog.length > 0
+                ? currentFilteredLog.filter(i => selectedIds.has(i.id))
+                : globalLog.filter(i => selectedIds.has(i.id));
+
+            if (itemsToCopy.length === 0) {
+                showToast("⚠️ No hay alimentos seleccionados");
+                closeCopySelectionModal();
+                return;
+            }
+
+            const markAsConsumed = !!document.getElementById('copyAsConsumed')?.checked;
+            const navigateToTarget = !!document.getElementById('copyNavigateToTarget')?.checked;
+
+            const targetItems = globalLog.filter(i => i.date === targetDate);
+            const targetOrders = targetItems.filter(i => i.sortOrder !== undefined).map(i => i.sortOrder);
+            let nextOrder = targetOrders.length > 0 ? Math.max(...targetOrders) + 1 : 1;
+
+            const newItems = [];
+            const baseTime = Date.now();
+
+            itemsToCopy.forEach((item, idx) => {
+                const newId = baseTime + Math.floor(Math.random() * 1000000) + idx;
+                const cloned = {
+                    ...item,
+                    id: newId,
+                    date: targetDate,
+                    sortOrder: nextOrder++
+                };
+
+                if (markAsConsumed) {
+                    consumedIds.add(newId);
+                } else {
+                    consumedIds.delete(newId);
+                }
+
+                newItems.push(cloned);
+            });
+
+            globalLog.push(...newItems);
+            saveData();
+            saveConsumedIds();
+
+            closeCopySelectionModal();
+
+            selectedIds.clear();
+            updateFab();
+
+            const count = newItems.length;
+            const dateParts = targetDate.split('-');
+            const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}` : targetDate;
+
+            showToast(`✅ ${count} alimento${count > 1 ? 's' : ''} copiado${count > 1 ? 's' : ''} al ${formattedDate}`);
+
+            if (navigateToTarget) {
+                const startInput = document.getElementById('filterStart');
+                const endInput = document.getElementById('filterEnd');
+                if (startInput) startInput.value = targetDate;
+                if (endInput) endInput.value = targetDate;
+                updateDayLabels();
+            }
+
+            applyFilter();
+            updateComparisonCharts();
         }
 
         function analyzeSelection() {
