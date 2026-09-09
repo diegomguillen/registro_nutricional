@@ -7833,18 +7833,29 @@
         }
         function closeModal() { document.getElementById('detailModal').classList.add('hidden'); }
 
+        let currentFilteredLog = [];
+
         // --- RENDER TABLA ---
         function applyFilter() {
             const s = document.getElementById('filterStart').value, e = document.getElementById('filterEnd').value;
             let f = [...globalLog];
+            if (s && e) f = f.filter(i => i.date >= s && i.date <= e);
+
             const explicitOrders = f.filter(i => i.sortOrder !== undefined).map(i => i.sortOrder);
             const minSortOrder = explicitOrders.length > 0 ? Math.min(...explicitOrders) : 0;
             const getOrder = (item) => {
                 if (item.sortOrder !== undefined) return item.sortOrder;
                 return (minSortOrder - 1) - ((item.id || 0) / 1e15);
             };
-            f.sort((a, b) => getOrder(a) - getOrder(b));
-            if (s && e) f = f.filter(i => i.date >= s && i.date <= e);
+
+            f.sort((a, b) => {
+                if (a.date !== b.date) {
+                    return b.date.localeCompare(a.date);
+                }
+                return getOrder(a) - getOrder(b);
+            });
+
+            currentFilteredLog = f;
             selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard(); updateComparisonCharts(); updateIncompleteDayUI();
         }
         function renderTable(items) {
@@ -8082,14 +8093,16 @@
 
         function moveGlobalLogItem(draggedId, targetId) {
             if (!draggedId || !targetId || String(draggedId) === String(targetId)) return;
-            const idxA = globalLog.findIndex(item => String(item.id) === String(draggedId));
-            const idxB = globalLog.findIndex(item => String(item.id) === String(targetId));
-            if (idxA === -1 || idxB === -1) return;
+            const fromIdx = currentFilteredLog.findIndex(item => String(item.id) === String(draggedId));
+            const toIdx = currentFilteredLog.findIndex(item => String(item.id) === String(targetId));
+            if (fromIdx === -1 || toIdx === -1) return;
 
-            const [movedItem] = globalLog.splice(idxA, 1);
-            globalLog.splice(idxB, 0, movedItem);
+            // 1. Mover exactamente en la lista visible que el usuario está viendo
+            const [movedItem] = currentFilteredLog.splice(fromIdx, 1);
+            currentFilteredLog.splice(toIdx, 0, movedItem);
 
-            globalLog.forEach((item, index) => {
+            // 2. Asignar sortOrder secuencial para preservar el nuevo orden visual exacto
+            currentFilteredLog.forEach((item, index) => {
                 item.sortOrder = index;
             });
 
