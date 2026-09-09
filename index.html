@@ -401,115 +401,137 @@
 
 
 
-            <div class="grid grid-cols-2 gap-4">
-                <div class="premium-card p-4 flex flex-col action-card">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-prot">●</span>
-                        <h4 class="text-[11px] font-medium text-white uppercase tracking-widest">Ayer</h4>
+            <!-- SECCIÓN DESPLEGABLE: COMPARATIVAS & MEDIAS -->
+            <div class="premium-card p-4 sm:p-5 animate-fade-in-up">
+                <div onclick="toggleComparisonAccordion()" class="flex items-center justify-between cursor-pointer group select-none">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-orange-500/20 border border-orange-500/30 flex items-center justify-center text-orange-400 font-bold text-lg">
+                            📊
+                        </div>
+                        <div>
+                            <h3 class="font-medium text-white text-base">Comparativas & Medias</h3>
+                            <p class="text-[11px] text-white/50">Ayer, semana pasada y medias semanales (L-D)</p>
+                        </div>
                     </div>
-                    <div class="h-24 w-full relative flex justify-center mb-4">
-                        <canvas id="chartYesterday"></canvas>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1 w-full">
-                        <div class="bg-prot-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
-                            <div id="yesterdayProt" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-carb-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
-                            <div id="yesterdayCarbs" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-fat-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
-                            <div id="yesterdayFats" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
-                            <div id="yesterdayKcal" class="text-[10px] font-bold text-white">0</div>
-                        </div>
+                    <div id="comparisonToggleChevron" class="w-8 h-8 rounded-full bg-[#2c2c2e] group-hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 group-hover:text-white transition-all duration-300 transform rotate-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
                     </div>
                 </div>
 
-                <div class="premium-card p-4 flex flex-col action-card">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-carb">●</span>
-                        <h4 class="text-[11px] font-medium text-white uppercase tracking-widest">Sem. Pasada</h4>
-                    </div>
-                    <div class="h-24 w-full relative flex justify-center mb-4">
-                        <canvas id="chartLastWeek"></canvas>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1 w-full">
-                        <div class="bg-prot-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
-                            <div id="lastWeekProt" class="text-[10px] font-bold text-white">0g</div>
+                <div id="comparisonChartsContainer" class="hidden mt-4 pt-4 border-t border-[#2c2c2e]">
+                    <div class="grid grid-cols-2 gap-3 sm:gap-4">
+                        <div class="bg-[#2c2c2e] p-3.5 sm:p-4 rounded-xl border border-[#3a3a3c] flex flex-col action-card">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-prot">●</span>
+                                <h4 class="text-[11px] font-medium text-white uppercase tracking-widest">Ayer</h4>
+                            </div>
+                            <div class="h-24 w-full relative flex justify-center mb-3">
+                                <canvas id="chartYesterday"></canvas>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 w-full">
+                                <div class="bg-prot-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
+                                    <div id="yesterdayProt" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-carb-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
+                                    <div id="yesterdayCarbs" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-fat-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
+                                    <div id="yesterdayFats" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
+                                    <div id="yesterdayKcal" class="text-[10px] font-bold text-white">0</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-carb-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
-                            <div id="lastWeekCarbs" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-fat-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
-                            <div id="lastWeekFats" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
-                            <div id="lastWeekKcal" class="text-[10px] font-bold text-white">0</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="premium-card p-4 flex flex-col action-card">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-fat">●</span>
-                        <h4 class="text-[11px] font-medium text-white uppercase tracking-widest" id="extraTitle1">Sem. Actual</h4>
-                    </div>
-                    <div class="h-24 w-full relative flex justify-center mb-4">
-                        <canvas id="chartExtra1"></canvas>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1 w-full">
-                        <div class="bg-prot-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
-                            <div id="extra1Prot" class="text-[10px] font-bold text-white">0g</div>
+                        <div class="bg-[#2c2c2e] p-3.5 sm:p-4 rounded-xl border border-[#3a3a3c] flex flex-col action-card">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-carb">●</span>
+                                <h4 class="text-[11px] font-medium text-white uppercase tracking-widest">Sem. Pasada</h4>
+                            </div>
+                            <div class="h-24 w-full relative flex justify-center mb-3">
+                                <canvas id="chartLastWeek"></canvas>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 w-full">
+                                <div class="bg-prot-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
+                                    <div id="lastWeekProt" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-carb-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
+                                    <div id="lastWeekCarbs" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-fat-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
+                                    <div id="lastWeekFats" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
+                                    <div id="lastWeekKcal" class="text-[10px] font-bold text-white">0</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-carb-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
-                            <div id="extra1Carbs" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-fat-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
-                            <div id="extra1Fats" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
-                            <div id="extra1Kcal" class="text-[10px] font-bold text-white">0</div>
-                        </div>
-                    </div>
-                </div>
 
-                <div class="premium-card p-4 flex flex-col action-card">
-                    <div class="flex items-center gap-2 mb-4">
-                        <span class="text-kcal">●</span>
-                        <h4 class="text-[11px] font-medium text-white uppercase tracking-widest" id="extraTitle2">Sem. Anter.</h4>
-                    </div>
-                    <div class="h-24 w-full relative flex justify-center mb-4">
-                        <canvas id="chartExtra2"></canvas>
-                    </div>
-                    <div class="grid grid-cols-4 gap-1 w-full">
-                        <div class="bg-prot-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
-                            <div id="extra2Prot" class="text-[10px] font-bold text-white">0g</div>
+                        <div class="bg-[#2c2c2e] p-3.5 sm:p-4 rounded-xl border border-[#3a3a3c] flex flex-col action-card">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-fat">●</span>
+                                <h4 class="text-[11px] font-medium text-white uppercase tracking-widest" id="extraTitle1">Sem. Actual (L-D)</h4>
+                            </div>
+                            <div class="h-24 w-full relative flex justify-center mb-3">
+                                <canvas id="chartExtra1"></canvas>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 w-full">
+                                <div class="bg-prot-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
+                                    <div id="extra1Prot" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-carb-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
+                                    <div id="extra1Carbs" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-fat-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
+                                    <div id="extra1Fats" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
+                                    <div id="extra1Kcal" class="text-[10px] font-bold text-white">0</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="bg-carb-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
-                            <div id="extra2Carbs" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-fat-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
-                            <div id="extra2Fats" class="text-[10px] font-bold text-white">0g</div>
-                        </div>
-                        <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
-                            <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
-                            <div id="extra2Kcal" class="text-[10px] font-bold text-white">0</div>
+
+                        <div class="bg-[#2c2c2e] p-3.5 sm:p-4 rounded-xl border border-[#3a3a3c] flex flex-col action-card">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-kcal">●</span>
+                                <h4 class="text-[11px] font-medium text-white uppercase tracking-widest" id="extraTitle2">Sem. Anter. (L-D)</h4>
+                            </div>
+                            <div class="h-24 w-full relative flex justify-center mb-3">
+                                <canvas id="chartExtra2"></canvas>
+                            </div>
+                            <div class="grid grid-cols-4 gap-1 w-full">
+                                <div class="bg-prot-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-prot font-bold uppercase">PROT</div>
+                                    <div id="extra2Prot" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-carb-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-carb font-bold uppercase">CARB</div>
+                                    <div id="extra2Carbs" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-fat-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-fat font-bold uppercase">GRAS</div>
+                                    <div id="extra2Fats" class="text-[10px] font-bold text-white">0g</div>
+                                </div>
+                                <div class="bg-kcal-soft rounded-lg p-1.5 text-center">
+                                    <div class="text-[8px] text-kcal font-bold uppercase">KCAL</div>
+                                    <div id="extra2Kcal" class="text-[10px] font-bold text-white">0</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -522,12 +544,14 @@
                         <span>📈</span> Correlaciones & Composición Corporal
                     </h2>
                     <!-- Filtro Temporal -->
-                    <div class="flex gap-1.5 overflow-x-auto no-scrollbar py-1">
-                        <button onclick="setBodyCompTimeframe('1m')" id="btnTimeframe1m" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">1 Mes</button>
-                        <button onclick="setBodyCompTimeframe('3m')" id="btnTimeframe3m" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">3 Meses</button>
-                        <button onclick="setBodyCompTimeframe('6m')" id="btnTimeframe6m" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">6 Meses</button>
-                        <button onclick="setBodyCompTimeframe('1y')" id="btnTimeframe1y" class="px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap">1 Año</button>
-                        <button onclick="setBodyCompTimeframe('all')" id="btnTimeframeall" class="px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0a84ff] text-white border border-[#0a84ff]/50 shadow-sm whitespace-nowrap">Todo</button>
+                    <div class="grid grid-cols-7 gap-1 w-full sm:w-auto bg-[#1c1c1e] p-1 rounded-xl border border-[#2c2c2e]">
+                        <button onclick="setBodyCompTimeframe('7d')" id="btnTimeframe7d" title="7 Días" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">7D</button>
+                        <button onclick="setBodyCompTimeframe('15d')" id="btnTimeframe15d" title="15 Días" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">15D</button>
+                        <button onclick="setBodyCompTimeframe('1m')" id="btnTimeframe1m" title="1 Mes" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">1M</button>
+                        <button onclick="setBodyCompTimeframe('3m')" id="btnTimeframe3m" title="3 Meses" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">3M</button>
+                        <button onclick="setBodyCompTimeframe('6m')" id="btnTimeframe6m" title="6 Meses" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">6M</button>
+                        <button onclick="setBodyCompTimeframe('1y')" id="btnTimeframe1y" title="1 Año" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">1A</button>
+                        <button onclick="setBodyCompTimeframe('all')" id="btnTimeframeall" title="Todo el historial" class="py-1 px-1 rounded-lg text-[11px] font-bold transition-all bg-[#0a84ff] text-white shadow-sm text-center">Todo</button>
                     </div>
                 </div>
 
@@ -3533,6 +3557,24 @@
             }
         }
 
+        function toggleComparisonAccordion() {
+            const container = document.getElementById('comparisonChartsContainer');
+            const chevron = document.getElementById('comparisonToggleChevron');
+            if (!container || !chevron) return;
+
+            const isHidden = container.classList.contains('hidden');
+            if (isHidden) {
+                container.classList.remove('hidden');
+                chevron.classList.add('rotate-180');
+                if (typeof updateComparisonCharts === 'function') {
+                    updateComparisonCharts();
+                }
+            } else {
+                container.classList.add('hidden');
+                chevron.classList.remove('rotate-180');
+            }
+        }
+
         function renderBodyCompTable() {
             const tbody = document.getElementById('bodyCompTableBody');
             if (!tbody) return;
@@ -4871,14 +4913,14 @@
 
         function setBodyCompTimeframe(tf) {
             bodyCompTimeframe = tf;
-            const tfs = ['1m', '3m', '6m', '1y', 'all'];
+            const tfs = ['7d', '15d', '1m', '3m', '6m', '1y', 'all'];
             tfs.forEach(t => {
                 const btn = document.getElementById(`btnTimeframe${t}`);
                 if (btn) {
                     if (t === tf) {
-                        btn.className = "px-2.5 py-1 rounded-full text-[11px] font-bold transition-all bg-[#0a84ff] text-white border border-[#0a84ff]/50 shadow-sm whitespace-nowrap";
+                        btn.className = "py-1 px-1 rounded-lg text-[11px] font-bold transition-all bg-[#0a84ff] text-white shadow-sm text-center";
                     } else {
-                        btn.className = "px-2.5 py-1 rounded-full text-[11px] font-medium transition-all bg-[#2c2c2e] text-white/60 hover:text-white border border-[#3a3a3c] whitespace-nowrap";
+                        btn.className = "py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center";
                     }
                 }
             });
@@ -5078,7 +5120,9 @@
             if (bodyCompTimeframe !== 'all') {
                 const now = new Date();
                 let cutoffDate = new Date(now);
-                if (bodyCompTimeframe === '1m') cutoffDate.setMonth(now.getMonth() - 1);
+                if (bodyCompTimeframe === '7d') cutoffDate.setDate(now.getDate() - 7);
+                else if (bodyCompTimeframe === '15d') cutoffDate.setDate(now.getDate() - 15);
+                else if (bodyCompTimeframe === '1m') cutoffDate.setMonth(now.getMonth() - 1);
                 else if (bodyCompTimeframe === '3m') cutoffDate.setMonth(now.getMonth() - 3);
                 else if (bodyCompTimeframe === '6m') cutoffDate.setMonth(now.getMonth() - 6);
                 else if (bodyCompTimeframe === '1y') cutoffDate.setFullYear(now.getFullYear() - 1);
@@ -6766,17 +6810,17 @@
             const lastWeekIds = { p: 'lastWeekProt', c: 'lastWeekCarbs', f: 'lastWeekFats', k: 'lastWeekKcal' };
             renderMiniChart('chartLastWeek', lastWeekIds, lastWeekStr, chartInstanceLastWeek, (c) => chartInstanceLastWeek = c);
 
-            // 3. MEDIA SEMANA ACTUAL (L-V)
+            // 3. MEDIA SEMANA ACTUAL (L-D)
             const currentWeekData = getAverageMacrosForWeek(today, true);
-            document.getElementById('extraTitle1').textContent = "Media Sem. Actual.(L-V)";
+            document.getElementById('extraTitle1').textContent = "Media Sem. Actual.(L-D)";
             const extra1Ids = { p: 'extra1Prot', c: 'extra1Carbs', f: 'extra1Fats', k: 'extra1Kcal' };
             renderMiniChartFromData('chartExtra1', extra1Ids, currentWeekData, chartInstanceExtra1, (c) => chartInstanceExtra1 = c);
 
-            // 4. MEDIA SEMANA ANTERIOR (L-V)
+            // 4. MEDIA SEMANA ANTERIOR (L-D)
             const prevWeek = new Date(today);
             prevWeek.setDate(today.getDate() - 7);
             const lastWeekData = getAverageMacrosForWeek(prevWeek, false);
-            document.getElementById('extraTitle2').textContent = "Media Sem. Anter.(L-V)";
+            document.getElementById('extraTitle2').textContent = "Media Sem. Anter.(L-D)";
             const extra2Ids = { p: 'extra2Prot', c: 'extra2Carbs', f: 'extra2Fats', k: 'extra2Kcal' };
             renderMiniChartFromData('chartExtra2', extra2Ids, lastWeekData, chartInstanceExtra2, (c) => chartInstanceExtra2 = c);
         }
@@ -6792,18 +6836,23 @@
             let totalP = 0, totalC = 0, totalF = 0, totalK = 0, daysCount = 0;
             const todayStr = new Date().toISOString().split('T')[0];
 
-            for (let i = 0; i < 5; i++) { // Monday to Friday
+            for (let i = 0; i < 7; i++) { // Lunes a Domingo (7 días)
                 const currentDay = new Date(monday);
                 currentDay.setDate(monday.getDate() + i);
                 const dateStr = currentDay.toISOString().split('T')[0];
 
-                // Si estamos en semana actual, solo contar hasta ayer incluido (o hasta hoy si se prefiere)
-                // Usualmente "días transcurridos" excluye el futuro.
+                // Si estamos en semana actual, no contar días futuros que todavía no han transcurrido
                 if (upToToday && dateStr > todayStr) continue;
+
+                // Obviar días marcados como incompletos / libres
+                if (dayFlags[dateStr]?.isIncomplete) continue;
 
                 const dayLogs = globalLog.filter(l => l.date === dateStr);
                 dayLogs.forEach(l => {
-                    totalP += l.p; totalC += l.c; totalF += l.f; totalK += l.kcal;
+                    totalP += (l.p || 0);
+                    totalC += (l.c || 0);
+                    totalF += (l.f || 0);
+                    totalK += (l.kcal || 0);
                 });
                 daysCount++;
             }
