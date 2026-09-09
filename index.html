@@ -1411,19 +1411,22 @@
     </div>
 
     <div id="detailModal"
-        class="fixed inset-0 bg-black/80 hidden z-[80] flex items-end sm:items-center justify-center backdrop-blur-sm">
+        onclick="if (event.target === this) closeModal()"
+        class="fixed inset-0 bg-black/80 hidden z-[80] flex items-end sm:items-center justify-center backdrop-blur-sm p-0 sm:p-4">
         <div
-            class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in relative">
-            <div class="bg-[#2c2c2e] px-5 py-4 border-b border-[#3a3a3c] flex justify-between items-center">
+            class="bg-[#1c1c1e] w-full sm:max-w-md max-h-[88vh] sm:max-h-[85vh] rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in relative flex flex-col">
+            <div class="bg-[#2c2c2e] px-5 py-4 border-b border-[#3a3a3c] flex justify-between items-center shrink-0 z-10">
                 <h3 class="text-lg font-medium text-white">Análisis</h3>
                 <button onclick="closeModal()"
-                    class="text-white hover:text-white bg-[#1c1c1e] rounded-full p-1 border border-[#3a3a3c]"><svg
-                        class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    class="text-white hover:text-white bg-[#1c1c1e] hover:bg-[#3a3a3c] rounded-full p-1.5 border border-[#3a3a3c] active:scale-95 transition-all"
+                    title="Cerrar">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                         </path>
-                    </svg></button>
+                    </svg>
+                </button>
             </div>
-            <div class="p-5 pb-10">
+            <div class="p-5 pb-20 overflow-y-auto flex-1 overscroll-contain">
                 <div class="grid grid-cols-4 gap-2 mb-6 text-center">
                     <div class="bg-prot-soft rounded-xl p-2.5">
                         <div class="text-[10px] text-prot font-bold uppercase">PROT</div>
@@ -1447,10 +1450,10 @@
                 <div class="h-40 relative w-full flex justify-center mb-4"><canvas id="modalChart"></canvas></div>
                 <div class="border-t border-[#2c2c2e] pt-4">
                     <h4 class="text-xs font-medium text-white uppercase mb-2">Elementos (Desglose)</h4>
-                    <ul id="modalList" class="text-sm text-white space-y-2 max-h-48 overflow-y-auto"></ul>
+                    <ul id="modalList" class="text-sm text-white space-y-2"></ul>
                 </div>
             </div>
-            <div class="absolute bottom-4 right-14">
+            <div class="absolute bottom-4 right-5 z-20">
                 <button onclick="openRecipeModal()"
                     class="bg-primary hover:bg-primary-light text-white w-12 h-12 rounded-full shadow-lg flex items-center justify-center active:scale-95 transition-transform"
                     title="Crear receta con selección">
