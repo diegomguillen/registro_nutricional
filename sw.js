@@ -1,4 +1,4 @@
-const CACHE_NAME = 'nutri-app-v2.8'
+const CACHE_NAME = 'nutri-app-v2.9'
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -48,7 +48,7 @@ self.addEventListener('fetch', (event) => {
 
   if (isHtmlOrJson) {
     event.respondWith(
-      fetch(event.request)
+      fetch(event.request, { cache: 'no-cache' })
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
             const responseClone = networkResponse.clone();

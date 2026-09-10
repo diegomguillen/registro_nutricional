@@ -1658,5 +1658,25 @@
       "bcaa": 0.0,
       "eaa": 0.0
     }
+  },
+  {
+    "id": 86,
+    "name": "Vitamina D",
+    "p": 0.1,
+    "c": 0.1,
+    "f": 0.1,
+    "kcal": 0.1,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_CARB",
+    "icon": "💊",
+    "qP": 1,
+    "qC": 3,
+    "qF": 1,
+    "aa": {
+      "leu": 0.0,
+      "bcaa": 0.0,
+      "eaa": 0.0
+    }
   }
 ]

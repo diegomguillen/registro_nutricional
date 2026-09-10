@@ -341,19 +341,19 @@
 
                 <div class="grid grid-cols-4 gap-2 mt-6 text-center">
                     <div class="bg-prot-soft rounded-xl p-2.5">
-                        <div class="text-[10px] text-prot font-bold uppercase">PROT</div>
+                        <div class="text-[11px] sm:text-xs text-prot font-bold uppercase">PROT</div>
                         <div id="homeProt" class="text-sm font-medium text-white mt-0.5">0g</div>
                     </div>
                     <div class="bg-carb-soft rounded-xl p-2.5">
-                        <div class="text-[10px] text-carb font-bold uppercase">CARB</div>
+                        <div class="text-[11px] sm:text-xs text-carb font-bold uppercase">CARB</div>
                         <div id="homeCarbs" class="text-sm font-medium text-white mt-0.5">0g</div>
                     </div>
                     <div class="bg-fat-soft rounded-xl p-2.5">
-                        <div class="text-[10px] text-fat font-bold uppercase">GRAS</div>
+                        <div class="text-[11px] sm:text-xs text-fat font-bold uppercase">GRAS</div>
                         <div id="homeFats" class="text-sm font-medium text-white mt-0.5">0g</div>
                     </div>
                     <div class="bg-kcal-soft rounded-xl p-2.5">
-                        <div class="text-[10px] text-kcal font-bold uppercase">KCAL</div>
+                        <div class="text-[11px] sm:text-xs text-kcal font-bold uppercase">KCAL</div>
                         <div id="homeKcal" class="text-sm font-medium text-white mt-0.5">0</div>
                     </div>
                 </div>
@@ -1146,7 +1146,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.8</span></p>
+                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.8.1</span></p>
             </div>
         </div>
 
@@ -6387,13 +6387,13 @@
 
         function formatDiffBadge(current, target, isKcal = false) {
             const diff = current - target;
-            const absDiff = Math.abs(diff).toFixed(isKcal ? 0 : 1).replace('.0', '');
+            const absDiff = Math.round(Math.abs(diff));
             const unit = isKcal ? 'kcal' : 'g';
 
             if (diff <= 0) {
-                return `<span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded font-bold">- ${absDiff}${unit}</span>`;
+                return `<span class="text-[11px] sm:text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-md font-bold whitespace-nowrap">- ${absDiff}${unit}</span>`;
             } else {
-                return `<span class="text-[9px] bg-red-500/20 text-red-500 px-1.5 py-0.5 rounded font-bold">+ ${absDiff}${unit}</span>`;
+                return `<span class="text-[11px] sm:text-xs bg-red-500/20 text-red-500 px-2 py-0.5 rounded-md font-bold whitespace-nowrap">+ ${absDiff}${unit}</span>`;
             }
         }
 
@@ -8103,10 +8103,10 @@
                 }
             });
 
-            document.getElementById('modalP').textContent = p.toFixed(1);
-            document.getElementById('modalC').textContent = c.toFixed(1);
-            document.getElementById('modalF').textContent = f.toFixed(1);
-            document.getElementById('modalKcal').textContent = k;
+            document.getElementById('modalP').textContent = Math.round(p);
+            document.getElementById('modalC').textContent = Math.round(c);
+            document.getElementById('modalF').textContent = Math.round(f);
+            document.getElementById('modalKcal').textContent = Math.round(k);
 
             // Diferencia con Objetivos Diarios
             const targets = getTargetMacros();
@@ -8114,22 +8114,22 @@
             if (targetDiffContainer) {
                 targetDiffContainer.innerHTML = `
                     <div class="bg-[#2c2c2e] border border-[#3a3a3c] rounded-xl p-3 mb-2">
-                        <div class="text-[10px] font-bold text-white uppercase tracking-wider mb-2 text-center opacity-70">Aporte y Diferencia vs Objetivo Diario (${targets.weight} kg)</div>
+                        <div class="text-[11px] font-bold text-white uppercase tracking-wider mb-2 text-center opacity-70">Aporte y Diferencia vs Objetivo Diario (${targets.weight} kg)</div>
                         <div class="grid grid-cols-4 gap-1 text-center text-xs">
                             <div class="flex flex-col items-center">
-                                <span class="text-[10px] text-prot font-bold">PROT</span>
+                                <span class="text-[11px] sm:text-xs text-prot font-bold">PROT</span>
                                 ${formatDiffBadge(p, targets.p)}
                             </div>
                             <div class="flex flex-col items-center">
-                                <span class="text-[10px] text-carb font-bold">CARB</span>
+                                <span class="text-[11px] sm:text-xs text-carb font-bold">CARB</span>
                                 ${formatDiffBadge(c, targets.c)}
                             </div>
                             <div class="flex flex-col items-center">
-                                <span class="text-[10px] text-fat font-bold">GRAS</span>
+                                <span class="text-[11px] sm:text-xs text-fat font-bold">GRAS</span>
                                 ${formatDiffBadge(f, targets.f)}
                             </div>
                             <div class="flex flex-col items-center">
-                                <span class="text-[10px] text-kcal font-bold">KCAL</span>
+                                <span class="text-[11px] sm:text-xs text-kcal font-bold">KCAL</span>
                                 ${formatDiffBadge(k, targets.k, true)}
                             </div>
                         </div>
@@ -8447,23 +8447,23 @@
             modalDiffEl.innerHTML = `
                 <div class="grid grid-cols-4 gap-2 mb-2">
                     <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
+                        <span class="text-[11px] sm:text-xs text-prot font-bold uppercase">PROT</span>
+                        <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(p)} / ${Math.round(targets.p)}g</span>
                         <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
                     </div>
                     <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
+                        <span class="text-[11px] sm:text-xs text-carb font-bold uppercase">CARB</span>
+                        <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(c)} / ${Math.round(targets.c)}g</span>
                         <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
                     </div>
                     <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
+                        <span class="text-[11px] sm:text-xs text-fat font-bold uppercase">GRAS</span>
+                        <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(f)} / ${Math.round(targets.f)}g</span>
                         <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
                     </div>
                     <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                        <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
-                        <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
+                        <span class="text-[11px] sm:text-xs text-kcal font-bold uppercase">KCAL</span>
+                        <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(k)} / ${Math.round(targets.k)}</span>
                         <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
                     </div>
                 </div>
@@ -9184,7 +9184,7 @@
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30' 
                 : 'bg-amber-500/20 text-amber-400 border-amber-500/30';
             const sign = diff >= 0 ? '+' : '';
-            return `<span class="text-[10px] ${badgeClass} border px-2 py-0.5 rounded-full font-bold whitespace-nowrap">${sign}${diff.toFixed(1)}g</span>`;
+            return `<span class="text-[11px] ${badgeClass} border px-2 py-0.5 rounded-full font-bold whitespace-nowrap">${sign}${diff.toFixed(1)}g</span>`;
         }
 
         function calcTotals(items) {
@@ -9252,23 +9252,23 @@
                 historyDiffEl.innerHTML = `
                     <div class="grid grid-cols-4 gap-2 mb-2">
                         <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                            <span class="text-[10px] text-prot font-bold uppercase">PROT</span>
-                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${p.toFixed(0)} / ${targets.p.toFixed(0)}g</span>
+                            <span class="text-[11px] sm:text-xs text-prot font-bold uppercase">PROT</span>
+                            <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(p)} / ${Math.round(targets.p)}g</span>
                             <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
                         </div>
                         <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                            <span class="text-[10px] text-carb font-bold uppercase">CARB</span>
-                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${c.toFixed(0)} / ${targets.c.toFixed(0)}g</span>
+                            <span class="text-[11px] sm:text-xs text-carb font-bold uppercase">CARB</span>
+                            <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(c)} / ${Math.round(targets.c)}g</span>
                             <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
                         </div>
                         <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                            <span class="text-[10px] text-fat font-bold uppercase">GRAS</span>
-                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${f.toFixed(0)} / ${targets.f.toFixed(0)}g</span>
+                            <span class="text-[11px] sm:text-xs text-fat font-bold uppercase">GRAS</span>
+                            <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(f)} / ${Math.round(targets.f)}g</span>
                             <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
                         </div>
                         <div class="bg-[#2c2c2e] p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                            <span class="text-[10px] text-kcal font-bold uppercase">KCAL</span>
-                            <span class="text-[11px] font-mono font-bold text-white mt-0.5">${k} / ${targets.k}</span>
+                            <span class="text-[11px] sm:text-xs text-kcal font-bold uppercase">KCAL</span>
+                            <span class="text-xs sm:text-[13px] font-mono font-bold text-white mt-0.5">${Math.round(k)} / ${Math.round(targets.k)}</span>
                             <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
                         </div>
                     </div>
@@ -9302,32 +9302,32 @@
 
             if (document.getElementById('homeProt')) {
                 document.getElementById('homeProt').innerHTML = `
-                    <div class="text-xs font-medium text-white">${p.toFixed(0)} <span class="text-[9px] text-white">/ ${targets.p.toFixed(0)}g</span></div>
+                    <div class="text-xs sm:text-sm font-bold text-white">${Math.round(p)} <span class="text-[11px] font-normal text-white/80">/ ${Math.round(targets.p)}g</span></div>
                     <div class="mt-1">${formatDiffBadge(p, targets.p)}</div>
                 `;
                 document.getElementById('homeCarbs').innerHTML = `
-                    <div class="text-xs font-medium text-white">${c.toFixed(0)} <span class="text-[9px] text-white">/ ${targets.c.toFixed(0)}g</span></div>
+                    <div class="text-xs sm:text-sm font-bold text-white">${Math.round(c)} <span class="text-[11px] font-normal text-white/80">/ ${Math.round(targets.c)}g</span></div>
                     <div class="mt-1">${formatDiffBadge(c, targets.c)}</div>
                 `;
                 document.getElementById('homeFats').innerHTML = `
-                    <div class="text-xs font-medium text-white">${f.toFixed(0)} <span class="text-[9px] text-white">/ ${targets.f.toFixed(0)}g</span></div>
+                    <div class="text-xs sm:text-sm font-bold text-white">${Math.round(f)} <span class="text-[11px] font-normal text-white/80">/ ${Math.round(targets.f)}g</span></div>
                     <div class="mt-1">${formatDiffBadge(f, targets.f)}</div>
                 `;
                 document.getElementById('homeKcal').innerHTML = `
-                    <div class="text-xs font-medium text-white">${k} <span class="text-[9px] text-white">/ ${targets.k}</span></div>
+                    <div class="text-xs sm:text-sm font-bold text-white">${Math.round(k)} <span class="text-[11px] font-normal text-white/80">/ ${Math.round(targets.k)}</span></div>
                     <div class="mt-1">${formatDiffBadge(k, targets.k, true)}</div>
                 `;
 
                 if (document.getElementById('homeLeu')) {
-                    document.getElementById('homeLeu').innerHTML = `${leu.toFixed(1)} <span class="text-[9px] text-white/70">/ ${targetLeu.toFixed(1)}g</span>`;
+                    document.getElementById('homeLeu').innerHTML = `${leu.toFixed(1)} <span class="text-[11px] text-white/80 font-normal">/ ${targetLeu.toFixed(1)}g</span>`;
                     document.getElementById('homeLeuBadge').innerHTML = formatAminoBadge(leu, targetLeu);
                 }
                 if (document.getElementById('homeBcaa')) {
-                    document.getElementById('homeBcaa').innerHTML = `${bcaa.toFixed(1)} <span class="text-[9px] text-white/70">/ ${targetBcaa.toFixed(1)}g</span>`;
+                    document.getElementById('homeBcaa').innerHTML = `${bcaa.toFixed(1)} <span class="text-[11px] text-white/80 font-normal">/ ${targetBcaa.toFixed(1)}g</span>`;
                     document.getElementById('homeBcaaBadge').innerHTML = formatAminoBadge(bcaa, targetBcaa);
                 }
                 if (document.getElementById('homeEaa')) {
-                    document.getElementById('homeEaa').innerHTML = `${eaa.toFixed(1)} <span class="text-[9px] text-white/70">/ ${targetEaa.toFixed(1)}g</span>`;
+                    document.getElementById('homeEaa').innerHTML = `${eaa.toFixed(1)} <span class="text-[11px] text-white/80 font-normal">/ ${targetEaa.toFixed(1)}g</span>`;
                     document.getElementById('homeEaaBadge').innerHTML = formatAminoBadge(eaa, targetEaa);
                 }
             }
