@@ -1146,7 +1146,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.8.1</span></p>
+                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.9.1</span></p>
             </div>
         </div>
 
@@ -8279,8 +8279,8 @@
                     <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
                     <td class="px-4 py-3 swipe-cell cursor-pointer select-none" title="Doble toque para editar cantidad">
                         <div class="${titleColor} flex items-center justify-between gap-1">
-                            <span class="flex items-center gap-1 cursor-pointer hover:underline" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" title="Ver consumo medio y consistencia">${icon}${displayName}</span>
-                            <button type="button" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" class="text-[11px] opacity-60 hover:opacity-100 hover:scale-110 transition-all p-0.5 shrink-0" title="Ver consumo medio y consistencia">📊</button>
+                            <span class="flex items-center gap-1">${icon}${displayName}</span>
+                            <button type="button" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" class="text-xs opacity-60 hover:opacity-100 hover:scale-110 transition-all p-1 shrink-0" title="Ver consumo medio y consistencia">📊</button>
                         </div>
                         <div class="text-xs text-white/70">${i.date} &bull; ${displayAmount}${displayUnit}</div>
                     </td>
@@ -9079,6 +9079,7 @@
                 if (!activeTouchRow) return;
                 const touch = e.changedTouches[0];
                 const diffX = touch.clientX - touchStartX;
+                const diffY = touch.clientY - touchStartY;
 
                 if (isSwiping) {
                     activeTouchRow.style.transform = '';
@@ -9097,11 +9098,11 @@
                         saveConsumedIds();
                         applyFilter();
                         if (typeof showToast === 'function') showToast('↩️ Ingesta desmarcada');
-                    } else if (Math.abs(diffX) <= 15) {
+                    } else if (Math.abs(diffX) <= 20 && Math.abs(diffY) <= 20) {
                         // Detect Double Tap for Mobile
                         const now = Date.now();
                         const rowId = activeTouchId;
-                        if (lastTapId === rowId && (now - lastTapTime) < 350) {
+                        if (lastTapId === rowId && (now - lastTapTime) < 400) {
                             editLogItemAmount(rowId);
                             lastTapTime = 0;
                             lastTapId = null;
