@@ -1146,7 +1146,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.9.1</span></p>
+                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.9.2</span></p>
             </div>
         </div>
 
@@ -8028,8 +8028,13 @@
             const navigateToTarget = !!document.getElementById('copyNavigateToTarget')?.checked;
 
             const targetItems = globalLog.filter(i => i.date === targetDate);
-            const targetOrders = targetItems.filter(i => i.sortOrder !== undefined).map(i => i.sortOrder);
-            let nextOrder = targetOrders.length > 0 ? Math.max(...targetOrders) + 1 : 1;
+            const explicitOrders = targetItems.filter(i => i.sortOrder !== undefined).map(i => i.sortOrder);
+            const minSortOrder = explicitOrders.length > 0 ? Math.min(...explicitOrders) : 0;
+            const getTargetItemOrder = (item) => {
+                if (item.sortOrder !== undefined) return item.sortOrder;
+                return (minSortOrder - 1) - ((item.id || 0) / 1e15);
+            };
+            targetItems.sort((a, b) => getTargetItemOrder(a) - getTargetItemOrder(b));
 
             const newItems = [];
             const baseTime = Date.now();
@@ -8039,8 +8044,7 @@
                 const cloned = {
                     ...item,
                     id: newId,
-                    date: targetDate,
-                    sortOrder: nextOrder++
+                    date: targetDate
                 };
 
                 if (markAsConsumed) {
@@ -8050,6 +8054,13 @@
                 }
 
                 newItems.push(cloned);
+            });
+
+            // Colocar los nuevos alimentos copiados al inicio (parte superior de la tabla)
+            // y reindexar secuencialmente todos los alimentos del día destino
+            const allDayItems = [...newItems, ...targetItems];
+            allDayItems.forEach((item, index) => {
+                item.sortOrder = index;
             });
 
             globalLog.push(...newItems);
