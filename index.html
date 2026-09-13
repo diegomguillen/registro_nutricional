@@ -594,6 +594,22 @@
                             <span id="rateGlycogen" class="text-[10px] sm:text-[11px] text-purple-400/90 block font-bold mt-0.5" title="Tasa media por día">-</span>
                         </div>
                     </div>
+
+                    <!-- Micro-barra de Balance Calórico Real Deducido (Termodinámico por Grasa) -->
+                    <div id="card1RealDeficitWrapper" class="px-3 py-2 bg-[#1c1c1e] rounded-xl border border-[#2c2c2e] flex flex-col gap-1.5 cursor-pointer hover:border-amber-500/40 transition-all" onclick="openGarminCalibrationModal()" title="Balance calórico deducido directamente de la tasa de variación de masa grasa EMA (1 kg grasa = 7,700 kcal). Toca para abrir el Calibrador y aplicar a tu deslizador.">
+                        <div class="flex items-center justify-between text-[10px]">
+                            <span class="text-white/70 font-medium flex items-center gap-1.5">
+                                <span id="realDeficitDot" class="w-1.5 h-1.5 rounded-full bg-amber-400 inline-block animate-pulse"></span>
+                                <span id="realDeficitLabel" class="text-white/90 font-semibold">Déficit Real Deducido</span>
+                                <span id="realDeficitSubtext" class="text-white/50 text-[9px]">(-0 g/d grasa)</span>
+                            </span>
+                            <span id="realDeficitKcalText" class="font-mono font-bold text-amber-400 text-xs">0 kcal/d</span>
+                        </div>
+                        <div class="w-full bg-[#2c2c2e] h-1.5 rounded-full overflow-hidden">
+                            <div id="realDeficitProgressBar" class="h-full rounded-full transition-all duration-500 bg-amber-400" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
                     <!-- Micro-barra de Fiabilidad / Nivel de Confianza -->
                     <div id="card1ConfidenceWrapper" class="px-3 py-2 bg-[#1c1c1e] rounded-xl border border-[#2c2c2e] flex flex-col gap-1.5 cursor-pointer" onclick="openChartHelpModal('weightFatMuscle')" title="Nivel de confianza: Tejido (Grasa/Músculo, α=0.25) se consolida entre 7-14 días; el Agua de Fondo del Peso Tendencia (α=0.08) completa su ciclo a los 25 días. Pulsa para ver la ayuda.">
                         <div class="flex items-center justify-between text-[10px]">
@@ -3895,6 +3911,13 @@
                     <span>🟢</span> <span><strong>Periodo Óptimo:</strong> Dispones de ${k} días completos de registro para una calibración de alta precisión.</span>
                    </div>`;
 
+            const dailyFatGrams = Math.round((deltaFat * 1000) / k);
+            const isFatLoss = deltaFat <= 0;
+            const fatBalanceText = isFatLoss
+                ? `🔥 Déficit: -${Math.abs(Math.round(dailyFatEnergyChange))} kcal/d`
+                : `💪 Superávit: +${Math.round(dailyFatEnergyChange)} kcal/d`;
+            const fatBalanceColor = isFatLoss ? 'text-emerald-400' : 'text-blue-400';
+
             body.innerHTML = `
                 <div class="grid grid-cols-2 gap-2 text-center">
                     <div class="bg-[#2c2c2e] p-2.5 rounded-xl border border-[#3a3a3c]">
@@ -3912,7 +3935,8 @@
                     </div>
                     <div class="bg-[#2c2c2e] p-2.5 rounded-xl border border-[#3a3a3c]">
                         <span class="text-[9px] text-fat/80 block font-bold uppercase">Δ Grasa (EMA)</span>
-                        <span class="font-bold text-fat text-xs">${deltaFat > 0 ? '+' : ''}${deltaFat.toFixed(2)} kg</span>
+                        <span class="font-bold text-fat text-xs">${deltaFat > 0 ? '+' : ''}${deltaFat.toFixed(2)} kg <span class="text-[10px] text-white/60">(${dailyFatGrams > 0 ? '+' : ''}${dailyFatGrams} g/d)</span></span>
+                        <span class="text-[9px] ${fatBalanceColor} block mt-0.5 font-bold">${fatBalanceText}</span>
                     </div>
                 </div>
 
@@ -3922,6 +3946,9 @@
                     <div class="flex justify-between items-center">
                         <span class="font-bold text-white text-xs">🔥 Gasto Real Deducido (TDEE):</span>
                         <span class="font-bold text-amber-400 text-sm font-mono">${calculatedRealTdee} kcal/día</span>
+                    </div>
+                    <div class="text-[10px] text-white/60 pt-0.5">
+                        Deducción: Ingesta (${avgEaten} kcal) ${isFatLoss ? '+' : '-'} Balance Grasa (${Math.abs(Math.round(dailyFatEnergyChange))} kcal)
                     </div>
                     <div class="text-[11px] ${offsetColor} font-medium pt-1 border-t border-amber-500/20">
                         ${offsetText}
@@ -5319,6 +5346,9 @@
 
 
 
+            let realDailyFatGrams = 0;
+            let realDailyKcalChange = 0;
+
             // Actualizar resumen de variaciones netas (Δ) en la primera tarjeta (5 compartimentos)
             if (sortedLogs.length >= 2) {
                 const diffWeight = weightEmaData[weightEmaData.length - 1] - weightEmaData[0];
@@ -5345,6 +5375,9 @@
                     return (gPerDay > 0 ? `+${gPerDay}` : `${gPerDay}`) + ' g/d';
                 };
 
+                realDailyFatGrams = Math.round((diffFat * 1000) / elapsedDays);
+                realDailyKcalChange = Math.round(realDailyFatGrams * 7.7);
+
                 const dW = document.getElementById('deltaWeight');
                 const dF = document.getElementById('deltaFat');
                 const dH2O = document.getElementById('deltaWater');
@@ -5368,6 +5401,54 @@
                 if (rH2O) rH2O.textContent = fmtRate(diffWater);
                 if (rS) rS.textContent = fmtRate(diffSmm);
                 if (rG) rG.textContent = fmtRate(diffGlycogen);
+            }
+
+            // Actualizar Micro-barra de Balance Calórico Real Deducido (Termodinámico por Grasa)
+            const realDeficitEl = document.getElementById('card1RealDeficitWrapper');
+            if (realDeficitEl) {
+                const dot = document.getElementById('realDeficitDot');
+                const lbl = document.getElementById('realDeficitLabel');
+                const sub = document.getElementById('realDeficitSubtext');
+                const txt = document.getElementById('realDeficitKcalText');
+                const bar = document.getElementById('realDeficitProgressBar');
+
+                if (sortedLogs.length < 2) {
+                    if (lbl) lbl.textContent = "Balance Calórico Deducido";
+                    if (sub) sub.textContent = "(Esperando mediciones)";
+                    if (txt) { txt.textContent = "-"; txt.className = "font-mono font-bold text-white/40 text-xs"; }
+                    if (bar) { bar.style.width = "0%"; bar.className = "h-full rounded-full bg-white/20"; }
+                    if (dot) dot.className = "w-1.5 h-1.5 rounded-full bg-white/30 inline-block";
+                } else if (realDailyFatGrams < 0) {
+                    // Pérdida de grasa = DÉFICIT REAL
+                    const defKcal = Math.abs(realDailyKcalChange);
+                    const isOptimal = defKcal >= 200 && defKcal <= 650;
+                    const colorClass = isOptimal ? "text-emerald-400" : (defKcal > 650 ? "text-amber-400" : "text-emerald-300");
+                    const bgClass = isOptimal ? "bg-emerald-400" : (defKcal > 650 ? "bg-amber-400" : "bg-emerald-300");
+                    const barWidth = Math.min(100, Math.max(8, Math.round((defKcal / 800) * 100)));
+
+                    if (lbl) lbl.textContent = "🔥 Déficit Calórico Real";
+                    if (sub) sub.textContent = `(${realDailyFatGrams} g/d grasa)`;
+                    if (txt) { txt.textContent = `-${defKcal} kcal/d`; txt.className = `font-mono font-bold ${colorClass} text-xs`; }
+                    if (bar) { bar.style.width = `${barWidth}%`; bar.className = `h-full rounded-full transition-all duration-500 ${bgClass}`; }
+                    if (dot) dot.className = `w-1.5 h-1.5 rounded-full ${bgClass} inline-block animate-pulse`;
+                } else if (realDailyFatGrams > 0) {
+                    // Ganancia de grasa = SUPERÁVIT REAL
+                    const surpKcal = realDailyKcalChange;
+                    const barWidth = Math.min(100, Math.max(8, Math.round((surpKcal / 800) * 100)));
+
+                    if (lbl) lbl.textContent = "💪 Superávit Calórico Real";
+                    if (sub) sub.textContent = `(+${realDailyFatGrams} g/d grasa)`;
+                    if (txt) { txt.textContent = `+${surpKcal} kcal/d`; txt.className = "font-mono font-bold text-blue-400 text-xs"; }
+                    if (bar) { bar.style.width = `${barWidth}%`; bar.className = "h-full rounded-full transition-all duration-500 bg-blue-400"; }
+                    if (dot) dot.className = "w-1.5 h-1.5 rounded-full bg-blue-400 inline-block animate-pulse";
+                } else {
+                    // Balance neutro (0 g/d)
+                    if (lbl) lbl.textContent = "⚖️ Balance Calórico Neutro";
+                    if (sub) sub.textContent = "(0 g/d grasa)";
+                    if (txt) { txt.textContent = "0 kcal/d"; txt.className = "font-mono font-bold text-cyan-400 text-xs"; }
+                    if (bar) { bar.style.width = "8%"; bar.className = "h-full rounded-full transition-all duration-500 bg-cyan-400"; }
+                    if (dot) dot.className = "w-1.5 h-1.5 rounded-full bg-cyan-400 inline-block";
+                }
             }
 
             // Actualizar Micro-barra de Fiabilidad / Nivel de Confianza según número de mediciones en la ventana
