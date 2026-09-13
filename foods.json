@@ -1698,5 +1698,25 @@
     "bcaa": 1.6,
     "eaa": 3.63
   }
+},
+{
+  "id": 88,
+  "name": "Aldi Copos Finos Avena Integral Bio",
+  "p": 14.0,
+  "c": 60.0,
+  "f": 7.2,
+  "kcal": 382,
+  "unit": "g",
+  "fam": "CARBS",
+  "sub": "PASTA_RICE",
+  "icon": "🌾",
+  "qP": 1,
+  "qC": 3,
+  "qF": 2,
+  "aa": {
+    "leu": 0.98,
+    "bcaa": 2.03,
+    "eaa": 4.62
+  }
 }
 ]
