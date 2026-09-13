@@ -1280,325 +1280,325 @@
     }
   },
   {
-  "id": 67,
-  "name": "Ecocesta Muesli Frutas 14% sin azúcares añadidos",
-  "p": 10.2,
-  "c": 64.0,
-  "f": 3.6,
-  "kcal": 329.2,
-  "unit": "g",
-  "fam": "CARBS",
-  "sub": "PASTA_RICE",
-  "icon": "🌾",
-  "qP": 1,
-  "qC": 3,
-  "qF": 2,
-  "aa": {
-    "leu": 0.71,
-    "bcaa": 1.48,
-    "eaa": 3.37
-   }
+    "id": 67,
+    "name": "Ecocesta Muesli Frutas 14% sin azúcares añadidos",
+    "p": 10.2,
+    "c": 64.0,
+    "f": 3.6,
+    "kcal": 329.2,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "PASTA_RICE",
+    "icon": "🌾",
+    "qP": 1,
+    "qC": 3,
+    "qF": 2,
+    "aa": {
+      "leu": 0.71,
+      "bcaa": 1.48,
+      "eaa": 3.37
+    }
   },
   {
-  "id": 68,
-  "name": "Lacón Carrefour",
-  "p": 17,
-  "c": 1,
-  "f": 9,
-  "kcal": 153,
-  "unit": "g",
-  "fam": "PROTEIN",
-  "sub": "MEAT_RED",
-  "icon": "🐷",
-  "qP": 2,
-  "qC": 1,
-  "qF": 1,
-  "aa": {
-    "leu": 1.39,
-    "bcaa": 3.06,
-    "eaa": 7.31
-  }
- },
- {
-  "id": 69,
-  "name": "Champiñones / Setas",
-  "p": 3.1,
-  "c": 1.0,
-  "f": 0.3,
-  "kcal": 19.1,
-  "unit": "g",
-  "fam": "VEG",
-  "sub": "GREEN",
-  "icon": "🍄",
-  "qP": 1,
-  "qC": 3,
-  "qF": 3,
-  "aa": {
-    "leu": 0.17,
-    "bcaa": 0.37,
-    "eaa": 0.93
-  }
- },
- {
-  "id": 70,
-  "name": "Palito Surimi Carrefour (Ud ~15g)",
-  "p": 0.98,
-  "c": 2.7,
-  "f": 0.72,
-  "kcal": 21.2,
-  "unit": "u",
-  "fam": "PROTEIN",
-  "sub": "FISH_BLUE",
-  "icon": "🦀",
-  "qP": 2,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 0.08,
-    "bcaa": 0.17,
-    "eaa": 0.41
-  }
- },
- {
-  "id": 71,
-  "name": "Tortilla 51% Avena Carrefour (ud 60g)",
-  "p": 5.82,
-  "c": 26.4,
-  "f": 6.6,
-  "kcal": 188.28,
-  "unit": "u",
-  "fam": "CARBS",
-  "sub": "BREAD",
-  "icon": "🫓",
-  "qP": 1,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 0.41,
-    "bcaa": 0.85,
-    "eaa": 1.92
-  }
- },
- {
-  "id": 72,
-  "name": "Anchoa en Aceite (Filete ~5g)",
-  "p": 1.4,
-  "c": 0.0,
-  "f": 0.6,
-  "kcal": 11,
-  "unit": "u",
-  "fam": "PROTEIN",
-  "sub": "FISH_BLUE",
-  "icon": "🐟",
-  "qP": 3,
-  "qC": 1,
-  "qF": 3,
-  "aa": {
-    "leu": 0.11,
-    "bcaa": 0.25,
-    "eaa": 0.59
-  }
- },
- {
-  "id": 73,
-  "name": "Lindahls Protein Tarrina 150g",
-  "p": 15.0,
-  "c": 11.0,
-  "f": 0.3,
-  "kcal": 106.7,
-  "unit": "u",
-  "fam": "PURE",
-  "sub": "P_PROT",
-  "icon": "🥤",
-  "qP": 3,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 1.43,
-    "bcaa": 3.15,
-    "eaa": 6.6
-  }
- },
- {
-  "id": 74,
-  "name": "Queso Cottage Proteína Plus Carrefour",
-  "p": 12.3,
-  "c": 4.5,
-  "f": 0.19,
-  "kcal": 68.91,
-  "unit": "g",
-  "fam": "DAIRY",
-  "sub": "CHEESE",
-  "icon": "🥣",
-  "qP": 3,
-  "qC": 2,
-  "qF": 1,
-  "aa": {
-    "leu": 1.17,
-    "bcaa": 2.58,
-    "eaa": 5.41
-  }
- },
-{
-  "id": 75,
-  "name": "HSN EVOBOLIC",
-  "p": 0.1,
-  "c": 0.1,
-  "f": 0.1,
-  "kcal": 0.1,
-  "unit": "u",
-  "fam": "PURE",
-  "sub": "P_PROT",
-  "icon": "💊",
-  "qP": 0,
-  "qC": 0,
-  "qF": 0,
-  "aa": {
-    "leu": 0,
-    "bcaa": 0,
-    "eaa": 0
-  }
- },
-{
-  "id": 76,
-  "name": "DHEA 10mg",
-  "p": 0.1,
-  "c": 0.1,
-  "f": 0.1,
-  "kcal": 0.1,
-  "unit": "u",
-  "fam": "PURE",
-  "sub": "P_PROT",
-  "icon": "💊",
-  "qP": 0,
-  "qC": 0,
-  "qF": 0,
-  "aa": {
-    "leu": 0,
-    "bcaa": 0,
-    "eaa": 0
-  }
- },
- {
-  "id": 77,
-  "name": "Creatina",
-  "p": 0.1,
-  "c": 0.1,
-  "f": 0.1,
-  "kcal": 0.1,
-  "unit": "u",
-  "fam": "PURE",
-  "sub": "P_PROT",
-  "icon": "💊",
-  "qP": 0,
-  "qC": 0,
-  "qF": 0,
-  "aa": {
-    "leu": 0,
-    "bcaa": 0,
-    "eaa": 0
-  }
- },
-{
-  "id": 78,
-  "name": "Magnesio",
-  "p": 0.1,
-  "c": 0.1,
-  "f": 0.1,
-  "kcal": 0.1,
-  "unit": "u",
-  "fam": "PURE",
-  "sub": "P_PROT",
-  "icon": "💊",
-  "qP": 0,
-  "qC": 0,
-  "qF": 0,
-  "aa": {
-    "leu": 0,
-    "bcaa": 0,
-    "eaa": 0
-  }
- },
- {
-  "id": 79,
-  "name": "Chocolate 99% Cacao",
-  "p": 13.0,
-  "c": 8.0,
-  "f": 51.0,
-  "kcal": 543,
-  "unit": "g",
-  "fam": "LIPID",
-  "sub": "NUT",
-  "icon": "🍫",
-  "qP": 1,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 0.72,
-    "bcaa": 1.56,
-    "eaa": 3.50
-  }
- },
- {
-  "id": 80,
-  "name": "Chocolate 90% Cacao",
-  "p": 10.0,
-  "c": 14.0,
-  "f": 55.0,
-  "kcal": 591,
-  "unit": "g",
-  "fam": "LIPID",
-  "sub": "NUT",
-  "icon": "🍫",
-  "qP": 1,
-  "qC": 2,
-  "qF": 2,
-  "aa": {
-    "leu": 0.55,
-    "bcaa": 1.20,
-    "eaa": 2.70
-  }
- },
- {
-  "id": 81,
-  "name": "Chocolate 85% Cacao",
-  "p": 9.5,
-  "c": 19.0,
-  "f": 46.0,
-  "kcal": 528,
-  "unit": "g",
-  "fam": "LIPID",
-  "sub": "NUT",
-  "icon": "🍫",
-  "qP": 1,
-  "qC": 1,
-  "qF": 2,
-  "aa": {
-    "leu": 0.52,
-    "bcaa": 1.14,
-    "eaa": 2.56
-  }
- },
- {
-  "id": 82,
-  "name": "Chocolate 70% Cacao",
-  "p": 8.0,
-  "c": 34.0,
-  "f": 42.0,
-  "kcal": 546,
-  "unit": "g",
-  "fam": "LIPID",
-  "sub": "NUT",
-  "icon": "🍫",
-  "qP": 1,
-  "qC": 1,
-  "qF": 2,
-  "aa": {
-    "leu": 0.44,
-    "bcaa": 0.96,
-    "eaa": 2.16
-  }
- },
+    "id": 68,
+    "name": "Lacón Carrefour",
+    "p": 17,
+    "c": 1,
+    "f": 9,
+    "kcal": 153,
+    "unit": "g",
+    "fam": "PROTEIN",
+    "sub": "MEAT_RED",
+    "icon": "🐷",
+    "qP": 2,
+    "qC": 1,
+    "qF": 1,
+    "aa": {
+      "leu": 1.39,
+      "bcaa": 3.06,
+      "eaa": 7.31
+    }
+  },
+  {
+    "id": 69,
+    "name": "Champiñones / Setas",
+    "p": 3.1,
+    "c": 1.0,
+    "f": 0.3,
+    "kcal": 19.1,
+    "unit": "g",
+    "fam": "VEG",
+    "sub": "GREEN",
+    "icon": "🍄",
+    "qP": 1,
+    "qC": 3,
+    "qF": 3,
+    "aa": {
+      "leu": 0.17,
+      "bcaa": 0.37,
+      "eaa": 0.93
+    }
+  },
+  {
+    "id": 70,
+    "name": "Palito Surimi Carrefour (Ud ~15g)",
+    "p": 0.98,
+    "c": 2.7,
+    "f": 0.72,
+    "kcal": 21.2,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE",
+    "icon": "🦀",
+    "qP": 2,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 0.08,
+      "bcaa": 0.17,
+      "eaa": 0.41
+    }
+  },
+  {
+    "id": 71,
+    "name": "Tortilla 51% Avena Carrefour (ud 60g)",
+    "p": 5.82,
+    "c": 26.4,
+    "f": 6.6,
+    "kcal": 188.28,
+    "unit": "u",
+    "fam": "CARBS",
+    "sub": "BREAD",
+    "icon": "🫓",
+    "qP": 1,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 0.41,
+      "bcaa": 0.85,
+      "eaa": 1.92
+    }
+  },
+  {
+    "id": 72,
+    "name": "Anchoa en Aceite (Filete ~5g)",
+    "p": 1.4,
+    "c": 0.0,
+    "f": 0.6,
+    "kcal": 11,
+    "unit": "u",
+    "fam": "PROTEIN",
+    "sub": "FISH_BLUE",
+    "icon": "🐟",
+    "qP": 3,
+    "qC": 1,
+    "qF": 3,
+    "aa": {
+      "leu": 0.11,
+      "bcaa": 0.25,
+      "eaa": 0.59
+    }
+  },
+  {
+    "id": 73,
+    "name": "Lindahls Protein Tarrina 150g",
+    "p": 15.0,
+    "c": 11.0,
+    "f": 0.3,
+    "kcal": 106.7,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "🥤",
+    "qP": 3,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 1.43,
+      "bcaa": 3.15,
+      "eaa": 6.6
+    }
+  },
+  {
+    "id": 74,
+    "name": "Queso Cottage Proteína Plus Carrefour",
+    "p": 12.3,
+    "c": 4.5,
+    "f": 0.19,
+    "kcal": 68.91,
+    "unit": "g",
+    "fam": "DAIRY",
+    "sub": "CHEESE",
+    "icon": "🥣",
+    "qP": 3,
+    "qC": 2,
+    "qF": 1,
+    "aa": {
+      "leu": 1.17,
+      "bcaa": 2.58,
+      "eaa": 5.41
+    }
+  },
+  {
+    "id": 75,
+    "name": "HSN EVOBOLIC",
+    "p": 0.1,
+    "c": 0.1,
+    "f": 0.1,
+    "kcal": 0.1,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "💊",
+    "qP": 0,
+    "qC": 0,
+    "qF": 0,
+    "aa": {
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
+    }
+  },
+  {
+    "id": 76,
+    "name": "DHEA 10mg",
+    "p": 0.1,
+    "c": 0.1,
+    "f": 0.1,
+    "kcal": 0.1,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "💊",
+    "qP": 0,
+    "qC": 0,
+    "qF": 0,
+    "aa": {
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
+    }
+  },
+  {
+    "id": 77,
+    "name": "Creatina",
+    "p": 0.1,
+    "c": 0.1,
+    "f": 0.1,
+    "kcal": 0.1,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "💊",
+    "qP": 0,
+    "qC": 0,
+    "qF": 0,
+    "aa": {
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
+    }
+  },
+  {
+    "id": 78,
+    "name": "Magnesio",
+    "p": 0.1,
+    "c": 0.1,
+    "f": 0.1,
+    "kcal": 0.1,
+    "unit": "u",
+    "fam": "PURE",
+    "sub": "P_PROT",
+    "icon": "💊",
+    "qP": 0,
+    "qC": 0,
+    "qF": 0,
+    "aa": {
+      "leu": 0,
+      "bcaa": 0,
+      "eaa": 0
+    }
+  },
+  {
+    "id": 79,
+    "name": "Chocolate 99% Cacao",
+    "p": 13.0,
+    "c": 8.0,
+    "f": 51.0,
+    "kcal": 543,
+    "unit": "g",
+    "fam": "LIPID",
+    "sub": "NUT",
+    "icon": "🍫",
+    "qP": 1,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 0.72,
+      "bcaa": 1.56,
+      "eaa": 3.50
+    }
+  },
+  {
+    "id": 80,
+    "name": "Chocolate 90% Cacao",
+    "p": 10.0,
+    "c": 14.0,
+    "f": 55.0,
+    "kcal": 591,
+    "unit": "g",
+    "fam": "LIPID",
+    "sub": "NUT",
+    "icon": "🍫",
+    "qP": 1,
+    "qC": 2,
+    "qF": 2,
+    "aa": {
+      "leu": 0.55,
+      "bcaa": 1.20,
+      "eaa": 2.70
+    }
+  },
+  {
+    "id": 81,
+    "name": "Chocolate 85% Cacao",
+    "p": 9.5,
+    "c": 19.0,
+    "f": 46.0,
+    "kcal": 528,
+    "unit": "g",
+    "fam": "LIPID",
+    "sub": "NUT",
+    "icon": "🍫",
+    "qP": 1,
+    "qC": 1,
+    "qF": 2,
+    "aa": {
+      "leu": 0.52,
+      "bcaa": 1.14,
+      "eaa": 2.56
+    }
+  },
+  {
+    "id": 82,
+    "name": "Chocolate 70% Cacao",
+    "p": 8.0,
+    "c": 34.0,
+    "f": 42.0,
+    "kcal": 546,
+    "unit": "g",
+    "fam": "LIPID",
+    "sub": "NUT",
+    "icon": "🍫",
+    "qP": 1,
+    "qC": 1,
+    "qF": 2,
+    "aa": {
+      "leu": 0.44,
+      "bcaa": 0.96,
+      "eaa": 2.16
+    }
+  },
   {
     "id": 83,
     "name": "HSN EvoEndurance",
@@ -1677,6 +1677,46 @@
       "leu": 0.0,
       "bcaa": 0.0,
       "eaa": 0.0
+    }
+  },
+  {
+    "id": 87,
+    "name": "Aldi Muesli 68% Rasing & Nut",
+    "p": 11.0,
+    "c": 54.0,
+    "f": 11.0,
+    "kcal": 379,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "PASTA_RICE",
+    "icon": "🌾",
+    "qP": 1,
+    "qC": 3,
+    "qF": 3,
+    "aa": {
+      "leu": 0.77,
+      "bcaa": 1.6,
+      "eaa": 3.63
+    }
+  },
+  {
+    "id": 88,
+    "name": "Aldi Copos Finos Avena Integral Bio",
+    "p": 14.0,
+    "c": 60.0,
+    "f": 7.2,
+    "kcal": 382,
+    "unit": "g",
+    "fam": "CARBS",
+    "sub": "PASTA_RICE",
+    "icon": "🌾",
+    "qP": 1,
+    "qC": 3,
+    "qF": 2,
+    "aa": {
+      "leu": 0.98,
+      "bcaa": 2.03,
+      "eaa": 4.62
     }
   }
 ]
