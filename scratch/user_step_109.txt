@@ -1,0 +1,15 @@
+<USER_REQUEST>
+Te adjunto una copia recien exportada de la app
+</USER_REQUEST>
+<ADDITIONAL_METADATA>
+The current local time is: 2026-09-13T13:39:15+02:00.
+
+The user's current state is as follows:
+Active Document: c:\Users\d7610\Documents\03_Profesional\Development\sw\vs_code\registro_nutricional\foods.json (LANGUAGE_JSON)
+Cursor is on line: 1
+Other open documents:
+- c:\Users\d7610\Documents\03_Profesional\Development\sw\vs_code\registro_nutricional\foods.json (LANGUAGE_JSON)
+- c:\Users\d7610\Documents\03_Profesional\Development\sw\vs_code\registro_nutricional\index.html (LANGUAGE_HTML)
+- c:\Users\d7610\Documents\03_Profesional\Development\sw\vs_code\registro_nutricional\plan_fase2_indicadores_nutricionales.md (LANGUAGE_MARKDOWN)
+- c:\Users\d7610\Documents\03_Profesional\Development\sw\vs_code\registro_nutricional\plan_fase1_clasificacion_ingestas.md (LANGUAGE_MARKDOWN)
+</ADDITIONAL_METADATA>
