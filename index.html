@@ -286,7 +286,7 @@
 
 <body class="text-white h-screen h-[100dvh] flex flex-col overflow-hidden">
 
-    <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-5 pb-32">
+    <main id="mainContainer" class="flex-1 overflow-y-auto no-scrollbar p-3 sm:p-5 pb-32">
 
         <div id="view-home" class="space-y-6 animate-fade-in">
             <header class="flex items-center justify-between mb-4">
@@ -807,15 +807,15 @@
 
             <div class="premium-card overflow-hidden animate-fade-in-up" style="animation-delay: 0.1s">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-[#2c2c2e]">
+                    <table class="w-full table-fixed divide-y divide-[#2c2c2e]">
                         <thead class="bg-[#2c2c2e] text-white">
                             <tr>
-                                <th class="px-2 py-3 w-6 text-center text-white/40"></th>
-                                <th class="px-4 py-3 w-8"><input type="checkbox" onclick="toggleAll(this)"
+                                <th class="w-7 px-1 py-2.5 text-center text-white/40"></th>
+                                <th class="w-8 px-1 py-2.5 text-center"><input type="checkbox" onclick="toggleAll(this)"
                                         class="custom-checkbox rounded text-primary"></th>
-                                <th class="px-4 py-3 text-left text-xs font-bold uppercase">Item</th>
-                                <th class="px-4 py-3 text-right text-xs font-bold uppercase">Kcal</th>
-                                <th class="px-4 py-3"></th>
+                                <th class="px-2 py-2.5 text-left text-xs font-bold uppercase">Item</th>
+                                <th class="w-14 sm:w-16 px-1.5 py-2.5 text-right text-xs font-bold uppercase">Kcal</th>
+                                <th class="w-8 sm:w-9 px-1 py-2.5 text-center"></th>
                             </tr>
                         </thead>
                         <tbody id="foodTableBody" class="divide-y divide-[#2c2c2e] text-sm"></tbody>
@@ -1711,16 +1711,22 @@
     <!-- Modal Ajustar Cantidad por Doble Tap -->
     <div id="editAmountModal" class="fixed inset-0 bg-black/80 hidden z-[85] flex items-end sm:items-center justify-center backdrop-blur-md transition-all">
         <div class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in relative space-y-4">
-            <!-- Cabecera con Título y X -->
-            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-3">
-                <h3 id="editAmountModalTitle" class="text-base font-bold text-white truncate max-w-[85%] flex items-center gap-2">
+            <!-- Cabecera con Título, Botón Cambiar y X -->
+            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-3 gap-2">
+                <h3 id="editAmountModalTitle" class="text-base font-bold text-white truncate min-w-0 flex items-center gap-2">
                     ✏️ Ajustar Cantidad
                 </h3>
-                <button type="button" onclick="closeEditAmountModal()" class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center" title="Cerrar">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+                <div class="flex items-center gap-2 shrink-0">
+                    <button type="button" onclick="startSubstituteFromCategoryModal()" class="px-2.5 py-1.5 rounded-xl bg-primary/20 hover:bg-primary/30 text-primary border border-primary/40 text-xs font-bold flex items-center gap-1.5 transition-all active:scale-95" title="Cambiar alimento">
+                        <span>🔄</span>
+                        <span class="text-[11px]">Cambiar</span>
+                    </button>
+                    <button type="button" onclick="closeEditAmountModal()" class="text-white hover:text-white bg-[#2c2c2e] hover:bg-[#3a3a3c] p-1.5 rounded-full border border-white/10 transition-all active:scale-95 flex items-center justify-center" title="Cerrar">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Tarjeta Superior (Balance vs Objetivo Diario) dentro del modal -->
@@ -2462,8 +2468,8 @@
         <div
             class="bg-[#1c1c1e] w-full sm:max-w-md rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center mb-3">
-                <h3 class="text-lg font-medium text-white">Categoría</h3>
-                <button onclick="document.getElementById('categoryModal').classList.add('hidden')"
+                <h3 id="categoryModalTitle" class="text-lg font-medium text-white">Categoría</h3>
+                <button onclick="closeCategorySelectorModal()"
                     class="text-white hover:text-white bg-[#2c2c2e] p-1 rounded-full"><svg class="w-6 h-6" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -2517,7 +2523,7 @@
                         </svg></button>
                     <h3 id="subCategoryTitle" class="text-lg font-medium text-white">Tipo</h3>
                 </div>
-                <button onclick="document.getElementById('subCategoryModal').classList.add('hidden')"
+                <button onclick="closeCategorySelectorModal()"
                     class="text-white hover:text-white bg-[#2c2c2e] p-1 rounded-full"><svg class="w-6 h-6" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -2660,7 +2666,7 @@
                     <span class="text-xl">📖</span>
                     <h3 class="text-lg font-medium text-white">Mis Recetas</h3>
                 </div>
-                <button onclick="document.getElementById('recipeGridModal').classList.add('hidden')"
+                <button onclick="closeRecipeGridModal()"
                     class="text-white hover:text-white bg-[#2c2c2e] p-1.5 rounded-full border border-white/10"><svg class="w-5 h-5" fill="none"
                         stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
@@ -3068,6 +3074,16 @@
         function selectRecipeFromGrid(id) {
             document.getElementById('recipeGridModal').classList.add('hidden');
 
+            if (itemBeingSubstitutedId) {
+                const targetId = itemBeingSubstitutedId;
+                itemBeingSubstitutedId = null;
+                const catModal = document.getElementById('categoryModal');
+                if (catModal) catModal.classList.add('hidden');
+                substituteEditingLogItem('recipe', id, targetId);
+                openEditAmountModal(targetId);
+                return;
+            }
+
             // Usar fecha seleccionada en el filtro (o hoy por defecto)
             const dateInput = document.getElementById('recipeDate');
             if (dateInput) dateInput.value = getActiveFilterDate();
@@ -3325,6 +3341,10 @@
 
         // --- NUEVO: SISTEMA DE SELECCIÓN VISUAL (MOSAICOS) ---
         function openCategorySelector() {
+            const catTitle = document.getElementById('categoryModalTitle');
+            if (catTitle) {
+                catTitle.textContent = (typeof itemBeingSubstitutedId !== 'undefined' && itemBeingSubstitutedId) ? '🔄 Sustituir Alimento' : 'Categoría';
+            }
 
             const grid = document.getElementById('categoryGrid');
             grid.innerHTML = '';
@@ -3466,6 +3486,16 @@
 
             document.getElementById('subCategoryModal').classList.add('hidden');
             document.getElementById('categoryModal').classList.add('hidden');
+
+            if (typeof itemBeingSubstitutedId !== 'undefined' && itemBeingSubstitutedId) {
+                const targetId = itemBeingSubstitutedId;
+                itemBeingSubstitutedId = null;
+                const catTitle = document.getElementById('categoryModalTitle');
+                if (catTitle) catTitle.textContent = 'Categoría';
+                substituteEditingLogItem('food', foodId, targetId);
+                openEditAmountModal(targetId);
+                return;
+            }
 
             // Usar fecha seleccionada en el filtro (o hoy por defecto)
             const dateInput = document.getElementById('foodDate');
@@ -8400,9 +8430,9 @@
         }
 
         // --- ACCIÓN RÁPIDA POR BLOQUE DE COMIDA ---
-        function setMealBlockTiming(mealKey, targetTiming) {
+        function setMealBlockTiming(mealKey, targetTiming, targetDate = null) {
             if (!targetTiming) return;
-            const activeDate = getActiveFilterDate();
+            const activeDate = targetDate || getActiveFilterDate();
             let count = 0;
             globalLog.forEach(item => {
                 const itemMeal = item.meal || 'general';
@@ -8824,16 +8854,45 @@
                     mealF += (i.f || 0);
                 });
 
+                let currentBlockTiming = 'neutro';
+                let timingSelectClass = 'bg-[#1c1c1e] text-white/70 border-[#3a3a3c]';
+                if (mealItems.length > 0) {
+                    const timings = [...new Set(mealItems.map(i => i.timing || 'neutro'))];
+                    if (timings.length === 1) {
+                        currentBlockTiming = timings[0];
+                        if (currentBlockTiming === 'pre') {
+                            timingSelectClass = 'bg-amber-500/25 text-amber-300 border-amber-500/50';
+                        } else if (currentBlockTiming === 'intra') {
+                            timingSelectClass = 'bg-orange-500/25 text-orange-300 border-orange-500/50';
+                        } else if (currentBlockTiming === 'post') {
+                            timingSelectClass = 'bg-emerald-500/25 text-emerald-300 border-emerald-500/50';
+                        } else {
+                            timingSelectClass = 'bg-[#1c1c1e] text-white/70 border-[#3a3a3c]';
+                        }
+                    } else {
+                        currentBlockTiming = 'mixed';
+                        timingSelectClass = 'bg-purple-500/25 text-purple-300 border-purple-500/50';
+                    }
+                }
+
                 let blockHtml = `
                     <tr class="meal-header-row bg-[#252528] border-t-2 border-b border-[#3a3a3c]/80 select-none">
-                        <td colspan="5" class="px-3 py-2">
-                            <div class="flex items-center justify-between gap-2">
-                                <div class="flex items-center gap-2 min-w-0">
-                                    <span class="text-base shrink-0">${mealDef.icon}</span>
-                                    <span class="text-xs font-bold text-white uppercase tracking-wider truncate">${mealDef.name}</span>
-                                    <span class="text-[10px] text-white/50 font-mono shrink-0">(${mealItems.length})</span>
+                        <td colspan="5" class="px-2 sm:px-3 py-2">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+                                <div class="flex items-center justify-between gap-2 min-w-0">
+                                    <div class="flex items-center gap-1.5 min-w-0">
+                                        <span class="text-sm sm:text-base shrink-0">${mealDef.icon}</span>
+                                        <span class="text-xs font-bold text-white uppercase tracking-wider truncate">${mealDef.name}</span>
+                                        <span class="text-[10px] text-white/50 font-mono shrink-0">(${mealItems.length})</span>
+                                    </div>
+                                    <div class="sm:hidden flex items-center gap-1 text-[9.5px] font-mono bg-[#1c1c1e] px-1.5 py-0.5 rounded border border-white/10 shrink-0">
+                                        <span class="text-emerald-400 font-bold">P:${Math.round(mealP)}</span>
+                                        <span class="text-amber-400 font-bold">C:${Math.round(mealC)}</span>
+                                        <span class="text-red-400 font-bold">G:${Math.round(mealF)}</span>
+                                        <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)}k</span>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-2 shrink-0">
+                                <div class="flex items-center justify-end gap-1.5 shrink-0">
                                     <div class="hidden sm:flex items-center gap-1.5 text-[11px] font-mono bg-[#1c1c1e] px-2 py-0.5 rounded-md border border-white/10">
                                         <span class="text-emerald-400 font-bold">P: ${Math.round(mealP)}g</span>
                                         <span class="text-white/30">•</span>
@@ -8843,24 +8902,20 @@
                                         <span class="text-white/30">•</span>
                                         <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)} kcal</span>
                                     </div>
-                                    <div class="sm:hidden flex items-center gap-1 text-[10px] font-mono bg-[#1c1c1e] px-1.5 py-0.5 rounded border border-white/10">
-                                        <span class="text-emerald-400 font-bold">P:${Math.round(mealP)}</span>
-                                        <span class="text-amber-400 font-bold">C:${Math.round(mealC)}</span>
-                                        <span class="text-red-400 font-bold">G:${Math.round(mealF)}</span>
-                                        <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)}k</span>
+                                    <div class="flex items-center gap-1.5 w-full sm:w-auto justify-end">
+                                        ${mealItems.length > 0 ? `
+                                        <select onchange="setMealBlockTiming('${mealDef.key}', this.value, '${contextDate || ''}')" class="${timingSelectClass} text-[10px] sm:text-[10.5px] rounded-lg px-2 py-0.5 font-bold focus:outline-none focus:border-primary cursor-pointer border shadow-sm transition-all" title="Timing deportivo del bloque">
+                                            ${currentBlockTiming === 'mixed' ? '<option value="" disabled selected>⚡ Mixto</option>' : ''}
+                                            <option value="neutro" class="bg-[#1c1c1e] text-white" ${currentBlockTiming === 'neutro' ? 'selected' : ''}>⚪ Neutro</option>
+                                            <option value="pre" class="bg-[#1c1c1e] text-amber-300 font-bold" ${currentBlockTiming === 'pre' ? 'selected' : ''}>⚡ Pre</option>
+                                            <option value="intra" class="bg-[#1c1c1e] text-orange-300 font-bold" ${currentBlockTiming === 'intra' ? 'selected' : ''}>🔥 Intra</option>
+                                            <option value="post" class="bg-[#1c1c1e] text-emerald-300 font-bold" ${currentBlockTiming === 'post' ? 'selected' : ''}>💪 Post</option>
+                                        </select>
+                                        ` : ''}
+                                        <button type="button" onclick="openAddForMeal('${mealDef.key}')" class="px-2 py-0.5 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 text-[10.5px] font-bold flex items-center gap-1 transition-all active:scale-95" title="Añadir a ${mealDef.name}">
+                                            <span>+ Añadir</span>
+                                        </button>
                                     </div>
-                                    ${mealItems.length > 0 ? `
-                                    <select onchange="setMealBlockTiming('${mealDef.key}', this.value); this.selectedIndex = 0;" class="bg-[#1c1c1e] text-[10px] text-white/70 hover:text-white border border-[#3a3a3c] rounded-lg px-1.5 py-0.5 font-bold focus:outline-none focus:border-primary cursor-pointer" title="Asignar timing deportivo a todo este bloque">
-                                        <option value="" disabled selected>⚡ Timing</option>
-                                        <option value="neutro">⚪ Neutro</option>
-                                        <option value="pre">⚡ Pre</option>
-                                        <option value="intra">🔥 Intra</option>
-                                        <option value="post">💪 Post</option>
-                                    </select>
-                                    ` : ''}
-                                    <button type="button" onclick="openAddForMeal('${mealDef.key}')" class="px-2 py-0.5 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 text-[10.5px] font-bold flex items-center gap-1 transition-all active:scale-95" title="Añadir a ${mealDef.name}">
-                                        <span>+ Añadir</span>
-                                    </button>
                                 </div>
                             </div>
                         </td>
@@ -8900,20 +8955,20 @@
 
                         blockHtml += `
                         <tr data-id="${i.id}" draggable="true" ondblclick="editLogItemAmount(${i.id})" class="group transition-all drag-row border-b border-[#2c2c2e] ${rowBg}">
-                            <td class="px-2 py-3 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
-                            <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
-                            <td class="px-4 py-3 swipe-cell cursor-pointer select-none" title="Doble toque para editar cantidad o cambiar comida y timing">
-                                <div class="${titleColor} flex items-center justify-between gap-1">
-                                    <div class="flex items-center gap-1.5 min-w-0 flex-wrap">
-                                        <span class="truncate">${icon}${displayName}</span>
+                            <td class="w-7 px-1 py-2 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
+                            <td class="w-8 px-1 py-2 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
+                            <td class="px-2 py-2 swipe-cell cursor-pointer select-none min-w-0 overflow-hidden" title="Doble toque para editar cantidad o cambiar comida y timing">
+                                <div class="${titleColor} flex items-center justify-between gap-1 min-w-0">
+                                    <div class="flex items-center gap-1.5 min-w-0 overflow-hidden">
+                                        <span class="truncate text-xs sm:text-sm font-medium leading-tight">${icon}${displayName}</span>
                                         ${timingBadgeHtml}
                                     </div>
-                                    <button type="button" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" class="text-xs opacity-60 hover:opacity-100 hover:scale-110 transition-all p-1 shrink-0" title="Ver consumo medio y consistencia">📊</button>
+                                    <button type="button" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" class="text-xs opacity-60 hover:opacity-100 hover:scale-110 transition-all p-0.5 shrink-0" title="Ver consumo medio y consistencia">📊</button>
                                 </div>
-                                <div class="text-xs text-white/70">${i.date} &bull; ${displayAmount}${displayUnit}</div>
+                                <div class="text-[11px] text-white/70 mt-0.5">${i.date} &bull; ${displayAmount}${displayUnit}</div>
                             </td>
-                            <td class="px-4 py-3 text-right font-medium text-white">${i.kcal}</td>
-                            <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
+                            <td class="w-14 sm:w-16 px-1.5 py-2 text-right font-medium font-mono text-xs sm:text-sm text-white whitespace-nowrap">${i.kcal}</td>
+                            <td class="w-8 sm:w-9 px-1 py-2 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors p-1" title="Eliminar"><svg class="w-4 h-4 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
                         </tr>`;
                     });
                 }
@@ -8942,9 +8997,11 @@
                     const dayItems = items.filter(i => i.date === d);
                     html += `
                         <tr class="bg-[#1c1c1e] border-t-4 border-b border-[#3a3a3c]">
-                            <td colspan="5" class="px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex items-center justify-between">
-                                <span>📅 ${d}</span>
-                                <span class="text-white/60 font-mono">${dayItems.length} registros</span>
+                            <td colspan="5" class="px-3 py-2">
+                                <div class="text-xs font-bold text-white uppercase tracking-wider flex items-center justify-between">
+                                    <span>📅 ${d}</span>
+                                    <span class="text-white/60 font-mono">${dayItems.length} registros</span>
+                                </div>
                             </td>
                         </tr>
                     `;
@@ -9102,6 +9159,136 @@
             const modal = document.getElementById('editAmountModal');
             if (modal) modal.classList.add('hidden');
             currentEditingItemId = null;
+            itemBeingSubstitutedId = null;
+        }
+
+        // --- SUSTITUCIÓN DE ALIMENTO EN EL MODAL DE EDICIÓN (VÍA MODAL DE CATEGORÍAS) ---
+        let itemBeingSubstitutedId = null;
+
+        function startSubstituteFromCategoryModal() {
+            if (!currentEditingItemId) return;
+            itemBeingSubstitutedId = currentEditingItemId;
+            const editModal = document.getElementById('editAmountModal');
+            if (editModal) editModal.classList.add('hidden');
+            openCategorySelector();
+        }
+
+        function closeCategorySelectorModal() {
+            const catModal = document.getElementById('categoryModal');
+            if (catModal) catModal.classList.add('hidden');
+            const subModal = document.getElementById('subCategoryModal');
+            if (subModal) subModal.classList.add('hidden');
+            const catTitle = document.getElementById('categoryModalTitle');
+            if (catTitle) catTitle.textContent = 'Categoría';
+
+            if (itemBeingSubstitutedId) {
+                const returnId = itemBeingSubstitutedId;
+                itemBeingSubstitutedId = null;
+                openEditAmountModal(returnId);
+            }
+        }
+
+        function closeRecipeGridModal() {
+            const rModal = document.getElementById('recipeGridModal');
+            if (rModal) rModal.classList.add('hidden');
+            if (itemBeingSubstitutedId) {
+                const catModal = document.getElementById('categoryModal');
+                if (catModal) catModal.classList.remove('hidden');
+            }
+        }
+
+        function substituteEditingLogItem(type, targetId, logItemId = null) {
+            const idToUse = logItemId || currentEditingItemId;
+            if (!idToUse) return;
+            const item = globalLog.find(l => String(l.id) === String(idToUse));
+            if (!item) return;
+
+            const titleEl = document.getElementById('editAmountModalTitle');
+            const slider = document.getElementById('editAmountRangeSlider');
+            const displayVal = document.getElementById('editAmountDisplayVal');
+            const minLabel = document.getElementById('editAmountMinLabel');
+            const maxLabel = document.getElementById('editAmountMaxLabel');
+
+            let currentAmt = item.amount !== undefined ? item.amount : (item.qty || 100);
+
+            if (type === 'food') {
+                const food = (foodData || []).find(f => String(f.id) === String(targetId));
+                if (!food) return;
+
+                const newUnit = food.unit || 'g';
+                const oldUnit = item.unit || 'g';
+
+                if (oldUnit === 'u' && newUnit === 'g') {
+                    currentAmt = 100;
+                } else if (oldUnit === 'g' && newUnit === 'u') {
+                    currentAmt = 1;
+                }
+
+                const factor = (newUnit === 'g') ? currentAmt / 100 : currentAmt;
+                const aa = food.aa || { leu: 0, bcaa: 0, eaa: 0 };
+
+                item.type = 'food';
+                item.foodId = food.id;
+                item.foodName = food.name;
+                item.foodIcon = food.icon || '🔹';
+                item.amount = currentAmt;
+                item.unit = newUnit;
+                item.p = parseFloat((food.p * factor).toFixed(1));
+                item.c = parseFloat((food.c * factor).toFixed(1));
+                item.f = parseFloat((food.f * factor).toFixed(1));
+                item.kcal = Math.round(food.kcal * factor);
+                item.leu = parseFloat(((aa.leu || 0) * factor).toFixed(2));
+                item.bcaa = parseFloat(((aa.bcaa || 0) * factor).toFixed(2));
+                item.eaa = parseFloat(((aa.eaa || 0) * factor).toFixed(2));
+                delete item.ingredients;
+
+                if (titleEl) titleEl.innerHTML = `${food.icon || '🔹'} ${food.name}`;
+            } else if (type === 'recipe') {
+                const recipe = (recipeData || []).find(r => String(r.id) === String(targetId));
+                if (!recipe) return;
+
+                const oldUnit = item.unit || 'g';
+                if (oldUnit === 'g') currentAmt = 1;
+
+                item.type = 'recipe';
+                item.foodId = recipe.id;
+                item.foodName = recipe.name;
+                item.foodIcon = '📖';
+                item.amount = currentAmt;
+                item.unit = 'u';
+                item.p = parseFloat((recipe.p * currentAmt).toFixed(1));
+                item.c = parseFloat((recipe.c * currentAmt).toFixed(1));
+                item.f = parseFloat((recipe.f * currentAmt).toFixed(1));
+                item.kcal = Math.round(recipe.kcal * currentAmt);
+                item.ingredients = recipe.ingredients;
+
+                if (titleEl) titleEl.innerHTML = `📖 ${recipe.name}`;
+            }
+
+            const isUnit = (item.unit === 'u');
+            if (slider) {
+                if (isUnit) {
+                    slider.min = "0.5";
+                    slider.max = "10";
+                    slider.step = "0.5";
+                    if (minLabel) minLabel.textContent = "0.5 ud";
+                    if (maxLabel) maxLabel.textContent = "10 ud";
+                } else {
+                    slider.min = "5";
+                    slider.max = "500";
+                    slider.step = "5";
+                    if (minLabel) minLabel.textContent = "5 g";
+                    if (maxLabel) maxLabel.textContent = "500 g";
+                }
+                slider.value = currentAmt;
+            }
+            if (displayVal) displayVal.textContent = `${currentAmt} ${item.unit}`;
+
+            saveData();
+            applyFilter();
+            updateComparisonCharts();
+            updateEditAmountModalCard();
+            showToast(`✅ Sustituido por ${item.foodName}`);
         }
 
         function onEditAmountSliderInput(newValStr) {
