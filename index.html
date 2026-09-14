@@ -1186,7 +1186,7 @@
             </svg>
             <span class="text-[10px] font-medium">Historial</span>
         </button>
-        <button onclick="openCategorySelector()"
+        <button onclick="pendingMealForAdd = getSuggestedMealByTime(); openCategorySelector()"
             class="nav-btn flex flex-col items-center justify-center w-full h-full text-white" id="btn-add">
             <div class="bg-primary/20 border border-primary/30 rounded-full p-2 mb-1 shadow-lg">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1215,6 +1215,18 @@
     </nav>
 
     <div id="analyzeFab" class="fixed bottom-20 right-4 sm:right-6 hidden z-50 animate-bounce-in items-center gap-2">
+        <button onclick="openBatchMoveModal()"
+            class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-3.5 rounded-full shadow-2xl flex items-center gap-1.5 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
+            title="Mover selección a otra comida">
+            <span class="text-sm">🍽️</span>
+            <span id="fabMoveText" class="text-xs font-bold uppercase tracking-wider">Mover</span>
+        </button>
+        <button onclick="openBatchTimingModal()"
+            class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-3.5 rounded-full shadow-2xl flex items-center gap-1.5 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
+            title="Asignar timing deportivo a la selección">
+            <span class="text-sm">⚡</span>
+            <span id="fabTimingText" class="text-xs font-bold uppercase tracking-wider">Timing</span>
+        </button>
         <button onclick="openCopySelectionModal()"
             class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-4 rounded-full shadow-2xl flex items-center gap-2 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
             title="Copiar selección a otra fecha">
@@ -1235,6 +1247,86 @@
             </svg>
             <span id="fabText" class="text-xs font-bold uppercase tracking-wider">Analizar</span>
         </button>
+    </div>
+
+    <!-- Modal Mover Selección en Lote a Comida -->
+    <div id="batchMoveModal" class="fixed inset-0 bg-black/80 hidden z-[85] flex items-end sm:items-center justify-center backdrop-blur-md">
+        <div class="bg-[#1c1c1e] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-2">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    🍽️ Mover selección a:
+                </h3>
+                <button onclick="closeBatchMoveModal()" class="text-white/60 hover:text-white p-1 rounded-full bg-[#2c2c2e]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+                <button onclick="executeBatchMove('desayuno')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-medium text-sm transition-all active:scale-98">
+                    <span class="text-xl">🌅</span>
+                    <span class="font-bold">Desayuno</span>
+                </button>
+                <button onclick="executeBatchMove('comida')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-medium text-sm transition-all active:scale-98">
+                    <span class="text-xl">🥗</span>
+                    <span class="font-bold">Comida</span>
+                </button>
+                <button onclick="executeBatchMove('merienda')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-medium text-sm transition-all active:scale-98">
+                    <span class="text-xl">🥪</span>
+                    <span class="font-bold">Merienda</span>
+                </button>
+                <button onclick="executeBatchMove('cena')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-medium text-sm transition-all active:scale-98">
+                    <span class="text-xl">🌙</span>
+                    <span class="font-bold">Cena</span>
+                </button>
+                <button onclick="executeBatchMove('snack')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-medium text-sm transition-all active:scale-98">
+                    <span class="text-xl">🍎</span>
+                    <span class="font-bold">Snacks</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Asignar Timing Deportivo en Lote -->
+    <div id="batchTimingModal" class="fixed inset-0 bg-black/80 hidden z-[85] flex items-end sm:items-center justify-center backdrop-blur-md">
+        <div class="bg-[#1c1c1e] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl p-5 shadow-2xl border border-[#2c2c2e] animate-slide-up sm:animate-fade-in space-y-4">
+            <div class="flex justify-between items-center border-b border-[#2c2c2e] pb-2">
+                <h3 class="text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                    ⚡ Asignar Timing Deportivo:
+                </h3>
+                <button onclick="closeBatchTimingModal()" class="text-white/60 hover:text-white p-1 rounded-full bg-[#2c2c2e]">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 gap-2">
+                <button onclick="executeBatchTiming('neutro')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] text-white font-medium text-sm transition-all active:scale-98 text-left">
+                    <span class="text-xl">⚪</span>
+                    <div>
+                        <div class="font-bold">Neutro</div>
+                        <div class="text-[10.5px] text-white/50">Ingesta sin relación directa peri-entreno</div>
+                    </div>
+                </button>
+                <button onclick="executeBatchTiming('pre')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-amber-500/10 border border-amber-500/30 text-amber-300 font-medium text-sm transition-all active:scale-98 text-left">
+                    <span class="text-xl">⚡</span>
+                    <div>
+                        <div class="font-bold text-amber-300">Pre-Entrenamiento</div>
+                        <div class="text-[10.5px] text-white/50">Carga energética antes de la sesión</div>
+                    </div>
+                </button>
+                <button onclick="executeBatchTiming('intra')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-orange-500/10 border border-orange-500/30 text-orange-300 font-medium text-sm transition-all active:scale-98 text-left">
+                    <span class="text-xl">🔥</span>
+                    <div>
+                        <div class="font-bold text-orange-300">Intra-Entrenamiento</div>
+                        <div class="text-[10.5px] text-white/50">Aporte de azúcares/electrolitos en esfuerzo</div>
+                    </div>
+                </button>
+                <button onclick="executeBatchTiming('post')" class="flex items-center gap-3 p-3 rounded-xl bg-[#2c2c2e] hover:bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 font-medium text-sm transition-all active:scale-98 text-left">
+                    <span class="text-xl">💪</span>
+                    <div>
+                        <div class="font-bold text-emerald-300">Post-Entrenamiento</div>
+                        <div class="text-[10.5px] text-white/50">Recuperación proteica y recarga glucogénica</div>
+                    </div>
+                </button>
+            </div>
+        </div>
     </div>
 
 
@@ -1258,6 +1350,54 @@
                     <label class="block text-xs font-medium text-white uppercase mb-1.5">Fecha</label>
                     <input type="date" id="foodDate"
                         class="w-full rounded-xl border-[#3a3a3c] bg-[#2c2c2e] focus:border-primary p-3 text-sm font-medium text-white">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-white uppercase mb-1.5">Momento de la Comida</label>
+                    <div id="foodMealChipsContainer" class="grid grid-cols-5 gap-1.5 bg-[#2c2c2e] p-1.5 rounded-xl border border-[#3a3a3c]">
+                        <button type="button" onclick="setFoodModalMeal('desayuno')" data-meal="desayuno" class="food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🌅</span>
+                            <span class="text-[10px] truncate max-w-full">Desayuno</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalMeal('comida')" data-meal="comida" class="food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🥗</span>
+                            <span class="text-[10px] truncate max-w-full">Comida</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalMeal('merienda')" data-meal="merienda" class="food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🥪</span>
+                            <span class="text-[10px] truncate max-w-full">Merienda</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalMeal('cena')" data-meal="cena" class="food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🌙</span>
+                            <span class="text-[10px] truncate max-w-full">Cena</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalMeal('snack')" data-meal="snack" class="food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🍎</span>
+                            <span class="text-[10px] truncate max-w-full">Snack</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-white uppercase mb-1.5">Timing Deportivo</label>
+                    <div id="foodTimingChipsContainer" class="grid grid-cols-4 gap-1.5 bg-[#2c2c2e] p-1.5 rounded-xl border border-[#3a3a3c]">
+                        <button type="button" onclick="setFoodModalTiming('neutro')" data-timing="neutro" class="food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>⚪</span>
+                            <span class="text-[10px]">Neutro</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalTiming('pre')" data-timing="pre" class="food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>⚡</span>
+                            <span class="text-[10px]">Pre</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalTiming('intra')" data-timing="intra" class="food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>🔥</span>
+                            <span class="text-[10px]">Intra</span>
+                        </button>
+                        <button type="button" onclick="setFoodModalTiming('post')" data-timing="post" class="food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>💪</span>
+                            <span class="text-[10px]">Post</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div id="scannerSection" class="bg-primary/10 p-3 rounded-xl border border-primary/20 hidden">
@@ -1390,6 +1530,54 @@
                     <label class="block text-xs font-medium text-white uppercase mb-1.5">Fecha</label>
                     <input type="date" id="recipeDate"
                         class="w-full rounded-xl border-[#3a3a3c] bg-[#2c2c2e] focus:border-primary p-3 text-sm font-medium text-white">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-white uppercase mb-1.5">Momento de la Comida</label>
+                    <div id="recipeMealChipsContainer" class="grid grid-cols-5 gap-1.5 bg-[#2c2c2e] p-1.5 rounded-xl border border-[#3a3a3c]">
+                        <button type="button" onclick="setRecipeModalMeal('desayuno')" data-meal="desayuno" class="recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🌅</span>
+                            <span class="text-[10px] truncate max-w-full">Desayuno</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalMeal('comida')" data-meal="comida" class="recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🥗</span>
+                            <span class="text-[10px] truncate max-w-full">Comida</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalMeal('merienda')" data-meal="merienda" class="recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🥪</span>
+                            <span class="text-[10px] truncate max-w-full">Merienda</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalMeal('cena')" data-meal="cena" class="recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🌙</span>
+                            <span class="text-[10px] truncate max-w-full">Cena</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalMeal('snack')" data-meal="snack" class="recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span class="text-base mb-0.5">🍎</span>
+                            <span class="text-[10px] truncate max-w-full">Snack</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-white uppercase mb-1.5">Timing Deportivo</label>
+                    <div id="recipeTimingChipsContainer" class="grid grid-cols-4 gap-1.5 bg-[#2c2c2e] p-1.5 rounded-xl border border-[#3a3a3c]">
+                        <button type="button" onclick="setRecipeModalTiming('neutro')" data-timing="neutro" class="recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>⚪</span>
+                            <span class="text-[10px]">Neutro</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalTiming('pre')" data-timing="pre" class="recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>⚡</span>
+                            <span class="text-[10px]">Pre</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalTiming('intra')" data-timing="intra" class="recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>🔥</span>
+                            <span class="text-[10px]">Intra</span>
+                        </button>
+                        <button type="button" onclick="setRecipeModalTiming('post')" data-timing="post" class="recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                            <span>💪</span>
+                            <span class="text-[10px]">Post</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div>
@@ -1541,6 +1729,58 @@
                     <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
                 </div>
                 <div id="editAmountTargetDiffContent" class="space-y-2 text-xs"></div>
+            </div>
+
+            <!-- Selector de Momento de la Comida -->
+            <div class="bg-[#2c2c2e] p-3 rounded-xl border border-[#3a3a3c] space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-white/70 uppercase tracking-wider">Momento de la Comida</span>
+                    <span id="editAmountCurrentMealLabel" class="text-xs font-bold text-primary">🌅 Desayuno</span>
+                </div>
+                <div id="editAmountMealChipsContainer" class="grid grid-cols-5 gap-1.5">
+                    <button type="button" onclick="onEditAmountChangeMeal('desayuno')" data-meal="desayuno" class="edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span class="text-sm">🌅</span>
+                        <span class="text-[9px] truncate max-w-full">Desayuno</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeMeal('comida')" data-meal="comida" class="edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span class="text-sm">🥗</span>
+                        <span class="text-[9px] truncate max-w-full">Comida</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeMeal('merienda')" data-meal="merienda" class="edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span class="text-sm">🥪</span>
+                        <span class="text-[9px] truncate max-w-full">Merienda</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeMeal('cena')" data-meal="cena" class="edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span class="text-sm">🌙</span>
+                        <span class="text-[9px] truncate max-w-full">Cena</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeMeal('snack')" data-meal="snack" class="edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span class="text-sm">🍎</span>
+                        <span class="text-[9px] truncate max-w-full">Snack</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Selector de Timing Deportivo -->
+            <div class="bg-[#2c2c2e] p-3 rounded-xl border border-[#3a3a3c] space-y-2">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-bold text-white/70 uppercase tracking-wider">Timing Deportivo</span>
+                    <span id="editAmountCurrentTimingLabel" class="text-xs font-bold text-white/60">⚪ Neutro</span>
+                </div>
+                <div id="editAmountTimingChipsContainer" class="grid grid-cols-4 gap-1.5">
+                    <button type="button" onclick="onEditAmountChangeTiming('neutro')" data-timing="neutro" class="edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span>⚪</span><span class="text-[10px]">Neutro</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeTiming('pre')" data-timing="pre" class="edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span>⚡</span><span class="text-[10px]">Pre</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeTiming('intra')" data-timing="intra" class="edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span>🔥</span><span class="text-[10px]">Intra</span>
+                    </button>
+                    <button type="button" onclick="onEditAmountChangeTiming('post')" data-timing="post" class="edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95">
+                        <span>💪</span><span class="text-[10px]">Post</span>
+                    </button>
+                </div>
             </div>
 
             <!-- Slider para Ajustar Cantidad -->
@@ -2720,6 +2960,8 @@
                 p: parseFloat(((food.p || 0) * multiplier).toFixed(1)),
                 c: parseFloat(((food.c || 0) * multiplier).toFixed(1)),
                 f: parseFloat(((food.f || 0) * multiplier).toFixed(1)),
+                meal: pendingMealForAdd || getSuggestedMealByTime(),
+                timing: 'neutro',
                 date: dateStr
             };
 
@@ -2953,18 +3195,131 @@
             }, 400);
         }
 
+        // --- CONSTANTES Y GESTIÓN DE MOMENTO DEL DÍA (COMIDAS) ---
+        const MEAL_DEFINITIONS = [
+            { key: 'desayuno', name: 'Desayuno', icon: '🌅' },
+            { key: 'comida', name: 'Comida', icon: '🥗' },
+            { key: 'merienda', name: 'Merienda', icon: '🥪' },
+            { key: 'cena', name: 'Cena', icon: '🌙' },
+            { key: 'snack', name: 'Snacks', icon: '🍎' }
+        ];
+
+        let pendingMealForAdd = 'desayuno';
+        let currentFoodModalMeal = 'desayuno';
+        let currentRecipeModalMeal = 'desayuno';
+        let currentFoodModalTiming = 'neutro';
+        let currentRecipeModalTiming = 'neutro';
+
+        function getSuggestedMealByTime() {
+            const hour = new Date().getHours();
+            if (hour >= 6 && hour < 12) return 'desayuno';
+            if (hour >= 12 && hour < 16) return 'comida';
+            if (hour >= 16 && hour < 20) return 'merienda';
+            if (hour >= 20 && hour < 24) return 'cena';
+            return 'snack';
+        }
+
+        function setFoodModalMeal(mealKey) {
+            currentFoodModalMeal = mealKey || 'desayuno';
+            const container = document.getElementById('foodMealChipsContainer');
+            if (!container) return;
+            const chips = container.querySelectorAll('.food-meal-chip');
+            chips.forEach(chip => {
+                const isSelected = chip.dataset.meal === currentFoodModalMeal;
+                if (isSelected) {
+                    chip.className = "food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-primary text-white border border-primary/50 shadow-sm";
+                } else {
+                    chip.className = "food-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-medium transition-all active:scale-95 bg-[#1c1c1e] text-white/60 hover:text-white border border-transparent";
+                }
+            });
+        }
+
+        function setFoodModalTiming(timingKey) {
+            currentFoodModalTiming = timingKey || 'neutro';
+            const container = document.getElementById('foodTimingChipsContainer');
+            if (!container) return;
+            const chips = container.querySelectorAll('.food-timing-chip');
+            chips.forEach(chip => {
+                const t = chip.dataset.timing;
+                const isSelected = (t === currentFoodModalTiming);
+                if (isSelected) {
+                    if (t === 'pre') {
+                        chip.className = "food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-amber-500/25 border border-amber-500/60 text-amber-300 shadow-sm";
+                    } else if (t === 'intra') {
+                        chip.className = "food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-orange-500/25 border border-orange-500/60 text-orange-300 shadow-sm";
+                    } else if (t === 'post') {
+                        chip.className = "food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-emerald-500/25 border border-emerald-500/60 text-emerald-300 shadow-sm";
+                    } else {
+                        chip.className = "food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-white/20 border border-white/50 text-white shadow-sm";
+                    }
+                } else {
+                    chip.className = "food-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-medium transition-all active:scale-95 bg-[#1c1c1e] text-white/50 hover:text-white border border-transparent";
+                }
+            });
+        }
+
+        function setRecipeModalMeal(mealKey) {
+            currentRecipeModalMeal = mealKey || 'desayuno';
+            const container = document.getElementById('recipeMealChipsContainer');
+            if (!container) return;
+            const chips = container.querySelectorAll('.recipe-meal-chip');
+            chips.forEach(chip => {
+                const isSelected = chip.dataset.meal === currentRecipeModalMeal;
+                if (isSelected) {
+                    chip.className = "recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-primary text-white border border-primary/50 shadow-sm";
+                } else {
+                    chip.className = "recipe-meal-chip flex flex-col items-center justify-center py-2 px-1 rounded-lg text-xs font-medium transition-all active:scale-95 bg-[#1c1c1e] text-white/60 hover:text-white border border-transparent";
+                }
+            });
+        }
+
+        function setRecipeModalTiming(timingKey) {
+            currentRecipeModalTiming = timingKey || 'neutro';
+            const container = document.getElementById('recipeTimingChipsContainer');
+            if (!container) return;
+            const chips = container.querySelectorAll('.recipe-timing-chip');
+            chips.forEach(chip => {
+                const t = chip.dataset.timing;
+                const isSelected = (t === currentRecipeModalTiming);
+                if (isSelected) {
+                    if (t === 'pre') {
+                        chip.className = "recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-amber-500/25 border border-amber-500/60 text-amber-300 shadow-sm";
+                    } else if (t === 'intra') {
+                        chip.className = "recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-orange-500/25 border border-orange-500/60 text-orange-300 shadow-sm";
+                    } else if (t === 'post') {
+                        chip.className = "recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-emerald-500/25 border border-emerald-500/60 text-emerald-300 shadow-sm";
+                    } else {
+                        chip.className = "recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-white/20 border border-white/50 text-white shadow-sm";
+                    }
+                } else {
+                    chip.className = "recipe-timing-chip flex items-center justify-center gap-1 py-2 px-1 rounded-lg text-xs font-medium transition-all active:scale-95 bg-[#1c1c1e] text-white/50 hover:text-white border border-transparent";
+                }
+            });
+        }
+
+        function openAddForMeal(mealKey) {
+            pendingMealForAdd = mealKey || getSuggestedMealByTime();
+            openCategorySelector();
+        }
+
         // --- GESTIÓN DE MODALES DE REGISTRO ---
-        function openFoodModal(famKey = null) {
+        function openFoodModal(famKey = null, preselectedMeal = null, preselectedTiming = 'neutro') {
             document.getElementById('scannerSection').classList.add('hidden');
             document.getElementById('foodSelectionControls').classList.remove('hidden'); // Mostrar selects
             const dateInput = document.getElementById('foodDate');
             if (dateInput) dateInput.value = getActiveFilterDate();
             populateSelect(famKey);
+            const mealToSet = preselectedMeal || pendingMealForAdd || getSuggestedMealByTime();
+            setFoodModalMeal(mealToSet);
+            setFoodModalTiming(preselectedTiming || 'neutro');
             document.getElementById('foodModal').classList.remove('hidden');
         }
-        function openRecipeLogModal() {
+        function openRecipeLogModal(preselectedMeal = null, preselectedTiming = 'neutro') {
             const dateInput = document.getElementById('recipeDate');
             if (dateInput) dateInput.value = getActiveFilterDate();
+            const mealToSet = preselectedMeal || pendingMealForAdd || getSuggestedMealByTime();
+            setRecipeModalMeal(mealToSet);
+            setRecipeModalTiming(preselectedTiming || 'neutro');
             document.getElementById('recipeLogModal').classList.remove('hidden');
         }
 
@@ -4933,6 +5288,8 @@
                     id: Date.now() + Math.random(),
                     date: targetDateStr,
                     type: 'food',
+                    meal: pendingMealForAdd || getSuggestedMealByTime(),
+                    timing: isPostWod ? 'post' : 'neutro',
                     foodId: food.id,
                     foodName: food.name,
                     foodIcon: food.icon || '🔹',
@@ -7413,6 +7770,8 @@
                 id: Date.now(),
                 date: dateInput.value,
                 type: 'food',
+                meal: currentFoodModalMeal || pendingMealForAdd || 'general',
+                timing: currentFoodModalTiming || 'neutro',
                 foodId: food.id,
                 foodName: food.name,
                 foodIcon: food.icon || '🔹',
@@ -7455,6 +7814,8 @@
                 id: Date.now(),
                 date: dateInput.value,
                 type: 'recipe',
+                meal: currentRecipeModalMeal || pendingMealForAdd || 'general',
+                timing: currentRecipeModalTiming || 'neutro',
                 foodId: recipe.id,
                 foodName: recipe.name,
                 amount: amount,
@@ -7658,7 +8019,16 @@
 
                 // 2. Cargamos el historial, recetas y estado consumido del usuario (LocalStorage)
                 const historyData = localStorage.getItem('macroCalculatorData');
-                if (historyData) globalLog = JSON.parse(historyData);
+                if (historyData) {
+                    try {
+                        const parsedHistory = JSON.parse(historyData);
+                        if (Array.isArray(parsedHistory)) {
+                            globalLog = parsedHistory.map(i => ({ ...i, meal: i.meal || 'general', timing: i.timing || 'neutro' }));
+                        }
+                    } catch (e) {
+                        console.error("Error cargando historial:", e);
+                    }
+                }
                 loadConsumedIds();
 
                 const recipesData = localStorage.getItem('macroCalculatorRecipes');
@@ -7767,7 +8137,7 @@
             if (!globalLog.length && foodData.length <= 29 && recipeData.length === 0) return showToast("Sin datos para exportar.");
 
             const backupObject = {
-                version: 5,
+                version: 6,
                 timestamp: new Date().toISOString(),
                 history: globalLog,
                 foods: foodData,
@@ -7849,8 +8219,8 @@
                         if (confirm(`Backup encontrado.\n- ${d.history?.length || 0} registros\n- ${d.foods?.length || 0} alimentos\n- ${d.recipes?.length || 0} recetas\n¿Restaurar y actualizar formato?`)) {
 
                             // 1. RESTAURAR HISTORIAL
-                            if (d.history) {
-                                globalLog = d.history;
+                            if (d.history && Array.isArray(d.history)) {
+                                globalLog = d.history.map(i => ({ ...i, meal: i.meal || 'general', timing: i.timing || 'neutro' }));
                                 saveData(); // Guarda en localStorage
                             }
 
@@ -7948,10 +8318,112 @@
                 if (textAnalizar) textAnalizar.textContent = `Analizar (${count})`;
                 const textCopiar = document.getElementById('fabCopyText');
                 if (textCopiar) textCopiar.textContent = `Copiar (${count})`;
+                const textMover = document.getElementById('fabMoveText');
+                if (textMover) textMover.textContent = `Mover (${count})`;
+                const textTiming = document.getElementById('fabTimingText');
+                if (textTiming) textTiming.textContent = `Timing (${count})`;
             } else {
                 fab.classList.add('hidden');
                 fab.classList.remove('flex');
             }
+        }
+
+        // --- ACCIONES EN LOTE: MOVER A COMIDA ---
+        function openBatchMoveModal() {
+            if (!selectedIds || selectedIds.size === 0) {
+                showToast("⚠️ Selecciona al menos un alimento");
+                return;
+            }
+            const modal = document.getElementById('batchMoveModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeBatchMoveModal() {
+            const modal = document.getElementById('batchMoveModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function executeBatchMove(targetMeal) {
+            if (!selectedIds || selectedIds.size === 0) return;
+            let count = 0;
+            globalLog.forEach(item => {
+                if (selectedIds.has(item.id)) {
+                    item.meal = targetMeal;
+                    count++;
+                }
+            });
+            saveData();
+            closeBatchMoveModal();
+            selectedIds.clear();
+            updateFab();
+            applyFilter();
+            const mealDef = MEAL_DEFINITIONS.find(m => m.key === targetMeal);
+            showToast(`✅ ${count} alimento${count > 1 ? 's' : ''} movido${count > 1 ? 's' : ''} a ${mealDef ? mealDef.name : targetMeal}`);
+        }
+
+        // --- ACCIONES EN LOTE: ASIGNAR TIMING DEPORTIVO ---
+        function openBatchTimingModal() {
+            if (!selectedIds || selectedIds.size === 0) {
+                showToast("⚠️ Selecciona al menos un alimento");
+                return;
+            }
+            const modal = document.getElementById('batchTimingModal');
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeBatchTimingModal() {
+            const modal = document.getElementById('batchTimingModal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function executeBatchTiming(targetTiming) {
+            if (!selectedIds || selectedIds.size === 0) return;
+            let count = 0;
+            globalLog.forEach(item => {
+                if (selectedIds.has(item.id)) {
+                    item.timing = targetTiming || 'neutro';
+                    count++;
+                }
+            });
+            saveData();
+            closeBatchTimingModal();
+            selectedIds.clear();
+            updateFab();
+            applyFilter();
+            const timingLabels = {
+                'neutro': '⚪ Neutro',
+                'pre': '⚡ Pre-Entreno',
+                'intra': '🔥 Intra-Entreno',
+                'post': '💪 Post-Entreno'
+            };
+            showToast(`✅ ${count} alimento${count > 1 ? 's' : ''} asignado${count > 1 ? 's' : ''} a ${timingLabels[targetTiming] || targetTiming}`);
+        }
+
+        // --- ACCIÓN RÁPIDA POR BLOQUE DE COMIDA ---
+        function setMealBlockTiming(mealKey, targetTiming) {
+            if (!targetTiming) return;
+            const activeDate = getActiveFilterDate();
+            let count = 0;
+            globalLog.forEach(item => {
+                const itemMeal = item.meal || 'general';
+                if (itemMeal === mealKey && (!activeDate || item.date === activeDate)) {
+                    item.timing = targetTiming;
+                    count++;
+                }
+            });
+            if (count === 0) {
+                showToast("No hay alimentos en esta comida");
+                return;
+            }
+            saveData();
+            applyFilter();
+            const timingLabels = {
+                'neutro': '⚪ Neutro',
+                'pre': '⚡ Pre-Entreno',
+                'intra': '🔥 Intra-Entreno',
+                'post': '💪 Post-Entreno'
+            };
+            showToast(`✅ ${count} alimento${count > 1 ? 's' : ''} marcado${count > 1 ? 's' : ''} como ${timingLabels[targetTiming] || targetTiming}`);
         }
 
         // --- COPIAR SELECCIÓN A OTRA FECHA ---
@@ -8335,41 +8807,250 @@
             selectedIds.clear(); updateFab(); renderTable(f); calcTotals(f); updateYesterdayBalanceCard(); updateComparisonCharts(); updateIncompleteDayUI();
         }
         function renderTable(items) {
-            const tb = document.getElementById('foodTableBody'); tb.innerHTML = '';
-            if (!items.length) { tb.innerHTML = '<tr><td colspan="5" class="p-8 text-center text-white italic text-sm">Sin registros</td></tr>'; return; }
-            items.forEach(i => {
-                const ck = selectedIds.has(i.id) ? 'checked' : '';
-                const isConsumed = consumedIds.has(i.id);
-                const isRecipe = i.type === 'recipe';
-                const icon = isRecipe ? '📖 ' : (i.foodIcon || '🔹 ');
-                const displayName = i.foodName || i.name || 'Alimento';
-                const escapedName = displayName.replace(/'/g, "\\'");
-                const displayAmount = i.amount !== undefined ? i.amount : (i.qty || 0);
-                const displayUnit = i.unit || '';
-                const rowBg = isConsumed ? 'bg-emerald-950/40 border-l-4 border-emerald-500' : 'hover:bg-[#2c2c2e]';
-                const titleColor = isConsumed ? 'text-emerald-400 font-semibold' : 'text-white font-medium';
+            const tb = document.getElementById('foodTableBody');
+            if (!tb) return;
+            tb.innerHTML = '';
 
-                tb.innerHTML += `
-                <tr data-id="${i.id}" draggable="true" ondblclick="editLogItemAmount(${i.id})" class="group transition-all drag-row border-b border-[#2c2c2e] ${rowBg}">
-                    <td class="px-2 py-3 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
-                    <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
-                    <td class="px-4 py-3 swipe-cell cursor-pointer select-none" title="Doble toque para editar cantidad">
-                        <div class="${titleColor} flex items-center justify-between gap-1">
-                            <span class="flex items-center gap-1">${icon}${displayName}</span>
-                            <button type="button" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" class="text-xs opacity-60 hover:opacity-100 hover:scale-110 transition-all p-1 shrink-0" title="Ver consumo medio y consistencia">📊</button>
-                        </div>
-                        <div class="text-xs text-white/70">${i.date} &bull; ${displayAmount}${displayUnit}</div>
-                    </td>
-                    <td class="px-4 py-3 text-right font-medium text-white">${i.kcal}</td>
-                    <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
-                </tr>`;
-            });
+            // Detectar si el filtro abarca múltiples fechas distintas
+            const uniqueDates = [...new Set(items.map(i => i.date))];
+            const isMultiDate = uniqueDates.length > 1;
+
+            const renderMealBlock = (mealDef, mealItems, contextDate = null) => {
+                let mealKcal = 0, mealP = 0, mealC = 0, mealF = 0;
+                mealItems.forEach(i => {
+                    mealKcal += (i.kcal || 0);
+                    mealP += (i.p || 0);
+                    mealC += (i.c || 0);
+                    mealF += (i.f || 0);
+                });
+
+                let blockHtml = `
+                    <tr class="meal-header-row bg-[#252528] border-t-2 border-b border-[#3a3a3c]/80 select-none">
+                        <td colspan="5" class="px-3 py-2">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="flex items-center gap-2 min-w-0">
+                                    <span class="text-base shrink-0">${mealDef.icon}</span>
+                                    <span class="text-xs font-bold text-white uppercase tracking-wider truncate">${mealDef.name}</span>
+                                    <span class="text-[10px] text-white/50 font-mono shrink-0">(${mealItems.length})</span>
+                                </div>
+                                <div class="flex items-center gap-2 shrink-0">
+                                    <div class="hidden sm:flex items-center gap-1.5 text-[11px] font-mono bg-[#1c1c1e] px-2 py-0.5 rounded-md border border-white/10">
+                                        <span class="text-emerald-400 font-bold">P: ${Math.round(mealP)}g</span>
+                                        <span class="text-white/30">•</span>
+                                        <span class="text-amber-400 font-bold">C: ${Math.round(mealC)}g</span>
+                                        <span class="text-white/30">•</span>
+                                        <span class="text-red-400 font-bold">G: ${Math.round(mealF)}g</span>
+                                        <span class="text-white/30">•</span>
+                                        <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)} kcal</span>
+                                    </div>
+                                    <div class="sm:hidden flex items-center gap-1 text-[10px] font-mono bg-[#1c1c1e] px-1.5 py-0.5 rounded border border-white/10">
+                                        <span class="text-emerald-400 font-bold">P:${Math.round(mealP)}</span>
+                                        <span class="text-amber-400 font-bold">C:${Math.round(mealC)}</span>
+                                        <span class="text-red-400 font-bold">G:${Math.round(mealF)}</span>
+                                        <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)}k</span>
+                                    </div>
+                                    ${mealItems.length > 0 ? `
+                                    <select onchange="setMealBlockTiming('${mealDef.key}', this.value); this.selectedIndex = 0;" class="bg-[#1c1c1e] text-[10px] text-white/70 hover:text-white border border-[#3a3a3c] rounded-lg px-1.5 py-0.5 font-bold focus:outline-none focus:border-primary cursor-pointer" title="Asignar timing deportivo a todo este bloque">
+                                        <option value="" disabled selected>⚡ Timing</option>
+                                        <option value="neutro">⚪ Neutro</option>
+                                        <option value="pre">⚡ Pre</option>
+                                        <option value="intra">🔥 Intra</option>
+                                        <option value="post">💪 Post</option>
+                                    </select>
+                                    ` : ''}
+                                    <button type="button" onclick="openAddForMeal('${mealDef.key}')" class="px-2 py-0.5 rounded-lg bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 text-[10.5px] font-bold flex items-center gap-1 transition-all active:scale-95" title="Añadir a ${mealDef.name}">
+                                        <span>+ Añadir</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+
+                if (mealItems.length === 0) {
+                    blockHtml += `
+                        <tr data-meal-drop="${mealDef.key}" class="meal-empty-row border-b border-[#2c2c2e]/40">
+                            <td colspan="5" class="py-2.5 px-4 text-center text-white/30 text-xs italic">
+                                Sin alimentos registrados — Pulsa + Añadir
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    mealItems.forEach(i => {
+                        const ck = selectedIds.has(i.id) ? 'checked' : '';
+                        const isConsumed = consumedIds.has(i.id);
+                        const isRecipe = i.type === 'recipe';
+                        const icon = isRecipe ? '📖 ' : (i.foodIcon || '🔹 ');
+                        const displayName = i.foodName || i.name || 'Alimento';
+                        const escapedName = displayName.replace(/'/g, "\\'");
+                        const displayAmount = i.amount !== undefined ? i.amount : (i.qty || 0);
+                        const displayUnit = i.unit || '';
+                        const rowBg = isConsumed ? 'bg-emerald-950/40 border-l-4 border-emerald-500' : 'hover:bg-[#2c2c2e]';
+                        const titleColor = isConsumed ? 'text-emerald-400 font-semibold' : 'text-white font-medium';
+
+                        const itemTiming = i.timing || 'neutro';
+                        let timingBadgeHtml = '';
+                        if (itemTiming === 'pre') {
+                            timingBadgeHtml = `<span class="inline-flex items-center px-1.5 py-0.2 text-[9px] font-bold rounded bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0" title="Timing: Pre-Entreno">⚡ Pre</span>`;
+                        } else if (itemTiming === 'intra') {
+                            timingBadgeHtml = `<span class="inline-flex items-center px-1.5 py-0.2 text-[9px] font-bold rounded bg-orange-500/20 text-orange-300 border border-orange-500/40 shrink-0" title="Timing: Intra-Entreno">🔥 Intra</span>`;
+                        } else if (itemTiming === 'post') {
+                            timingBadgeHtml = `<span class="inline-flex items-center px-1.5 py-0.2 text-[9px] font-bold rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shrink-0" title="Timing: Post-Entreno">💪 Post</span>`;
+                        }
+
+                        blockHtml += `
+                        <tr data-id="${i.id}" draggable="true" ondblclick="editLogItemAmount(${i.id})" class="group transition-all drag-row border-b border-[#2c2c2e] ${rowBg}">
+                            <td class="px-2 py-3 text-center drag-handle cursor-grab active:cursor-grabbing text-white/40 hover:text-white font-bold select-none text-base touch-none" title="Arrastrar para reordenar">⋮⋮</td>
+                            <td class="px-4 py-3 text-center"><input type="checkbox" data-id="${i.id}" class="row-checkbox custom-checkbox rounded text-primary" onclick="toggleSelection(${i.id})" ${ck}></td>
+                            <td class="px-4 py-3 swipe-cell cursor-pointer select-none" title="Doble toque para editar cantidad o cambiar comida y timing">
+                                <div class="${titleColor} flex items-center justify-between gap-1">
+                                    <div class="flex items-center gap-1.5 min-w-0 flex-wrap">
+                                        <span class="truncate">${icon}${displayName}</span>
+                                        ${timingBadgeHtml}
+                                    </div>
+                                    <button type="button" onclick="event.stopPropagation(); openFoodStatsModal('${escapedName}')" class="text-xs opacity-60 hover:opacity-100 hover:scale-110 transition-all p-1 shrink-0" title="Ver consumo medio y consistencia">📊</button>
+                                </div>
+                                <div class="text-xs text-white/70">${i.date} &bull; ${displayAmount}${displayUnit}</div>
+                            </td>
+                            <td class="px-4 py-3 text-right font-medium text-white">${i.kcal}</td>
+                            <td class="px-4 py-3 text-center"><button onclick="deleteItem(${i.id})" class="text-white hover:text-red-500 transition-colors"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button></td>
+                        </tr>`;
+                    });
+                }
+                return blockHtml;
+            };
+
+            if (!isMultiDate) {
+                // Vista de 1 solo día (uso habitual del diario)
+                let html = '';
+                MEAL_DEFINITIONS.forEach(mDef => {
+                    const mealItems = items.filter(i => (i.meal || 'general') === mDef.key);
+                    html += renderMealBlock(mDef, mealItems);
+                });
+
+                // Si existen registros antiguos o sin comida asignada, mostrarlos en Registro General
+                const generalItems = items.filter(i => (i.meal || 'general') === 'general');
+                if (generalItems.length > 0) {
+                    const genDef = { key: 'general', name: 'Registro General', icon: '📦' };
+                    html += renderMealBlock(genDef, generalItems);
+                }
+                tb.innerHTML = html;
+            } else {
+                // Vista de rango de fechas múltiples
+                let html = '';
+                uniqueDates.forEach(d => {
+                    const dayItems = items.filter(i => i.date === d);
+                    html += `
+                        <tr class="bg-[#1c1c1e] border-t-4 border-b border-[#3a3a3c]">
+                            <td colspan="5" class="px-4 py-2 text-xs font-bold text-white uppercase tracking-wider flex items-center justify-between">
+                                <span>📅 ${d}</span>
+                                <span class="text-white/60 font-mono">${dayItems.length} registros</span>
+                            </td>
+                        </tr>
+                    `;
+                    MEAL_DEFINITIONS.forEach(mDef => {
+                        const mealItems = dayItems.filter(i => (i.meal || 'general') === mDef.key);
+                        if (mealItems.length > 0) {
+                            html += renderMealBlock(mDef, mealItems, d);
+                        }
+                    });
+                    const generalItems = dayItems.filter(i => (i.meal || 'general') === 'general');
+                    if (generalItems.length > 0) {
+                        const genDef = { key: 'general', name: 'Registro General', icon: '📦' };
+                        html += renderMealBlock(genDef, generalItems, d);
+                    }
+                });
+                tb.innerHTML = html;
+            }
         }
 
         let currentEditingItemId = null;
 
         function editLogItemAmount(id) {
             openEditAmountModal(id);
+        }
+
+        function updateEditAmountModalMealChips(activeMeal) {
+            const container = document.getElementById('editAmountMealChipsContainer');
+            const label = document.getElementById('editAmountCurrentMealLabel');
+            if (!container) return;
+            const chips = container.querySelectorAll('.edit-meal-chip');
+            chips.forEach(chip => {
+                const isSelected = chip.dataset.meal === activeMeal;
+                if (isSelected) {
+                    chip.className = "edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-primary text-white border border-primary/50 shadow-sm";
+                } else {
+                    chip.className = "edit-meal-chip flex flex-col items-center justify-center py-1.5 px-1 rounded-lg text-xs font-medium transition-all active:scale-95 bg-[#1c1c1e] text-white/60 hover:text-white border border-[#3a3a3c]";
+                }
+            });
+            if (label) {
+                const mealDef = MEAL_DEFINITIONS.find(m => m.key === activeMeal);
+                label.textContent = mealDef ? `${mealDef.icon} ${mealDef.name}` : (activeMeal === 'general' ? '📦 General' : activeMeal);
+            }
+        }
+
+        function onEditAmountChangeMeal(newMeal) {
+            if (!currentEditingItemId) return;
+            const item = globalLog.find(l => String(l.id) === String(currentEditingItemId));
+            if (!item) return;
+            if (item.meal === newMeal) return;
+
+            item.meal = newMeal;
+            saveData();
+            applyFilter();
+            updateEditAmountModalMealChips(newMeal);
+            const mealDef = MEAL_DEFINITIONS.find(m => m.key === newMeal);
+            showToast(`Cambiado a ${mealDef ? mealDef.name : newMeal}`);
+        }
+
+        function updateEditAmountModalTimingChips(activeTiming) {
+            const container = document.getElementById('editAmountTimingChipsContainer');
+            const label = document.getElementById('editAmountCurrentTimingLabel');
+            if (!container) return;
+            const chips = container.querySelectorAll('.edit-timing-chip');
+            chips.forEach(chip => {
+                const t = chip.dataset.timing;
+                const isSelected = (t === (activeTiming || 'neutro'));
+                if (isSelected) {
+                    if (t === 'pre') {
+                        chip.className = "edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-amber-500/25 border border-amber-500/60 text-amber-300 shadow-sm";
+                    } else if (t === 'intra') {
+                        chip.className = "edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-orange-500/25 border border-orange-500/60 text-orange-300 shadow-sm";
+                    } else if (t === 'post') {
+                        chip.className = "edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-emerald-500/25 border border-emerald-500/60 text-emerald-300 shadow-sm";
+                    } else {
+                        chip.className = "edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-bold transition-all active:scale-95 bg-white/20 border border-white/50 text-white shadow-sm";
+                    }
+                } else {
+                    chip.className = "edit-timing-chip flex items-center justify-center gap-1 py-1.5 px-1 rounded-lg text-xs font-medium transition-all active:scale-95 bg-[#1c1c1e] text-white/50 hover:text-white border border-[#3a3a3c]";
+                }
+            });
+            if (label) {
+                const timingLabels = {
+                    'neutro': '⚪ Neutro',
+                    'pre': '⚡ Pre-Entreno',
+                    'intra': '🔥 Intra-Entreno',
+                    'post': '💪 Post-Entreno'
+                };
+                label.textContent = timingLabels[activeTiming] || '⚪ Neutro';
+            }
+        }
+
+        function onEditAmountChangeTiming(newTiming) {
+            if (!currentEditingItemId) return;
+            const item = globalLog.find(l => String(l.id) === String(currentEditingItemId));
+            if (!item) return;
+            item.timing = newTiming || 'neutro';
+            saveData();
+            applyFilter();
+            updateEditAmountModalTimingChips(item.timing);
+            const timingLabels = {
+                'neutro': '⚪ Neutro',
+                'pre': '⚡ Pre-Entreno',
+                'intra': '🔥 Intra-Entreno',
+                'post': '💪 Post-Entreno'
+            };
+            showToast(`Timing cambiado a ${timingLabels[item.timing] || item.timing}`);
         }
 
         function openEditAmountModal(id) {
@@ -8409,6 +9090,9 @@
 
             slider.value = currentAmt;
             if (displayVal) displayVal.textContent = `${currentAmt} ${unit}`;
+
+            updateEditAmountModalMealChips(item.meal || 'general');
+            updateEditAmountModalTimingChips(item.timing || 'neutro');
 
             modal.classList.remove('hidden');
             updateEditAmountModalCard();
@@ -9019,6 +9703,14 @@
             const toIdx = currentFilteredLog.findIndex(item => String(item.id) === String(targetId));
             if (fromIdx === -1 || toIdx === -1) return;
 
+            const draggedItem = currentFilteredLog[fromIdx];
+            const targetItem = currentFilteredLog[toIdx];
+
+            // Reasignar comida si se arrastra a otra sección
+            if (draggedItem && targetItem && targetItem.meal && draggedItem.meal !== targetItem.meal) {
+                draggedItem.meal = targetItem.meal;
+            }
+
             // 1. Mover exactamente en la lista visible que el usuario está viendo
             const [movedItem] = currentFilteredLog.splice(fromIdx, 1);
             currentFilteredLog.splice(toIdx, 0, movedItem);
@@ -9031,6 +9723,18 @@
             saveData();
             applyFilter();
             if (typeof showToast === 'function') showToast('📌 Orden del historial actualizado');
+        }
+
+        function moveGlobalLogItemToMeal(draggedId, targetMeal) {
+            if (!draggedId || !targetMeal) return;
+            const item = globalLog.find(i => String(i.id) === String(draggedId));
+            if (!item || item.meal === targetMeal) return;
+
+            item.meal = targetMeal;
+            saveData();
+            applyFilter();
+            const mealDef = MEAL_DEFINITIONS.find(m => m.key === targetMeal);
+            if (typeof showToast === 'function') showToast(`📌 Movido a ${mealDef ? mealDef.name : targetMeal}`);
         }
 
         function initTableDragAndDrop() {
@@ -9077,7 +9781,12 @@
                 tableBody.querySelectorAll('tr').forEach(r => r.classList.remove('border-t-2', 'border-primary'));
                 if (targetRow && draggedId) {
                     const targetId = targetRow.dataset.id;
-                    moveGlobalLogItem(draggedId, targetId);
+                    const dropMeal = targetRow.dataset.mealDrop;
+                    if (targetId) {
+                        moveGlobalLogItem(draggedId, targetId);
+                    } else if (dropMeal) {
+                        moveGlobalLogItemToMeal(draggedId, dropMeal);
+                    }
                 }
             });
 
@@ -9193,7 +9902,12 @@
                         const targetRow = targetElem.closest('tr');
                         if (targetRow && targetRow !== activeTouchRow && tableBody.contains(targetRow)) {
                             const targetId = targetRow.dataset.id;
-                            moveGlobalLogItem(activeTouchId, targetId);
+                            const dropMeal = targetRow.dataset.mealDrop;
+                            if (targetId) {
+                                moveGlobalLogItem(activeTouchId, targetId);
+                            } else if (dropMeal) {
+                                moveGlobalLogItemToMeal(activeTouchId, dropMeal);
+                            }
                         }
                     }
                 }
