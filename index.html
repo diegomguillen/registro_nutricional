@@ -641,11 +641,10 @@
                         <canvas id="chartNutriImpact"></canvas>
                     </div>
 
-                    <!-- Diagnóstico / Semáforo de las 4 variables directas -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 pt-2 border-t border-[#3a3a3c]/60">
+                    <!-- Diagnóstico / Semáforo de las 3 variables directas -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-[#3a3a3c]/60">
                         <div id="badgeProtFFM" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Cumplimiento Proteico Medio 7D"></div>
                         <div id="badgeCarbWater" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Repleción de Carbohidratos N-1"></div>
-                        <div id="badgeDeficitFFM" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Déficit Calórico Real Medio 7D"></div>
                         <div id="badgeRecompMatrix" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Partición de Recomposición (% Grasa Perdida)"></div>
                     </div>
                 </div>
@@ -1162,7 +1161,7 @@
                 </div>
             </div>
             <div class="text-center">
-                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.9.4</span></p>
+                <p class="text-[10px] text-white">Versión del sistema: <span id="appVersion">v2.9.7</span></p>
             </div>
         </div>
 
@@ -3824,7 +3823,13 @@
 
             if (!body || !modal) return;
 
-            const sortedLogs = [...bodyCompLog].sort((a, b) => new Date(a.date) - new Date(b.date));
+            const now = new Date();
+            const todayStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+
+            // Excluir el día actual en curso: los cálculos han de ser estrictamente hasta hoy - 1
+            const sortedLogs = [...bodyCompLog]
+                .filter(l => l.date < todayStr)
+                .sort((a, b) => new Date(a.date) - new Date(b.date));
 
             // Calcular masa grasa EMA para la serie
             const alphaFat = 0.3;
@@ -3852,8 +3857,8 @@
                     excludedDaysCount++;
                     return;
                 }
-                let dayLogs = globalLog.filter(i => i.date === prevDate);
-                if (!dayLogs.length) dayLogs = globalLog.filter(i => i.date === l.date);
+                let dayLogs = globalLog.filter(i => i.date === prevDate && i.date < todayStr);
+                if (!dayLogs.length) dayLogs = globalLog.filter(i => i.date === l.date && i.date < todayStr);
                 if (!dayLogs.length) {
                     excludedDaysCount++;
                     return;
@@ -3956,7 +3961,7 @@
                 </div>
 
                 <p class="text-[10px] text-white/50 leading-tight">
-                    * Basado en la 1ª Ley de la Termodinámica (1 kg grasa = 7,700 kcal). Excluye automáticamente todos los días marcados como incompletos.
+                    * Basado en la 1ª Ley de la Termodinámica (1 kg grasa = 7,700 kcal). Excluye automáticamente el día actual en curso (cálculo hasta hoy - 1) y todos los días marcados como incompletos.
                 </p>
             `;
 
@@ -4029,7 +4034,7 @@
                 title: "Impacto Nutricional & Recomposición (Métricas Directas)",
                 subtitle: "Semáforo fisiológico de cumplimiento de objetivos y partición magra",
                 purpose: "Evalúa de forma directa y transparente (sin distorsiones estadísticas) el cumplimiento de tus objetivos nutricionales y la calidad real de tu recomposición corporal.",
-                howTo: "📊 GUÍA DE LAS 4 MÉTRICAS DIRECTAS:\n\n" +
+                howTo: "📊 GUÍA DE LAS 3 MÉTRICAS DIRECTAS:\n\n" +
                        "🥩 PROTEÍNA MEDIA (7 DÍAS):\n" +
                        "• Mide: % de cumplimiento de tu objetivo proteico diario promedio en la última semana.\n" +
                        "• 🟢 Verde (≥ 90%): Proteína Óptima. Blindaje muscular y síntesis proteica garantizados.\n" +
@@ -4040,11 +4045,6 @@
                        "• 🟢 Verde (75% - 115%): Repleción Óptima. Depósitos de glucógeno cargados para rendir.\n" +
                        "• 🟡 Amarillo (50% - 74% o 116% - 130%): Carga Moderada / Elevada.\n" +
                        "• 🔴 Rojo (< 50% o > 130%): Vaciado Glucídico Severo o Superávit Excesivo.\n\n" +
-                       "🔥 DÉFICIT REAL MEDIO (7 DÍAS):\n" +
-                       "• Mide: % de cumplimiento de tu déficit calórico objetivo diario sostenido en 7 días.\n" +
-                       "• 🟢 Verde (80% - 120%): Déficit en Diana. Quema de grasa a ritmo óptimo y seguro.\n" +
-                       "• 🟡 Amarillo (50% - 79% o 121% - 135%): Déficit Ligero o Intenso.\n" +
-                       "• 🔴 Rojo (< 50% o > 135%): Sin Apenas Déficit o Déficit Demasiado Agresivo.\n\n" +
                        "⚖️ RECOMPOSICIÓN TISULAR (Partición Magra):\n" +
                        "• Mide: % del tejido perdido en el periodo que corresponde a Masa Grasa pura.\n" +
                        "• 🟢 Verde (≥ 80% Grasa): Definición Limpia. Casi todo lo perdido es grasa pura, manteniendo el músculo intacto.\n" +
@@ -4052,7 +4052,7 @@
                        "• 🔴 Rojo (< 65% Grasa): Pérdida Muscular Excesiva. El déficit es agresivo o falta proteína.",
                 conclusiones: "✔ REGLA DE ÉXITO:\n" +
                               "• El 100% de la barra representa el punto óptimo de cada métrica (línea vertical verde a 100%).\n" +
-                              "• Mantener las 4 barras en Verde o Amarillo garantiza que estás quemando grasa de forma sostenida con tu masa muscular 100% protegida."
+                              "• Mantener las 3 barras en Verde o Amarillo garantiza que tus macronutrientes cubren las demandas biológicas y que tu recomposición conserva el músculo intacto."
             },
             protFFM: {
                 icon: "🥩",
@@ -5346,15 +5346,29 @@
 
 
 
+            // Fecha de hoy en formato YYYY-MM-DD (hora local)
+            const nowLocal = new Date();
+            const todayStrLocal = `${nowLocal.getFullYear()}-${String(nowLocal.getMonth() + 1).padStart(2, '0')}-${String(nowLocal.getDate()).padStart(2, '0')}`;
+
+            // Encontrar el último índice de registro cerrado estrictamente anterior a hoy (hasta hoy - 1)
+            let endCompletedIdx = -1;
+            for (let i = sortedLogs.length - 1; i >= 0; i--) {
+                if (sortedLogs[i].date < todayStrLocal) {
+                    endCompletedIdx = i;
+                    break;
+                }
+            }
+
             let realDailyFatGrams = 0;
             let realDailyKcalChange = 0;
 
             // Actualizar resumen de variaciones netas (Δ) en la primera tarjeta (5 compartimentos)
-            if (sortedLogs.length >= 2) {
-                const diffWeight = weightEmaData[weightEmaData.length - 1] - weightEmaData[0];
-                const diffFat = fatKgEmaData[fatKgEmaData.length - 1] - fatKgEmaData[0];
-                const diffWater = actEmaData[actEmaData.length - 1] - actEmaData[0];
-                const diffSmm = smmSecaEmaData[smmSecaEmaData.length - 1] - smmSecaEmaData[0];
+            // Sólo se calculan sobre días completos finalizados (hasta hoy - 1)
+            if (endCompletedIdx >= 1) {
+                const diffWeight = weightEmaData[endCompletedIdx] - weightEmaData[0];
+                const diffFat = fatKgEmaData[endCompletedIdx] - fatKgEmaData[0];
+                const diffWater = actEmaData[endCompletedIdx] - actEmaData[0];
+                const diffSmm = smmSecaEmaData[endCompletedIdx] - smmSecaEmaData[0];
                 const diffGlycogen = diffWeight - (diffFat + diffWater + diffSmm);
 
                 const fmtDelta = (v, isMuscle = false) => {
@@ -5364,9 +5378,9 @@
                     return (v > 0 ? `+${v.toFixed(2)}` : `${v.toFixed(2)}`) + ' kg';
                 };
 
-                // Días transcurridos entre la primera y última medición del periodo visible
+                // Días transcurridos entre la primera y última medición cerrada del periodo visible (hasta hoy - 1)
                 const firstDate = new Date(sortedLogs[0].date);
-                const lastDate = new Date(sortedLogs[sortedLogs.length - 1].date);
+                const lastDate = new Date(sortedLogs[endCompletedIdx].date);
                 const elapsedDays = Math.max(1, Math.round((lastDate - firstDate) / (1000 * 60 * 60 * 24)));
 
                 const fmtRate = (vKg) => {
@@ -5412,7 +5426,7 @@
                 const txt = document.getElementById('realDeficitKcalText');
                 const bar = document.getElementById('realDeficitProgressBar');
 
-                if (sortedLogs.length < 2) {
+                if (endCompletedIdx < 1) {
                     if (lbl) lbl.textContent = "Balance Calórico Deducido";
                     if (sub) sub.textContent = "(Esperando mediciones)";
                     if (txt) { txt.textContent = "-"; txt.className = "font-mono font-bold text-white/40 text-xs"; }
@@ -5451,10 +5465,10 @@
                 }
             }
 
-            // Actualizar Micro-barra de Fiabilidad / Nivel de Confianza según número de mediciones en la ventana
+            // Actualizar Micro-barra de Fiabilidad / Nivel de Confianza según número de mediciones en la ventana cerrada (hasta hoy - 1)
             const confEl = document.getElementById('card1ConfidenceWrapper');
             if (confEl) {
-                const n = sortedLogs.length;
+                const n = endCompletedIdx >= 0 ? (endCompletedIdx + 1) : 0;
                 let confPct = 0;
                 let confLabel = "";
                 let confColor = "";
@@ -5623,32 +5637,30 @@
                 const targetCarb = Math.round(targets.c || 200);
                 const targetDef = Math.abs(parseFloat(userGarmin.deficitKcal)) || calculateMaxSafeDeficit(targets) || 400;
 
-                // 1. Proteína Media 7D
-                const validProt = prot7dData.filter(v => v !== null && !isNaN(v));
-                const currentAvgProt = validProt.length ? validProt[validProt.length - 1] : 0;
+                const lastClosedIdx = endCompletedIdx >= 0 ? endCompletedIdx : sortedLogs.length - 1;
+
+                // 1. Proteína Media 7D (evaluada hasta el último día cerrado, hoy - 1)
+                const currentAvgProt = (lastClosedIdx >= 0 && prot7dData[lastClosedIdx] !== null && !isNaN(prot7dData[lastClosedIdx]))
+                    ? prot7dData[lastClosedIdx]
+                    : (prot7dData.filter((v, idx) => idx <= lastClosedIdx && v !== null && !isNaN(v)).pop() || 0);
                 const protPct = targetProt > 0 ? Math.round((currentAvgProt / targetProt) * 100) : 100;
 
-                // 2. Carbohidratos N-1 (24h)
-                const validCarb = carbEatenData.filter(v => v !== null && !isNaN(v));
-                const currentCarb = validCarb.length ? validCarb[validCarb.length - 1] : 0;
+                // 2. Carbohidratos N-1 (24h) (evaluada hasta el último día cerrado, hoy - 1)
+                const currentCarb = (lastClosedIdx >= 0 && carbEatenData[lastClosedIdx] !== null && !isNaN(carbEatenData[lastClosedIdx]))
+                    ? carbEatenData[lastClosedIdx]
+                    : (carbEatenData.filter((v, idx) => idx <= lastClosedIdx && v !== null && !isNaN(v)).pop() || 0);
                 const carbPct = targetCarb > 0 ? Math.round((currentCarb / targetCarb) * 100) : 100;
 
-                // 3. Déficit Real Medio 7D
-                const validDef = realDeficit7dData.filter(v => v !== null && !isNaN(v));
-                const currentAvgDef = validDef.length ? validDef[validDef.length - 1] : 0;
-                const realDefVal = Math.max(0, -currentAvgDef);
-                const defPct = targetDef > 0 ? Math.round((realDefVal / targetDef) * 100) : 100;
-
-                // 4. Partición de Recomposición (% Grasa Perdida)
+                // 3. Partición de Recomposición (% Grasa Perdida hasta hoy - 1)
                 let recompSharePct = 100;
                 let recompDiagnosis = "Definición Limpia";
                 let recompColorClass = "text-emerald-400";
                 let recompDotClass = "bg-emerald-400";
                 let recompBarColor = 'rgba(48, 209, 88, 0.85)';
 
-                const diffW = (weightEmaData.length >= 2) ? (weightEmaData[weightEmaData.length - 1] - weightEmaData[0]) : 0;
-                const diffF = (fatKgEmaData.length >= 2) ? (fatKgEmaData[fatKgEmaData.length - 1] - fatKgEmaData[0]) : 0;
-                const diffS = (smmSecaEmaData.length >= 2) ? (smmSecaEmaData[smmSecaEmaData.length - 1] - smmSecaEmaData[0]) : 0;
+                const diffW = (endCompletedIdx >= 1) ? (weightEmaData[endCompletedIdx] - weightEmaData[0]) : 0;
+                const diffF = (endCompletedIdx >= 1) ? (fatKgEmaData[endCompletedIdx] - fatKgEmaData[0]) : 0;
+                const diffS = (endCompletedIdx >= 1) ? (smmSecaEmaData[endCompletedIdx] - smmSecaEmaData[0]) : 0;
 
                 if (diffW <= -0.15) { // Fase de pérdida de peso
                     if (diffF < 0 && diffS >= -0.05) {
@@ -5777,28 +5789,6 @@
                     carbBarColor = 'rgba(255, 69, 58, 0.85)';
                 }
 
-                // Diagnóstico y Colores de Déficit (7D)
-                let defLabel = "Déficit en Diana";
-                let defColorClass = "text-emerald-400";
-                let defDotClass = "bg-emerald-400";
-                let defBarColor = 'rgba(48, 209, 88, 0.85)';
-                if (defPct >= 80 && defPct <= 120) {
-                    defLabel = "Déficit en Diana";
-                    defColorClass = "text-emerald-400";
-                    defDotClass = "bg-emerald-400";
-                    defBarColor = 'rgba(48, 209, 88, 0.85)';
-                } else if ((defPct >= 50 && defPct < 80) || (defPct > 120 && defPct <= 135)) {
-                    defLabel = defPct < 80 ? "Déficit Ligero" : "Déficit Fuerte";
-                    defColorClass = "text-yellow-400";
-                    defDotClass = "bg-yellow-400";
-                    defBarColor = 'rgba(255, 214, 10, 0.85)';
-                } else {
-                    defLabel = defPct < 50 ? "Sin Apenas Déficit" : "Déficit Catabólico";
-                    defColorClass = "text-red-400";
-                    defDotClass = "bg-red-500";
-                    defBarColor = 'rgba(255, 69, 58, 0.85)';
-                }
-
                 // Actualizar Badges Inferiores con información directa en tiempo real
                 const bP = document.getElementById('badgeProtFFM');
                 if (bP) {
@@ -5812,37 +5802,30 @@
                     bC.title = `Ingesta de ayer: ${currentCarb}g frente a objetivo de ${targetCarb}g (${carbPct}%)`;
                 }
 
-                const bD = document.getElementById('badgeDeficitFFM');
-                if (bD) {
-                    bD.innerHTML = `<span class="w-2 h-2 rounded-full ${defDotClass} inline-block animate-pulse"></span><span class="${defColorClass} text-[10px] font-semibold">Déficit 7D: -${realDefVal} kcal (${defPct}%) · ${defLabel}</span>`;
-                    bD.title = `Déficit medio 7D: -${realDefVal} kcal/día frente a objetivo de ${targetDef} kcal/día (${defPct}%)`;
-                }
-
                 const bR = document.getElementById('badgeRecompMatrix');
                 if (bR) {
                     bR.innerHTML = `<span class="w-2 h-2 rounded-full ${recompDotClass} inline-block animate-pulse"></span><span class="${recompColorClass} text-[10px] font-semibold">Recomp: ${recompSharePct}% Grasa · ${recompDiagnosis}</span>`;
                     bR.title = `Calidad de recomposición tisular: el ${recompSharePct}% del cambio tisular es grasa`;
                 }
 
-                const maxX = Math.max(125, Math.ceil((Math.max(protPct, carbPct, defPct, recompSharePct) + 10) / 10) * 10);
+                const maxX = Math.max(125, Math.ceil((Math.max(protPct, carbPct, recompSharePct) + 10) / 10) * 10);
 
                 chartInstanceNutriImpact = new Chart(ctxNutri, {
                     type: 'bar',
                     data: {
-                        labels: ['🥩 Proteína (7D)', '🍚 Carbohidratos N-1', '🔥 Déficit Real (7D)', '⚖️ Recomposición'],
+                        labels: ['🥩 Proteína (7D)', '🍚 Carbohidratos N-1', '⚖️ Recomposición'],
                         datasets: [
                             {
                                 label: '% Cumplimiento / Calidad',
-                                data: [protPct, carbPct, defPct, recompSharePct],
+                                data: [protPct, carbPct, recompSharePct],
                                 backgroundColor: [
                                     protBarColor,
                                     carbBarColor,
-                                    defBarColor,
                                     recompBarColor
                                 ],
                                 borderRadius: 6,
                                 borderWidth: 0,
-                                barThickness: 20
+                                barThickness: 22
                             }
                         ]
                     },
