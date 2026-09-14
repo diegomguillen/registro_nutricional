@@ -1214,39 +1214,41 @@
         </button>
     </nav>
 
-    <div id="analyzeFab" class="fixed bottom-20 right-4 sm:right-6 hidden z-50 animate-bounce-in items-center gap-2">
-        <button onclick="openBatchMoveModal()"
-            class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-3.5 rounded-full shadow-2xl flex items-center gap-1.5 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
-            title="Mover selección a otra comida">
-            <span class="text-sm">🍽️</span>
-            <span id="fabMoveText" class="text-xs font-bold uppercase tracking-wider">Mover</span>
-        </button>
-        <button onclick="openBatchTimingModal()"
-            class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-3.5 rounded-full shadow-2xl flex items-center gap-1.5 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
-            title="Asignar timing deportivo a la selección">
-            <span class="text-sm">⚡</span>
-            <span id="fabTimingText" class="text-xs font-bold uppercase tracking-wider">Timing</span>
-        </button>
-        <button onclick="openCopySelectionModal()"
-            class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-3 px-4 rounded-full shadow-2xl flex items-center gap-2 transition-all active:scale-95 border border-white/20 backdrop-blur-md"
-            title="Copiar selección a otra fecha">
-            <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-            </svg>
-            <span id="fabCopyText" class="text-xs font-bold uppercase tracking-wider">Copiar</span>
-        </button>
-        <button onclick="analyzeSelection()"
-            class="bg-primary hover:bg-primary-light text-white font-medium py-3 px-4 rounded-full shadow-2xl flex items-center gap-2 transition-all active:scale-95 border border-white/20"
-            title="Analizar selección">
-            <svg class="w-4 h-4 shadow-sm" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
-            </svg>
-            <span id="fabText" class="text-xs font-bold uppercase tracking-wider">Analizar</span>
-        </button>
+    <div id="analyzeFab" class="fixed bottom-20 inset-x-0 sm:inset-x-auto sm:right-6 hidden z-50 animate-bounce-in items-center justify-center sm:justify-end px-3 pointer-events-none">
+        <div class="flex items-center gap-1 sm:gap-2 pointer-events-auto">
+            <button onclick="openBatchMoveModal()"
+                class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-2 px-2 sm:py-2.5 sm:px-3.5 rounded-full shadow-2xl flex items-center gap-1 transition-all active:scale-95 border border-white/20 backdrop-blur-md shrink-0"
+                title="Mover selección a otra comida">
+                <span class="text-xs">🍽️</span>
+                <span id="fabMoveText" class="text-[10px] sm:text-xs font-bold uppercase sm:tracking-wider">Mover</span>
+            </button>
+            <button onclick="openBatchTimingModal()"
+                class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-2 px-2 sm:py-2.5 sm:px-3.5 rounded-full shadow-2xl flex items-center gap-1 transition-all active:scale-95 border border-white/20 backdrop-blur-md shrink-0"
+                title="Asignar timing deportivo a la selección">
+                <span class="text-xs">⚡</span>
+                <span id="fabTimingText" class="text-[10px] sm:text-xs font-bold uppercase sm:tracking-wider">Timing</span>
+            </button>
+            <button onclick="openCopySelectionModal()"
+                class="bg-[#2c2c2e]/95 hover:bg-[#3a3a3c] text-white font-medium py-2 px-2 sm:py-2.5 sm:px-3.5 rounded-full shadow-2xl flex items-center gap-1 transition-all active:scale-95 border border-white/20 backdrop-blur-md shrink-0"
+                title="Copiar selección a otra fecha">
+                <svg class="w-3.5 h-3.5 text-emerald-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                </svg>
+                <span id="fabCopyText" class="text-[10px] sm:text-xs font-bold uppercase sm:tracking-wider">Copiar</span>
+            </button>
+            <button onclick="analyzeSelection()"
+                class="bg-primary hover:bg-primary-light text-white font-medium py-2 px-2.5 sm:py-2.5 sm:px-4 rounded-full shadow-2xl flex items-center gap-1 sm:gap-1.5 transition-all active:scale-95 border border-white/20 shrink-0"
+                title="Analizar selección">
+                <svg class="w-3.5 h-3.5 shadow-sm shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
+                </svg>
+                <span id="fabText" class="text-[10px] sm:text-xs font-bold uppercase sm:tracking-wider">Analizar</span>
+            </button>
+        </div>
     </div>
 
     <!-- Modal Mover Selección en Lote a Comida -->
@@ -8347,11 +8349,11 @@
                 const textAnalizar = document.getElementById('fabText');
                 if (textAnalizar) textAnalizar.textContent = `Analizar (${count})`;
                 const textCopiar = document.getElementById('fabCopyText');
-                if (textCopiar) textCopiar.textContent = `Copiar (${count})`;
+                if (textCopiar) textCopiar.textContent = `Copiar`;
                 const textMover = document.getElementById('fabMoveText');
-                if (textMover) textMover.textContent = `Mover (${count})`;
+                if (textMover) textMover.textContent = `Mover`;
                 const textTiming = document.getElementById('fabTimingText');
-                if (textTiming) textTiming.textContent = `Timing (${count})`;
+                if (textTiming) textTiming.textContent = `Timing`;
             } else {
                 fab.classList.add('hidden');
                 fab.classList.remove('flex');
@@ -8889,7 +8891,7 @@
                                         <span class="text-emerald-400 font-bold">P:${Math.round(mealP)}</span>
                                         <span class="text-amber-400 font-bold">C:${Math.round(mealC)}</span>
                                         <span class="text-red-400 font-bold">G:${Math.round(mealF)}</span>
-                                        <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)}k</span>
+                                        <span class="text-[#0a84ff] font-bold">${Math.round(mealKcal)} kcal</span>
                                     </div>
                                 </div>
                                 <div class="flex items-center justify-end gap-1.5 shrink-0">
