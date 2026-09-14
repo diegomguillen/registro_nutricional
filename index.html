@@ -1196,7 +1196,8 @@
             <span class="text-[10px] font-medium uppercase">Añadir</span>
         </button>
         <button onclick="switchView('backup')"
-            class="nav-btn flex flex-col items-center justify-center w-full h-full text-white" id="btn-backup">
+            class="nav-btn flex flex-col items-center justify-center w-full h-full text-white select-none" id="btn-backup"
+            title="Datos (Mantén pulsado para Exportar todo)">
             <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4">
@@ -7185,8 +7186,76 @@
             }
         }
         const URL_LIMIT = 2048; // Límite seguro estándar para navegadores y clientes móviles
+
+        // --- ACCESO RÁPIDO: MANTENER PULSADO 'DATOS' EN TABBAR PARA EXPORTAR TODO ---
+        function initBackupLongPress() {
+            const btn = document.getElementById('btn-backup');
+            if (!btn) return;
+
+            let longPressTimer = null;
+            let isLongPressTriggered = false;
+            let startX = 0;
+            let startY = 0;
+
+            btn.style.userSelect = 'none';
+            btn.style.webkitUserSelect = 'none';
+            btn.style.webkitTouchCallout = 'none';
+
+            btn.addEventListener('contextmenu', (e) => {
+                if (isLongPressTriggered) {
+                    e.preventDefault();
+                }
+            });
+
+            btn.addEventListener('pointerdown', (e) => {
+                if (e.button !== undefined && e.button !== 0) return;
+                isLongPressTriggered = false;
+                startX = e.clientX;
+                startY = e.clientY;
+
+                btn.classList.add('scale-90', 'opacity-80', 'transition-transform');
+
+                clearTimeout(longPressTimer);
+                longPressTimer = setTimeout(() => {
+                    isLongPressTriggered = true;
+                    btn.classList.remove('scale-90', 'opacity-80');
+
+                    if (navigator.vibrate) {
+                        try { navigator.vibrate([40, 30, 40]); } catch (_) {}
+                    }
+                    showToast("📦 Exportando copia de seguridad...");
+                    exportData();
+                }, 500);
+            });
+
+            const cancelPress = () => {
+                clearTimeout(longPressTimer);
+                btn.classList.remove('scale-90', 'opacity-80');
+            };
+
+            btn.addEventListener('pointerup', cancelPress);
+            btn.addEventListener('pointerleave', cancelPress);
+            btn.addEventListener('pointercancel', cancelPress);
+
+            btn.addEventListener('pointermove', (e) => {
+                if (Math.abs(e.clientX - startX) > 10 || Math.abs(e.clientY - startY) > 10) {
+                    cancelPress();
+                }
+            });
+
+            btn.addEventListener('click', (e) => {
+                if (isLongPressTriggered) {
+                    e.preventDefault();
+                    e.stopImmediatePropagation();
+                    isLongPressTriggered = false;
+                    return false;
+                }
+            }, true);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             initApp();
+            initBackupLongPress();
         });
 
         function updatePreview() {
@@ -8194,7 +8263,6 @@
                         title: 'Backup NutriApp',
                         text: 'Copia de seguridad NutriApp'
                     });
-                    showToast("Copia compartida con éxito");
                     return;
                 } catch (e) {
                     if (e.name === 'AbortError') return;
