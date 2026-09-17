@@ -702,10 +702,10 @@
   {
     "id": 38,
     "name": "Lata 56gr atún natural",
-    "p": 23,
+    "p": 12.88,
     "c": 0,
-    "f": 0.7,
-    "kcal": 98.3,
+    "f": 0.45,
+    "kcal": 55.6,
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
@@ -714,18 +714,18 @@
     "qC": 1,
     "qF": 3,
     "aa": {
-      "leu": 1.86,
-      "bcaa": 4.02,
-      "eaa": 9.66
+      "leu": 1.04,
+      "bcaa": 2.25,
+      "eaa": 5.41
     }
   },
   {
     "id": 39,
     "name": "Lata 52gr atún aove",
-    "p": 22,
+    "p": 11.44,
     "c": 0,
-    "f": 12,
-    "kcal": 196,
+    "f": 6.24,
+    "kcal": 101.92,
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
@@ -734,18 +734,18 @@
     "qC": 1,
     "qF": 3,
     "aa": {
-      "leu": 1.78,
-      "bcaa": 3.85,
-      "eaa": 9.24
+      "leu": 0.93,
+      "bcaa": 2,
+      "eaa": 4.8
     }
   },
   {
     "id": 40,
     "name": "Lata 65gr caballa al natural",
-    "p": 23,
+    "p": 14.95,
     "c": 0,
-    "f": 3.3,
-    "kcal": 121.7,
+    "f": 2.14,
+    "kcal": 79.1,
     "unit": "u",
     "fam": "PROTEIN",
     "sub": "FISH_BLUE",
@@ -754,9 +754,9 @@
     "qC": 1,
     "qF": 3,
     "aa": {
-      "leu": 1.86,
-      "bcaa": 4.02,
-      "eaa": 9.66
+      "leu": 1.21,
+      "bcaa": 2.61,
+      "eaa": 6.26
     }
   },
   {
