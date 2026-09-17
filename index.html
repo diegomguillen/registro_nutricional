@@ -628,6 +628,38 @@
                     </div>
                 </div>
 
+                <!-- Tarjeta: Diferencial Semanal de Recomposición (Últimas 8 Semanas) -->
+                <div class="premium-card p-4 space-y-3 animate-fade-in-up">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">📊</span>
+                            <div>
+                                <h4 class="text-xs font-bold text-white uppercase tracking-wider">BALANCE SEMANAL: GRASA Y MÚSCULO (8 SEMANAS)</h4>
+                                <p class="text-[10px] text-white/60">Diferencial semana a semana normalizado a la mediana hídrica</p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="openChartHelpModal('weeklyDeltasHelp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
+                            ❓
+                        </button>
+                    </div>
+
+                    <div class="h-56 w-full relative">
+                        <canvas id="chartWeeklyDeltas"></canvas>
+                    </div>
+
+                    <!-- Resumen inferior acumulado neto de las 8 semanas -->
+                    <div id="weeklyDeltasSummary" class="grid grid-cols-2 gap-2 pt-2 border-t border-[#3a3a3c]/60 text-center">
+                        <div class="bg-[#2c2c2e]/60 p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-amber-400 font-bold uppercase">Δ Grasa Neta Acumulada</span>
+                            <span id="weeklyNetFatText" class="text-xs font-mono font-bold text-white mt-0.5">-- kg</span>
+                        </div>
+                        <div class="bg-[#2c2c2e]/60 p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
+                            <span class="text-[10px] text-emerald-400 font-bold uppercase">Δ Músculo Seco Neto</span>
+                            <span id="weeklyNetMuscleText" class="text-xs font-mono font-bold text-white mt-0.5">-- kg</span>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Tarjeta 2: Impacto Nutricional & Recomposición (Métricas Fisiológicas Directas) -->
                 <div class="premium-card p-4 space-y-3">
                     <div class="flex items-center justify-between">
@@ -3757,6 +3789,7 @@
         let bodyCompTimeframe = 'all';
         let chartInstanceWeightFatMuscle = null;
         let chartInstanceNutriImpact = null;
+        let chartInstanceWeeklyDeltas = null;
 
         function getGarminCalculatedTargets() {
             const w = parseFloat(userGarmin.weightKg) || 80;
@@ -4571,6 +4604,25 @@
                 conclusiones: "✔ CONCLUSIÓN PRÁCTICA:\n" +
                               "• No se trata de un descuadre ni de un fallo matemático en la base de datos.\n" +
                               "• Si el faltante en Kcal no suma exactamente igual que la suma de gramos de macros convertidos a calorías, esa diferencia corresponde al aporte energético de la fibra dietética y a los redondeos oficiales de las etiquetas alimentarias."
+            },
+            weeklyDeltasHelp: {
+                icon: "📊",
+                title: "Balance Semanal: Grasa y Músculo (8 Semanas)",
+                subtitle: "Evolución semana a semana normalizada por estado hídrico",
+                purposeTitle: "📌 Metodología de Cálculo",
+                purpose: "Evalúa la velocidad y calidad de tu recomposición corporal agrupando los pesajes diarios en bloques semanales completos (Lunes a Domingo) para filtrar el ruido hídrico y aislar los cambios de tejido real.",
+                howTo: "⚖️ CÓMO INTERPRETAR CADA BARRA (Opción A - Diferencial vs Semana Previa):\n\n" +
+                       "🔴 Barra Roja (Δ Grasa Normalizada):\n" +
+                       "• Negativa (hacia abajo): Pérdida neta de grasa corporal esa semana (¡Éxito en definición!).\n" +
+                       "• Positiva (hacia arriba): Ganancia neta de grasa corporal esa semana.\n\n" +
+                       "🟢 Barra Verde (Δ Músculo Seco Normalizado):\n" +
+                       "• En torno a 0.00 kg o positiva: Músculo esquelético intacto o en crecimiento libre de agua.\n" +
+                       "• Negativa significativa: Alerta de pérdida magra o degradación proteica.\n\n" +
+                       "🧬 NORMALIZACIÓN BIOFÍSICA POR AGUA:\n" +
+                       "• Las oscilaciones agudas de líquidos (sodio, sudor, glucógeno) alteran la lectura de la bioimpedancia.\n" +
+                       "• Esta gráfica normaliza el peso y la masa muscular a tu mediana hídrica de referencia histórica (%TBW), aislando el 27% seco proteico/mineral puro.",
+                conclusiones: "✔ REGLA DE ORO EN DEFINICIÓN:\n" +
+                              "• Barra Roja orientada hacia abajo (pérdida continua de grasa) con Barra Verde en 0.00 kg o ligeramente positiva (preservación muscular total)."
             }
         };
 
@@ -6344,6 +6396,258 @@
 
             // Actualizar Panel de Recomposición Corporal
             updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData);
+            // Actualizar Gráfico de Diferenciales Semanales (8 Semanas)
+            renderWeeklyDeltasChart();
+        }
+
+        function renderWeeklyDeltasChart() {
+            const canvas = document.getElementById('chartWeeklyDeltas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            if (chartInstanceWeeklyDeltas) {
+                chartInstanceWeeklyDeltas.destroy();
+                chartInstanceWeeklyDeltas = null;
+            }
+
+            if (!bodyCompLog || bodyCompLog.length < 2) {
+                const fText = document.getElementById('weeklyNetFatText');
+                const mText = document.getElementById('weeklyNetMuscleText');
+                if (fText) fText.textContent = '-- kg';
+                if (mText) mText.textContent = '-- kg';
+                return;
+            }
+
+            // Ordenar todos los registros por fecha ascendente
+            const sorted = [...bodyCompLog].sort((a, b) => a.date.localeCompare(b.date));
+
+            // Calcular mediana hídrica histórica (%TBW)
+            const allWaters = sorted.map(l => l.waterPct).filter(w => typeof w === 'number' && !isNaN(w) && w > 0);
+            const tbwRef = allWaters.length > 0 ? calculateMedian(allWaters) : 56.0;
+
+            // Calcular para cada registro el Músculo Seco Normalizado y la Grasa Normalizada
+            const enrichedLogs = sorted.map(l => {
+                const w = parseFloat(l.weight) || 0;
+                const rawSmm = parseFloat(l.ffmKg) || (w * 0.4);
+                const wPct = (typeof l.waterPct === 'number' && !isNaN(l.waterPct) && l.waterPct > 0) ? l.waterPct : tbwRef;
+                const fatPct = parseFloat(l.fatPct) || 20;
+
+                // Músculo Seco Normalizado (aislando agua con la mediana de referencia y el 27% proteico puro)
+                const smmNorm = rawSmm * (tbwRef / wPct);
+                const smmSecaNorm = smmNorm * 0.27;
+
+                // Grasa Normalizada (corrigiendo el desplazamiento hídrico del peso hacia la mediana de referencia)
+                const waterKg = w * (wPct / 100);
+                const refWaterKg = w * (tbwRef / 100);
+                const weightNorm = w - (waterKg - refWaterKg);
+                const fatNorm = weightNorm * (fatPct / 100);
+
+                return {
+                    date: l.date,
+                    smmSecaNorm,
+                    fatNorm
+                };
+            });
+
+            // Agrupar en las últimas 8 semanas naturales (Lunes a Domingo)
+            const latestDateStr = enrichedLogs[enrichedLogs.length - 1].date;
+            const refDate = new Date(latestDateStr + 'T12:00:00');
+            const dayOfWeek = refDate.getDay();
+            const diffToMon = dayOfWeek === 0 ? -6 : 1 - dayOfWeek;
+            const latestMonday = new Date(refDate);
+            latestMonday.setDate(refDate.getDate() + diffToMon);
+
+            const weeks = [];
+            for (let w = 7; w >= 0; w--) {
+                const mon = new Date(latestMonday);
+                mon.setDate(latestMonday.getDate() - (w * 7));
+                const sun = new Date(mon);
+                sun.setDate(mon.getDate() + 6);
+
+                const monStr = mon.toISOString().split('T')[0];
+                const sunStr = sun.toISOString().split('T')[0];
+
+                const weekLogs = enrichedLogs.filter(l => l.date >= monStr && l.date <= sunStr);
+                if (weekLogs.length > 0) {
+                    const avgFat = weekLogs.reduce((acc, l) => acc + l.fatNorm, 0) / weekLogs.length;
+                    const avgMuscle = weekLogs.reduce((acc, l) => acc + l.smmSecaNorm, 0) / weekLogs.length;
+                    weeks.push({
+                        monStr, sunStr,
+                        label: `${mon.getDate()}/${mon.getMonth() + 1}`,
+                        count: weekLogs.length,
+                        avgFat,
+                        avgMuscle,
+                        hasData: true
+                    });
+                } else {
+                    weeks.push({
+                        monStr, sunStr,
+                        label: `${mon.getDate()}/${mon.getMonth() + 1}`,
+                        count: 0,
+                        avgFat: null,
+                        avgMuscle: null,
+                        hasData: false
+                    });
+                }
+            }
+
+            // Filtrar semanas vacías anteriores al primer pesaje registrado
+            const firstDataIdx = weeks.findIndex(wk => wk.hasData);
+            const activeWeeks = firstDataIdx >= 0 ? weeks.slice(firstDataIdx) : weeks;
+
+            // Calcular diferenciales semana a semana (Opción A)
+            let prevFat = null;
+            let prevMuscle = null;
+            const labels = [];
+            const fatDeltas = [];
+            const muscleDeltas = [];
+            const fatAvgs = [];
+            const muscleAvgs = [];
+
+            activeWeeks.forEach((wk) => {
+                const monParts = wk.monStr.split('-');
+                const shortRange = `${parseInt(monParts[2])}/${parseInt(monParts[1])}`;
+                labels.push(shortRange);
+
+                if (!wk.hasData || wk.avgFat === null) {
+                    fatDeltas.push(null);
+                    muscleDeltas.push(null);
+                    fatAvgs.push(null);
+                    muscleAvgs.push(null);
+                    return;
+                }
+
+                fatAvgs.push(wk.avgFat);
+                muscleAvgs.push(wk.avgMuscle);
+
+                if (prevFat === null) {
+                    // Primera semana registrada = Línea Base (Δ = 0)
+                    fatDeltas.push(0);
+                    muscleDeltas.push(0);
+                } else {
+                    const dF = parseFloat((wk.avgFat - prevFat).toFixed(2));
+                    const dM = parseFloat((wk.avgMuscle - prevMuscle).toFixed(2));
+                    fatDeltas.push(dF);
+                    muscleDeltas.push(dM);
+                }
+
+                prevFat = wk.avgFat;
+                prevMuscle = wk.avgMuscle;
+            });
+
+            // Resumen de cambio neto acumulado entre la primera y última semana con datos
+            const validFats = fatAvgs.filter(v => v !== null);
+            const validMuscles = muscleAvgs.filter(v => v !== null);
+            const fText = document.getElementById('weeklyNetFatText');
+            const mText = document.getElementById('weeklyNetMuscleText');
+
+            if (validFats.length >= 2) {
+                const netFat = validFats[validFats.length - 1] - validFats[0];
+                const netMuscle = validMuscles[validMuscles.length - 1] - validMuscles[0];
+
+                if (fText) {
+                    const signF = netFat >= 0 ? '+' : '';
+                    fText.textContent = `${signF}${netFat.toFixed(2)} kg`;
+                    fText.className = netFat <= 0 ? 'text-xs font-mono font-bold text-emerald-400 mt-0.5' : 'text-xs font-mono font-bold text-amber-400 mt-0.5';
+                }
+                if (mText) {
+                    const signM = netMuscle >= 0 ? '+' : '';
+                    mText.textContent = `${signM}${netMuscle.toFixed(2)} kg`;
+                    mText.className = netMuscle >= -0.05 ? 'text-xs font-mono font-bold text-emerald-400 mt-0.5' : 'text-xs font-mono font-bold text-red-400 mt-0.5';
+                }
+            } else {
+                if (fText) fText.textContent = '-- kg';
+                if (mText) mText.textContent = '-- kg';
+            }
+
+            chartInstanceWeeklyDeltas = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels,
+                    datasets: [
+                        {
+                            label: 'Δ Grasa Norm. (kg)',
+                            data: fatDeltas,
+                            backgroundColor: 'rgba(255, 69, 58, 0.75)',
+                            borderColor: '#ff453a',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Δ Músculo Seco (kg)',
+                            data: muscleDeltas,
+                            backgroundColor: 'rgba(48, 209, 88, 0.75)',
+                            borderColor: '#30d158',
+                            borderWidth: 1.5,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: { color: '#2c2c2e' },
+                            ticks: {
+                                color: '#8e8e93',
+                                font: { size: 10, weight: 'bold' }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                color: (ctxScale) => ctxScale.tick.value === 0 ? 'rgba(255, 255, 255, 0.35)' : '#2c2c2e',
+                                lineWidth: (ctxScale) => ctxScale.tick.value === 0 ? 1.5 : 1
+                            },
+                            ticks: {
+                                color: '#8e8e93',
+                                font: { size: 9 },
+                                callback: function(val) {
+                                    return (val > 0 ? '+' : '') + val.toFixed(1) + ' kg';
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#ffffff',
+                                font: { size: 10, weight: 'bold' },
+                                boxWidth: 12
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: '#1c1c1e',
+                            titleColor: '#ffffff',
+                            bodyColor: '#ffffff',
+                            borderColor: '#3a3a3c',
+                            borderWidth: 1,
+                            padding: 10,
+                            callbacks: {
+                                title: function(tooltipItems) {
+                                    const idx = tooltipItems[0].dataIndex;
+                                    const wk = activeWeeks[idx];
+                                    return `Semana: ${wk.monStr} al ${wk.sunStr} (${wk.count} pesajes)`;
+                                },
+                                label: function(context) {
+                                    const val = context.parsed.y;
+                                    if (val === null || val === undefined) return '';
+                                    const sign = val >= 0 ? '+' : '';
+                                    const isFat = context.datasetIndex === 0;
+                                    const idx = context.dataIndex;
+                                    const wk = activeWeeks[idx];
+                                    const avgStr = isFat && wk.avgFat !== null 
+                                        ? ` (Media: ${wk.avgFat.toFixed(2)} kg)` 
+                                        : (!isFat && wk.avgMuscle !== null ? ` (Media: ${wk.avgMuscle.toFixed(2)} kg)` : '');
+                                    return `${context.dataset.label}: ${sign}${val.toFixed(2)} kg${avgStr}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
 
         function updateRecompositionPanel(sortedLogs, smmSecaEmaData, fatKgEmaData) {
