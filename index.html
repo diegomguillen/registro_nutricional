@@ -6773,10 +6773,11 @@
                 foodStats[key].totalWaterDelta += comp.diffWater;
             });
 
-            // Umbral dinámico de repeticiones mínimas emparejadas
-            const minRep = totalPairedDays >= 6 ? 2 : 1;
+            // Umbral dinámico de repeticiones mínimas emparejadas para el Top 5 (hábitos estructurales)
+            const minRep = totalPairedDays >= 12 ? 12 : Math.max(2, Math.floor(totalPairedDays / 2));
             const validFoods = Object.values(foodStats).filter(f => f.pairedCount >= minRep);
-            cachedValidFoods = validFoods;
+            // Para el modal completo 'Ver todos', mantener todos los que tengan al menos 2 repeticiones
+            cachedValidFoods = Object.values(foodStats).filter(f => f.pairedCount >= (totalPairedDays >= 6 ? 2 : 1));
 
             // A) TOP 5 MÚSCULO & SUPLEMENTOS (TENDENCIA 14d)
             const topAnabolic = [...validFoods]
@@ -6798,7 +6799,7 @@
                 if (!container) return;
                 container.innerHTML = '';
                 if (!foods || foods.length === 0) {
-                    container.innerHTML = `<span class="text-[10px] text-white/50 italic">Sin alimentos con ≥${minRep} consumos...</span>`;
+                    container.innerHTML = `<span class="text-[10px] text-white/50 italic">Sin alimentos habituales con ≥${minRep} consumos...</span>`;
                     return;
                 }
 
@@ -6810,6 +6811,7 @@
                         <div class="flex items-center gap-1.5 overflow-hidden pr-2">
                             <span class="text-xs shrink-0">${f.icon}</span>
                             <span class="text-[11px] font-medium text-white truncate" title="${f.name}">${f.name}</span>
+                            <span class="text-[9px] text-white/40 shrink-0 font-mono">(${f.pairedCount}d)</span>
                         </div>
                         <span class="text-[9px] font-bold ${badgeClass} shrink-0 px-1.5 py-0.5 rounded bg-black/30 border border-current/20">${avgVal}</span>
                     `;
