@@ -324,15 +324,18 @@
             </div>
 
             <div class="premium-card p-5 relative animate-fade-in-up">
-                <div class="flex items-center gap-2 mb-4">
-                    <span class="text-kcal">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                                clip-rule="evenodd" />
-                        </svg>
-                    </span>
-                    <h3 class="text-xs font-medium text-white uppercase tracking-wider">RESUMEN CALÓRICO</h3>
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-2">
+                        <span class="text-kcal">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                        <h3 class="text-xs font-medium text-white uppercase tracking-wider">RESUMEN CALÓRICO</h3>
+                    </div>
+                    <button type="button" onclick="openChartHelpModal('macroEnergyHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Guía: Calorías vs Macros">❓</button>
                 </div>
 
                 <div class="h-48 relative w-full flex justify-center">
@@ -801,6 +804,7 @@
             <div id="historyTargetDiffCard" class="premium-card p-3.5 space-y-2 animate-fade-in-up">
                 <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
                     <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
+                    <button type="button" onclick="openChartHelpModal('macroEnergyHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Guía: Calorías vs Macros">❓</button>
                 </div>
                 <div id="historyTargetDiffContent" class="space-y-2 text-xs"></div>
             </div>
@@ -1736,6 +1740,7 @@
             <div class="bg-[#1c1c1e] p-3 rounded-xl border border-[#2c2c2e] space-y-2">
                 <div class="flex items-center justify-between border-b border-[#2c2c2e] pb-1.5">
                     <span class="text-[10px] font-bold text-white uppercase tracking-wider opacity-70">🎯 Balance vs Objetivo Diario</span>
+                    <button type="button" onclick="openChartHelpModal('macroEnergyHelp')" class="w-5 h-5 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-[10px] font-bold transition-all active:scale-95" title="Guía: Calorías vs Macros">❓</button>
                 </div>
                 <div id="editAmountTargetDiffContent" class="space-y-2 text-xs"></div>
             </div>
@@ -2247,7 +2252,7 @@
 
             <div class="space-y-3 pt-2 text-xs leading-relaxed text-white/90">
                 <div class="bg-[#2c2c2e] p-3 rounded-xl border border-[#3a3a3c]">
-                    <h4 class="font-bold text-primary uppercase text-[10px] tracking-wider mb-1">📌 Propósito del Gráfico</h4>
+                    <h4 id="chartHelpPurposeTitle" class="font-bold text-primary uppercase text-[10px] tracking-wider mb-1">📌 Propósito del Gráfico</h4>
                     <p id="chartHelpPurpose" class="text-white/80"></p>
                 </div>
 
@@ -4546,6 +4551,26 @@
                        "• Qué son: Los 9 aminoácidos que el organismo no puede sintetizar por sí mismo y que deben obtenerse a través de la dieta.\n" +
                        "• Por qué importan: La leucina activa la señal de construcción, pero los EAA son los «ladrillos» imprescindibles para edificarla. Consumir el espectro completo de aminoácidos esenciales asegura que el balance proteico neto sea positivo y favorece una recuperación muscular integral.",
                 conclusiones: "✔ Requerimientos calculados según FFM (Masa Magra en kg):\n• Leu_dia = 0.20 × FFM (g)\n• BCAA_dia = 0.45 × FFM (g)\n• EAA_dia = 1.00 × FFM (g)"
+            },
+            macroEnergyHelp: {
+                icon: "⚖️",
+                title: "Calorías Reales vs Cálculo de Macros (4-4-9)",
+                subtitle: "¿Por qué el total de Kcal no siempre coincide con 4·P + 4·C + 9·G?",
+                purposeTitle: "📌 Concepto Nutricional",
+                purpose: "Explica por qué las calorías totales registradas de los alimentos pueden diferir ligeramente de la suma teórica de macronutrientes puros, y por qué el balance de Kcal no siempre es idéntico a la suma de excesos/faltantes de gramos.",
+                howTo: "📦 1. CALORÍAS DE ETIQUETA (Normativa Oficial UE 1169/2011):\n" +
+                       "• La app suma las calorías exactas declaradas por los fabricantes para cada alimento (k += item.kcal).\n" +
+                       "• En alimentos con fibra (avena, muesli, legumbres, tubérculos, frutas, etc.), la normativa europea e internacional computa legalmente ~2 kcal por cada gramo de fibra dietética fermentable. Esta energía real absorbible se suma a las Kcal totales del alimento, pero NO se contabiliza como carbohidrato disponible.\n\n" +
+                       "🧮 2. CÁLCULO SIMPLIFICADO DE ATWATER (4-4-9):\n" +
+                       "• El modelo clásico asume: 1g Proteína = 4 kcal, 1g Carbohidrato = 4 kcal, 1g Grasa = 9 kcal.\n" +
+                       "• Al multiplicar tus gramos consumidos por 4-4-9 obtendrás una cifra ligeramente inferior a las calorías de las etiquetas si tu dieta incluye alimentos integrales o ricos en fibra (~20-40 kcal/día de aporte por fibra).\n\n" +
+                       "🎯 3. BALANCE VS OBJETIVO DIARIO:\n" +
+                       "• El objetivo de carbohidratos se calcula completando las calorías restantes según la regla 4-4-9.\n" +
+                       "• El badge KCAL (-75 o +X) compara las calorías totales reales consumidas contra tu meta calórica (la energía neta para déficit o superávit).\n" +
+                       "• Los badges de PROT, CARB y GRAS muestran el cumplimiento estructural gramo a gramo de cada macronutriente individual.",
+                conclusiones: "✔ CONCLUSIÓN PRÁCTICA:\n" +
+                              "• No se trata de un descuadre ni de un fallo matemático en la base de datos.\n" +
+                              "• Si el faltante en Kcal no suma exactamente igual que la suma de gramos de macros convertidos a calorías, esa diferencia corresponde al aporte energético de la fibra dietética y a los redondeos oficiales de las etiquetas alimentarias."
             }
         };
 
@@ -4556,6 +4581,8 @@
             document.getElementById('chartHelpIcon').textContent = info.icon;
             document.getElementById('chartHelpTitle').textContent = info.title;
             document.getElementById('chartHelpSubtitle').textContent = info.subtitle;
+            const purposeTitleEl = document.getElementById('chartHelpPurposeTitle');
+            if (purposeTitleEl) purposeTitleEl.textContent = info.purposeTitle || "📌 Propósito del Gráfico";
             document.getElementById('chartHelpPurpose').textContent = info.purpose;
             document.getElementById('chartHelpHowTo').textContent = info.howTo;
             document.getElementById('chartHelpConclusions').textContent = info.conclusiones;
