@@ -634,13 +634,33 @@
                         <div class="flex items-center gap-2">
                             <span class="text-base">📊</span>
                             <div>
-                                <h4 class="text-xs font-bold text-white uppercase tracking-wider">BALANCE SEMANAL: GRASA Y MÚSCULO (8 SEMANAS)</h4>
+                                <h4 class="text-xs font-bold text-white uppercase tracking-wider">BALANCE SEMANAL: GRASA Y MÚSCULO</h4>
                                 <p class="text-[10px] text-white/60">Diferencial semana a semana normalizado a la mediana hídrica</p>
                             </div>
                         </div>
                         <button type="button" onclick="openChartHelpModal('weeklyDeltasHelp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
                             ❓
                         </button>
+                    </div>
+
+                    <!-- Filtro Temporal de Semanas (Idéntica estética al selector superior) -->
+                    <div class="grid grid-cols-5 gap-1 w-full bg-[#1c1c1e] p-1 rounded-xl border border-[#2c2c2e]">
+                        <button type="button" onclick="setWeeklyDeltasWeeks('4')" id="btnWeeklyWeeks4" title="4 Semanas" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">4S</button>
+                        <button type="button" onclick="setWeeklyDeltasWeeks('8')" id="btnWeeklyWeeks8" title="8 Semanas" class="py-1 px-1 rounded-lg text-[11px] font-bold transition-all bg-[#0a84ff] text-white shadow-sm text-center">8S</button>
+                        <button type="button" onclick="setWeeklyDeltasWeeks('12')" id="btnWeeklyWeeks12" title="12 Semanas" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">12S</button>
+                        <button type="button" onclick="setWeeklyDeltasWeeks('16')" id="btnWeeklyWeeks16" title="16 Semanas" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">16S</button>
+                        <button type="button" onclick="setWeeklyDeltasWeeks('all')" id="btnWeeklyWeeksall" title="Todo el historial" class="py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center">Todo</button>
+                    </div>
+
+                    <!-- Selector de Superposición Nutricional -->
+                    <div class="flex items-center justify-between text-[11px] px-0.5">
+                        <span class="text-[10px] text-white/50 font-semibold uppercase tracking-wider">Superponer Ingesta:</span>
+                        <div class="inline-flex p-0.5 rounded-lg bg-[#2c2c2e] border border-[#3a3a3c] text-[10px] font-semibold gap-0.5">
+                            <button type="button" onclick="setWeeklyNutriOverlay('none')" id="btnNutriOverlayNone" class="px-2 py-0.5 rounded-md transition-all text-white/50 hover:text-white">Off</button>
+                            <button type="button" onclick="setWeeklyNutriOverlay('kcal')" id="btnNutriOverlayKcal" class="px-2 py-0.5 rounded-md transition-all text-white/50 hover:text-white">Kcal</button>
+                            <button type="button" onclick="setWeeklyNutriOverlay('prot')" id="btnNutriOverlayProt" class="px-2 py-0.5 rounded-md transition-all text-white/50 hover:text-white">Proteína</button>
+                            <button type="button" onclick="setWeeklyNutriOverlay('carb')" id="btnNutriOverlayCarb" class="px-2 py-0.5 rounded-md transition-all text-white/50 hover:text-white">Carbos</button>
+                        </div>
                     </div>
 
                     <div class="h-56 w-full relative">
@@ -650,37 +670,13 @@
                     <!-- Resumen inferior acumulado neto de las 8 semanas -->
                     <div id="weeklyDeltasSummary" class="grid grid-cols-2 gap-2 pt-2 border-t border-[#3a3a3c]/60 text-center">
                         <div class="bg-[#2c2c2e]/60 p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
-                            <span class="text-[10px] text-amber-400 font-bold uppercase">Δ Grasa Neta Acumulada</span>
-                            <span id="weeklyNetFatText" class="text-xs font-mono font-bold text-white mt-0.5">-- kg</span>
+                            <span class="text-[10px] text-red-400 font-bold uppercase">Δ Grasa Neta Acumulada</span>
+                            <span id="weeklyNetFatText" class="text-xs font-mono font-bold text-red-400 mt-0.5">-- kg</span>
                         </div>
                         <div class="bg-[#2c2c2e]/60 p-2 rounded-xl border border-[#3a3a3c] flex flex-col items-center justify-between">
                             <span class="text-[10px] text-emerald-400 font-bold uppercase">Δ Músculo Seco Neto</span>
-                            <span id="weeklyNetMuscleText" class="text-xs font-mono font-bold text-white mt-0.5">-- kg</span>
+                            <span id="weeklyNetMuscleText" class="text-xs font-mono font-bold text-emerald-400 mt-0.5">-- kg</span>
                         </div>
-                    </div>
-                </div>
-
-                <!-- Tarjeta 2: Impacto Nutricional & Recomposición (Métricas Fisiológicas Directas) -->
-                <div class="premium-card p-4 space-y-3">
-                    <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">🎯</span>
-                            <h4 class="text-xs font-bold text-white uppercase tracking-wider">IMPACTO NUTRICIONAL & RECOMPOSICIÓN</h4>
-                        </div>
-                        <button onclick="openChartHelpModal('nutriImpactHelp')" class="w-6 h-6 rounded-full bg-[#2c2c2e] hover:bg-[#3a3a3c] border border-[#3a3a3c] flex items-center justify-center text-white/70 hover:text-white text-xs font-bold transition-all active:scale-95" title="Ayuda e Interpretación">
-                            ❓
-                        </button>
-                    </div>
-
-                    <div class="h-56 w-full relative">
-                        <canvas id="chartNutriImpact"></canvas>
-                    </div>
-
-                    <!-- Diagnóstico / Semáforo de las 3 variables directas -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2 border-t border-[#3a3a3c]/60">
-                        <div id="badgeProtFFM" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Cumplimiento Proteico Medio 7D"></div>
-                        <div id="badgeCarbWater" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Repleción de Carbohidratos N-1"></div>
-                        <div id="badgeRecompMatrix" class="px-2 py-1.5 rounded-lg bg-[#2c2c2e]/60 border border-[#3a3a3c] flex items-center gap-1.5" title="Partición de Recomposición (% Grasa Perdida)"></div>
                     </div>
                 </div>
 
@@ -3788,7 +3784,6 @@
         let bodyCompLog = [];
         let bodyCompTimeframe = 'all';
         let chartInstanceWeightFatMuscle = null;
-        let chartInstanceNutriImpact = null;
         let chartInstanceWeeklyDeltas = null;
 
         function getGarminCalculatedTargets() {
@@ -5652,9 +5647,8 @@
 
         function updateBodyCompCharts() {
             const ctx1 = document.getElementById('chartWeightFatMuscle');
-            const ctxNutri = document.getElementById('chartNutriImpact');
 
-            if (!ctx1 || !ctxNutri) return;
+            if (!ctx1) return;
 
             let sortedLogs = [...bodyCompLog].sort((a, b) => a.date.localeCompare(b.date));
 
@@ -6098,264 +6092,13 @@
                 });
             }
 
-            // 2. Gráfico Unificado: Impacto Nutricional & Recomposición (Métricas Fisiológicas Directas)
-            if (chartInstanceNutriImpact) chartInstanceNutriImpact.destroy();
-            if (ctxNutri) {
-                const targets = getGarminCalculatedTargets();
-                const targetProt = Math.round(targets.p || 160);
-                const targetCarb = Math.round(targets.c || 200);
-                const targetDef = Math.abs(parseFloat(userGarmin.deficitKcal)) || calculateMaxSafeDeficit(targets) || 400;
-
-                const lastClosedIdx = endCompletedIdx >= 0 ? endCompletedIdx : sortedLogs.length - 1;
-
-                // 1. Proteína Media 7D (evaluada hasta el último día cerrado, hoy - 1)
-                const currentAvgProt = (lastClosedIdx >= 0 && prot7dData[lastClosedIdx] !== null && !isNaN(prot7dData[lastClosedIdx]))
-                    ? prot7dData[lastClosedIdx]
-                    : (prot7dData.filter((v, idx) => idx <= lastClosedIdx && v !== null && !isNaN(v)).pop() || 0);
-                const protPct = targetProt > 0 ? Math.round((currentAvgProt / targetProt) * 100) : 100;
-
-                // 2. Carbohidratos N-1 (24h) (evaluada hasta el último día cerrado, hoy - 1)
-                const currentCarb = (lastClosedIdx >= 0 && carbEatenData[lastClosedIdx] !== null && !isNaN(carbEatenData[lastClosedIdx]))
-                    ? carbEatenData[lastClosedIdx]
-                    : (carbEatenData.filter((v, idx) => idx <= lastClosedIdx && v !== null && !isNaN(v)).pop() || 0);
-                const carbPct = targetCarb > 0 ? Math.round((currentCarb / targetCarb) * 100) : 100;
-
-                // 3. Partición de Recomposición (% Grasa Perdida hasta hoy - 1)
-                let recompSharePct = 100;
-                let recompDiagnosis = "Definición Limpia";
-                let recompColorClass = "text-emerald-400";
-                let recompDotClass = "bg-emerald-400";
-                let recompBarColor = 'rgba(48, 209, 88, 0.85)';
-
-                const diffW = (endCompletedIdx >= 1) ? (weightEmaData[endCompletedIdx] - weightEmaData[0]) : 0;
-                const diffF = (endCompletedIdx >= 1) ? (fatKgEmaData[endCompletedIdx] - fatKgEmaData[0]) : 0;
-                const diffS = (endCompletedIdx >= 1) ? (smmSecaEmaData[endCompletedIdx] - smmSecaEmaData[0]) : 0;
-
-                if (diffW <= -0.15) { // Fase de pérdida de peso
-                    if (diffF < 0 && diffS >= -0.05) {
-                        recompSharePct = 100;
-                        recompDiagnosis = "Definición Limpia";
-                        recompColorClass = "text-emerald-400";
-                        recompDotClass = "bg-emerald-400";
-                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
-                    } else if (diffF < 0 && diffS < -0.05) {
-                        const totalLost = Math.abs(diffF) + Math.abs(diffS);
-                        recompSharePct = totalLost > 0 ? Math.round((Math.abs(diffF) / totalLost) * 100) : 80;
-                        if (recompSharePct >= 80) {
-                            recompDiagnosis = "Definición Limpia";
-                            recompColorClass = "text-emerald-400";
-                            recompDotClass = "bg-emerald-400";
-                            recompBarColor = 'rgba(48, 209, 88, 0.85)';
-                        } else if (recompSharePct >= 65) {
-                            recompDiagnosis = "Recomposición Aceptable";
-                            recompColorClass = "text-yellow-400";
-                            recompDotClass = "bg-yellow-400";
-                            recompBarColor = 'rgba(255, 214, 10, 0.85)';
-                        } else {
-                            recompDiagnosis = "Pérdida Muscular";
-                            recompColorClass = "text-red-400";
-                            recompDotClass = "bg-red-500";
-                            recompBarColor = 'rgba(255, 69, 58, 0.85)';
-                        }
-                    } else if (diffF >= 0 && diffS < 0) {
-                        recompSharePct = 0;
-                        recompDiagnosis = "Pérdida Muscular";
-                        recompColorClass = "text-red-400";
-                        recompDotClass = "bg-red-500";
-                        recompBarColor = 'rgba(255, 69, 58, 0.85)';
-                    } else {
-                        recompSharePct = 100;
-                        recompDiagnosis = "Mantenimiento Óptimo";
-                        recompColorClass = "text-emerald-400";
-                        recompDotClass = "bg-emerald-400";
-                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
-                    }
-                } else if (diffW >= 0.15) { // Fase de volumen
-                    if (diffS > 0) {
-                        const totalGain = Math.max(0, diffF) + diffS;
-                        recompSharePct = totalGain > 0 ? Math.round((diffS / totalGain) * 100) : 100;
-                        if (recompSharePct >= 60) {
-                            recompDiagnosis = "Volumen Limpio";
-                            recompColorClass = "text-emerald-400";
-                            recompDotClass = "bg-emerald-400";
-                            recompBarColor = 'rgba(48, 209, 88, 0.85)';
-                        } else {
-                            recompDiagnosis = "Ganancia de Grasa";
-                            recompColorClass = "text-yellow-400";
-                            recompDotClass = "bg-yellow-400";
-                            recompBarColor = 'rgba(255, 214, 10, 0.85)';
-                        }
-                    } else {
-                        recompSharePct = 30;
-                        recompDiagnosis = "Ganancia Sin Músculo";
-                        recompColorClass = "text-red-400";
-                        recompDotClass = "bg-red-500";
-                        recompBarColor = 'rgba(255, 69, 58, 0.85)';
-                    }
-                } else { // Peso estable
-                    if (diffF <= 0 && diffS >= 0) {
-                        recompSharePct = 100;
-                        recompDiagnosis = "Recomposición Pura";
-                        recompColorClass = "text-emerald-400";
-                        recompDotClass = "bg-emerald-400";
-                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
-                    } else if (diffS < -0.1) {
-                        recompSharePct = 50;
-                        recompDiagnosis = "Pérdida Muscular Leve";
-                        recompColorClass = "text-yellow-400";
-                        recompDotClass = "bg-yellow-400";
-                        recompBarColor = 'rgba(255, 214, 10, 0.85)';
-                    } else {
-                        recompSharePct = 100;
-                        recompDiagnosis = "Estable y Protegido";
-                        recompColorClass = "text-emerald-400";
-                        recompDotClass = "bg-emerald-400";
-                        recompBarColor = 'rgba(48, 209, 88, 0.85)';
-                    }
-                }
-
-                // Diagnóstico y Colores de Proteína (7D)
-                let protLabel = "Proteína Óptima";
-                let protColorClass = "text-emerald-400";
-                let protDotClass = "bg-emerald-400";
-                let protBarColor = 'rgba(48, 209, 88, 0.85)';
-                if (protPct >= 90) {
-                    protLabel = "Proteína Óptima";
-                    protColorClass = "text-emerald-400";
-                    protDotClass = "bg-emerald-400";
-                    protBarColor = 'rgba(48, 209, 88, 0.85)';
-                } else if (protPct >= 75) {
-                    protLabel = "Proteína Moderada";
-                    protColorClass = "text-yellow-400";
-                    protDotClass = "bg-yellow-400";
-                    protBarColor = 'rgba(255, 214, 10, 0.85)';
-                } else {
-                    protLabel = "Proteína Insuficiente";
-                    protColorClass = "text-red-400";
-                    protDotClass = "bg-red-500";
-                    protBarColor = 'rgba(255, 69, 58, 0.85)';
-                }
-
-                // Diagnóstico y Colores de Carbohidratos N-1
-                let carbLabel = "Repleción Óptima";
-                let carbColorClass = "text-emerald-400";
-                let carbDotClass = "bg-emerald-400";
-                let carbBarColor = 'rgba(48, 209, 88, 0.85)';
-                if (carbPct >= 75 && carbPct <= 115) {
-                    carbLabel = "Repleción Óptima";
-                    carbColorClass = "text-emerald-400";
-                    carbDotClass = "bg-emerald-400";
-                    carbBarColor = 'rgba(48, 209, 88, 0.85)';
-                } else if ((carbPct >= 50 && carbPct < 75) || (carbPct > 115 && carbPct <= 130)) {
-                    carbLabel = carbPct < 75 ? "Carga Moderada" : "Carga Alta";
-                    carbColorClass = "text-yellow-400";
-                    carbDotClass = "bg-yellow-400";
-                    carbBarColor = 'rgba(255, 214, 10, 0.85)';
-                } else {
-                    carbLabel = carbPct < 50 ? "Vaciado Glucídico" : "Exceso Glucídico";
-                    carbColorClass = "text-red-400";
-                    carbDotClass = "bg-red-500";
-                    carbBarColor = 'rgba(255, 69, 58, 0.85)';
-                }
-
-                // Actualizar Badges Inferiores con información directa en tiempo real
-                const bP = document.getElementById('badgeProtFFM');
-                if (bP) {
-                    bP.innerHTML = `<span class="w-2 h-2 rounded-full ${protDotClass} inline-block animate-pulse"></span><span class="${protColorClass} text-[10px] font-semibold">Prot 7D: ${currentAvgProt}g (${protPct}%) · ${protLabel}</span>`;
-                    bP.title = `Ingesta media 7D: ${currentAvgProt}g/día frente a objetivo de ${targetProt}g/día (${protPct}%)`;
-                }
-
-                const bC = document.getElementById('badgeCarbWater');
-                if (bC) {
-                    bC.innerHTML = `<span class="w-2 h-2 rounded-full ${carbDotClass} inline-block animate-pulse"></span><span class="${carbColorClass} text-[10px] font-semibold">Carbos N-1: ${currentCarb}g (${carbPct}%) · ${carbLabel}</span>`;
-                    bC.title = `Ingesta de ayer: ${currentCarb}g frente a objetivo de ${targetCarb}g (${carbPct}%)`;
-                }
-
-                const bR = document.getElementById('badgeRecompMatrix');
-                if (bR) {
-                    bR.innerHTML = `<span class="w-2 h-2 rounded-full ${recompDotClass} inline-block animate-pulse"></span><span class="${recompColorClass} text-[10px] font-semibold">Recomp: ${recompSharePct}% Grasa · ${recompDiagnosis}</span>`;
-                    bR.title = `Calidad de recomposición tisular: el ${recompSharePct}% del cambio tisular es grasa`;
-                }
-
-                const maxX = Math.max(125, Math.ceil((Math.max(protPct, carbPct, recompSharePct) + 10) / 10) * 10);
-
-                chartInstanceNutriImpact = new Chart(ctxNutri, {
-                    type: 'bar',
-                    data: {
-                        labels: ['🥩 Proteína (7D)', '🍚 Carbohidratos N-1', '⚖️ Recomposición'],
-                        datasets: [
-                            {
-                                label: '% Cumplimiento / Calidad',
-                                data: [protPct, carbPct, recompSharePct],
-                                backgroundColor: [
-                                    protBarColor,
-                                    carbBarColor,
-                                    recompBarColor
-                                ],
-                                borderRadius: 6,
-                                borderWidth: 0,
-                                barThickness: 22
-                            }
-                        ]
-                    },
-                    options: {
-                        indexAxis: 'y',
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: {
-                                ticks: { color: '#ffffff', font: { size: 10.5, weight: 'bold' } },
-                                grid: { display: false }
-                            },
-                            x: {
-                                min: 0,
-                                max: maxX,
-                                ticks: {
-                                    color: '#8e8e93',
-                                    font: { size: 9 },
-                                    callback: v => `${v}%`
-                                },
-                                grid: {
-                                    color: (context) => (context.tick && context.tick.value === 100) ? 'rgba(48, 209, 88, 0.45)' : '#2c2c2e',
-                                    lineWidth: (context) => (context.tick && context.tick.value === 100) ? 1.5 : 1
-                                }
-                            }
-                        },
-                        plugins: {
-                            legend: { display: false },
-                            tooltip: {
-                                callbacks: {
-                                    label: function(context) {
-                                        const val = context.parsed.x;
-                                        const idx = context.dataIndex;
-                                        if (idx === 0) {
-                                            return `Proteína 7D: ${currentAvgProt}g/d (${val}% de ${targetProt}g) [${protLabel}]`;
-                                        } else if (idx === 1) {
-                                            return `Carbohidratos N-1: ${currentCarb}g (${val}% de ${targetCarb}g) [${carbLabel}]`;
-                                        } else if (idx === 2) {
-                                            return `Déficit 7D: -${realDefVal} kcal/d (${val}% de ${targetDef} kcal) [${defLabel}]`;
-                                        } else {
-                                            const signF = diffF >= 0 ? `+${diffF.toFixed(2)}` : diffF.toFixed(2);
-                                            const signS = diffS >= 0 ? `+${diffS.toFixed(2)}` : diffS.toFixed(2);
-                                            return `Recomposición: ${val}% Grasa (${signF}kg Grasa vs ${signS}kg Músculo) [${recompDiagnosis}]`;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
+            // Escuchar el evento doble clic para abrir la gráfica a pantalla completa en horizontal
+            if (ctx1 && !ctx1.getAttribute('data-zoom-listener')) {
+                ctx1.setAttribute('data-zoom-listener', 'true');
+                ctx1.addEventListener('dblclick', () => {
+                    openFullscreenChart(ctx1);
                 });
             }
-
-            // Escuchar el evento doble clic para abrir la gráfica a pantalla completa en horizontal
-            [ctx1, ctxNutri].forEach(c => {
-                if (c && !c.getAttribute('data-zoom-listener')) {
-                    c.setAttribute('data-zoom-listener', 'true');
-                    c.addEventListener('dblclick', () => {
-                        openFullscreenChart(c);
-                    });
-                }
-            });
 
             // Diagnóstico Fisiológico de Líquidos y Tendencia Proteica Seca
             const diagTextEl = document.getElementById('bodyCompDiagnosisText');
@@ -6400,6 +6143,21 @@
             renderWeeklyDeltasChart();
         }
 
+        let weeklyNutriOverlayMode = localStorage.getItem('nutri_weeklyOverlayMode') || 'kcal';
+        let weeklyDeltasWeeksCount = localStorage.getItem('nutri_weeklyDeltasWeeks') || '8';
+
+        function setWeeklyDeltasWeeks(weeksVal) {
+            weeklyDeltasWeeksCount = weeksVal;
+            try { localStorage.setItem('nutri_weeklyDeltasWeeks', weeksVal); } catch (e) {}
+            renderWeeklyDeltasChart();
+        }
+
+        function setWeeklyNutriOverlay(mode) {
+            weeklyNutriOverlayMode = mode;
+            try { localStorage.setItem('nutri_weeklyOverlayMode', mode); } catch (e) {}
+            renderWeeklyDeltasChart();
+        }
+
         function renderWeeklyDeltasChart() {
             const canvas = document.getElementById('chartWeeklyDeltas');
             if (!canvas) return;
@@ -6409,6 +6167,39 @@
             if (chartInstanceWeeklyDeltas) {
                 chartInstanceWeeklyDeltas.destroy();
                 chartInstanceWeeklyDeltas = null;
+            }
+
+            // Actualizar botones de filtro temporal de semanas
+            const weekOptions = ['4', '8', '12', '16', 'all'];
+            weekOptions.forEach(opt => {
+                const btn = document.getElementById(`btnWeeklyWeeks${opt}`);
+                if (btn) {
+                    if (opt === String(weeklyDeltasWeeksCount)) {
+                        btn.className = "py-1 px-1 rounded-lg text-[11px] font-bold transition-all bg-[#0a84ff] text-white shadow-sm text-center";
+                    } else {
+                        btn.className = "py-1 px-1 rounded-lg text-[11px] font-medium transition-all text-white/60 hover:text-white hover:bg-white/5 text-center";
+                    }
+                }
+            });
+
+            // Actualizar botones de superposición nutricional
+            const btnNone = document.getElementById('btnNutriOverlayNone');
+            const btnKcal = document.getElementById('btnNutriOverlayKcal');
+            const btnProt = document.getElementById('btnNutriOverlayProt');
+            const btnCarb = document.getElementById('btnNutriOverlayCarb');
+
+            [btnNone, btnKcal, btnProt, btnCarb].forEach(b => {
+                if (b) b.className = 'px-2 py-0.5 rounded-md transition-all text-white/50 hover:text-white';
+            });
+
+            if (weeklyNutriOverlayMode === 'kcal' && btnKcal) {
+                btnKcal.className = 'px-2 py-0.5 rounded-md transition-all bg-amber-500/25 text-amber-300 font-bold border border-amber-500/40 shadow-sm';
+            } else if (weeklyNutriOverlayMode === 'prot' && btnProt) {
+                btnProt.className = 'px-2 py-0.5 rounded-md transition-all bg-sky-500/25 text-sky-300 font-bold border border-sky-500/40 shadow-sm';
+            } else if (weeklyNutriOverlayMode === 'carb' && btnCarb) {
+                btnCarb.className = 'px-2 py-0.5 rounded-md transition-all bg-purple-500/25 text-purple-300 font-bold border border-purple-500/40 shadow-sm';
+            } else if (btnNone) {
+                btnNone.className = 'px-2 py-0.5 rounded-md transition-all bg-white/20 text-white font-bold border border-white/30 shadow-sm';
             }
 
             if (!bodyCompLog || bodyCompLog.length < 2) {
@@ -6450,7 +6241,7 @@
                 };
             });
 
-            // Agrupar en las últimas 8 semanas naturales (Lunes a Domingo)
+            // Agrupar en las semanas seleccionadas (Lunes a Domingo)
             const latestDateStr = enrichedLogs[enrichedLogs.length - 1].date;
             const refDate = new Date(latestDateStr + 'T12:00:00');
             const dayOfWeek = refDate.getDay();
@@ -6458,8 +6249,19 @@
             const latestMonday = new Date(refDate);
             latestMonday.setDate(refDate.getDate() + diffToMon);
 
+            let numWeeks = 8;
+            if (weeklyDeltasWeeksCount === '4') numWeeks = 4;
+            else if (weeklyDeltasWeeksCount === '8') numWeeks = 8;
+            else if (weeklyDeltasWeeksCount === '12') numWeeks = 12;
+            else if (weeklyDeltasWeeksCount === '16') numWeeks = 16;
+            else if (weeklyDeltasWeeksCount === 'all') {
+                const earliestDate = new Date(enrichedLogs[0].date + 'T12:00:00');
+                const diffMs = latestMonday.getTime() - earliestDate.getTime();
+                numWeeks = Math.max(4, Math.ceil(diffMs / (7 * 24 * 60 * 60 * 1000)) + 1);
+            }
+
             const weeks = [];
-            for (let w = 7; w >= 0; w--) {
+            for (let w = numWeeks - 1; w >= 0; w--) {
                 const mon = new Date(latestMonday);
                 mon.setDate(latestMonday.getDate() - (w * 7));
                 const sun = new Date(mon);
@@ -6504,11 +6306,39 @@
             const muscleDeltas = [];
             const fatAvgs = [];
             const muscleAvgs = [];
+            const kcals = [];
+            const prots = [];
+            const carbs = [];
+            const foodDays = [];
 
             activeWeeks.forEach((wk) => {
                 const monParts = wk.monStr.split('-');
                 const shortRange = `${parseInt(monParts[2])}/${parseInt(monParts[1])}`;
                 labels.push(shortRange);
+
+                // Calcular media diaria de comida registrada en la semana (lunes a domingo)
+                let kSum = 0, pSum = 0, cSum = 0, fDays = 0;
+                for (let d = new Date(wk.monStr + 'T12:00:00'); d <= new Date(wk.sunStr + 'T12:00:00'); d.setDate(d.getDate() + 1)) {
+                    const dStr = d.toISOString().split('T')[0];
+                    if (typeof dayFlags !== 'undefined' && dayFlags[dStr]?.isIncomplete) continue;
+                    const dayItems = globalLog.filter(item => item.date === dStr);
+                    if (dayItems.length > 0) {
+                        let dk = 0, dp = 0, dc = 0;
+                        dayItems.forEach(it => {
+                            dk += (it.kcal || 0);
+                            dp += (it.p || 0);
+                            dc += (it.c || 0);
+                        });
+                        kSum += dk;
+                        pSum += dp;
+                        cSum += dc;
+                        fDays++;
+                    }
+                }
+                kcals.push(fDays > 0 ? Math.round(kSum / fDays) : null);
+                prots.push(fDays > 0 ? Math.round(pSum / fDays) : null);
+                carbs.push(fDays > 0 ? Math.round(cSum / fDays) : null);
+                foodDays.push(fDays);
 
                 if (!wk.hasData || wk.avgFat === null) {
                     fatDeltas.push(null);
@@ -6549,66 +6379,141 @@
                 if (fText) {
                     const signF = netFat >= 0 ? '+' : '';
                     fText.textContent = `${signF}${netFat.toFixed(2)} kg`;
-                    fText.className = netFat <= 0 ? 'text-xs font-mono font-bold text-emerald-400 mt-0.5' : 'text-xs font-mono font-bold text-amber-400 mt-0.5';
+                    fText.className = 'text-xs font-mono font-bold text-red-400 mt-0.5';
                 }
                 if (mText) {
                     const signM = netMuscle >= 0 ? '+' : '';
                     mText.textContent = `${signM}${netMuscle.toFixed(2)} kg`;
-                    mText.className = netMuscle >= -0.05 ? 'text-xs font-mono font-bold text-emerald-400 mt-0.5' : 'text-xs font-mono font-bold text-red-400 mt-0.5';
+                    mText.className = 'text-xs font-mono font-bold text-emerald-400 mt-0.5';
                 }
             } else {
                 if (fText) fText.textContent = '-- kg';
                 if (mText) mText.textContent = '-- kg';
             }
 
+            const datasets = [
+                {
+                    type: 'bar',
+                    label: 'Δ Grasa Norm. (kg)',
+                    data: fatDeltas,
+                    backgroundColor: 'rgba(255, 69, 58, 0.75)',
+                    borderColor: '#ff453a',
+                    borderWidth: 1.5,
+                    borderRadius: 4,
+                    order: 2
+                },
+                {
+                    type: 'bar',
+                    label: 'Δ Músculo Seco (kg)',
+                    data: muscleDeltas,
+                    backgroundColor: 'rgba(48, 209, 88, 0.75)',
+                    borderColor: '#30d158',
+                    borderWidth: 1.5,
+                    borderRadius: 4,
+                    order: 2
+                }
+            ];
+
+            let lineMeta = null;
+            if (weeklyNutriOverlayMode === 'kcal') {
+                lineMeta = {
+                    label: 'Ingesta Kcal Media',
+                    data: kcals,
+                    color: '#f59e0b',
+                    unit: ' kcal/d',
+                    axisSuffix: ' kcal'
+                };
+            } else if (weeklyNutriOverlayMode === 'prot') {
+                lineMeta = {
+                    label: 'Proteína Media',
+                    data: prots,
+                    color: '#38bdf8',
+                    unit: ' g/d',
+                    axisSuffix: 'g'
+                };
+            } else if (weeklyNutriOverlayMode === 'carb') {
+                lineMeta = {
+                    label: 'Carbohidratos Media',
+                    data: carbs,
+                    color: '#c084fc',
+                    unit: ' g/d',
+                    axisSuffix: 'g'
+                };
+            }
+
+            if (lineMeta) {
+                datasets.push({
+                    type: 'line',
+                    label: `${lineMeta.label} (${lineMeta.unit.trim()})`,
+                    data: lineMeta.data,
+                    yAxisID: 'yNutri',
+                    borderColor: lineMeta.color,
+                    backgroundColor: lineMeta.color,
+                    borderWidth: 2,
+                    tension: 0.25,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: lineMeta.color,
+                    pointBorderColor: '#1c1c1e',
+                    pointBorderWidth: 1.5,
+                    spanGaps: true,
+                    order: 1
+                });
+            }
+
+            const scalesConfig = {
+                x: {
+                    grid: { color: '#2c2c2e' },
+                    ticks: {
+                        color: '#e5e5ea',
+                        font: { size: 9 }
+                    }
+                },
+                y: {
+                    position: 'left',
+                    suggestedMax: 0.2,
+                    grid: {
+                        color: (ctxScale) => ctxScale.tick.value === 0 ? 'rgba(255, 255, 255, 0.25)' : '#2c2c2e',
+                        lineWidth: (ctxScale) => ctxScale.tick.value === 0 ? 1.5 : 1
+                    },
+                    ticks: {
+                        color: '#e5e5ea',
+                        font: { size: 9 },
+                        stepSize: 0.2,
+                        maxTicksLimit: 8,
+                        callback: function(val) {
+                            const rounded = Math.round(val * 100) / 100;
+                            return rounded === 0 ? '0' : (rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1));
+                        }
+                    }
+                }
+            };
+
+            if (lineMeta) {
+                scalesConfig.yNutri = {
+                    position: 'right',
+                    grid: { drawOnChartArea: false },
+                    ticks: {
+                        color: lineMeta.color,
+                        font: { size: 9 },
+                        maxTicksLimit: 6,
+                        callback: function(val) {
+                            return Math.round(val) + lineMeta.axisSuffix;
+                        }
+                    }
+                };
+            }
+
             chartInstanceWeeklyDeltas = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels,
-                    datasets: [
-                        {
-                            label: 'Δ Grasa Norm. (kg)',
-                            data: fatDeltas,
-                            backgroundColor: 'rgba(255, 69, 58, 0.75)',
-                            borderColor: '#ff453a',
-                            borderWidth: 1.5,
-                            borderRadius: 4
-                        },
-                        {
-                            label: 'Δ Músculo Seco (kg)',
-                            data: muscleDeltas,
-                            backgroundColor: 'rgba(48, 209, 88, 0.75)',
-                            borderColor: '#30d158',
-                            borderWidth: 1.5,
-                            borderRadius: 4
-                        }
-                    ]
+                    datasets
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: {
-                        x: {
-                            grid: { color: '#2c2c2e' },
-                            ticks: {
-                                color: '#8e8e93',
-                                font: { size: 10, weight: 'bold' }
-                            }
-                        },
-                        y: {
-                            grid: {
-                                color: (ctxScale) => ctxScale.tick.value === 0 ? 'rgba(255, 255, 255, 0.35)' : '#2c2c2e',
-                                lineWidth: (ctxScale) => ctxScale.tick.value === 0 ? 1.5 : 1
-                            },
-                            ticks: {
-                                color: '#8e8e93',
-                                font: { size: 9 },
-                                callback: function(val) {
-                                    return (val > 0 ? '+' : '') + val.toFixed(1) + ' kg';
-                                }
-                            }
-                        }
-                    },
+                    scales: scalesConfig,
                     plugins: {
                         legend: {
                             position: 'top',
@@ -6629,15 +6534,27 @@
                                 title: function(tooltipItems) {
                                     const idx = tooltipItems[0].dataIndex;
                                     const wk = activeWeeks[idx];
-                                    return `Semana: ${wk.monStr} al ${wk.sunStr} (${wk.count} pesajes)`;
+                                    const daysLogged = foodDays[idx] || 0;
+                                    const foodStr = daysLogged > 0 ? ` | ${daysLogged}d comida` : '';
+                                    return `Semana: ${wk.monStr} al ${wk.sunStr} (${wk.count} pesajes${foodStr})`;
                                 },
                                 label: function(context) {
+                                    const idx = context.dataIndex;
+                                    const wk = activeWeeks[idx];
+                                    if (context.dataset.type === 'line') {
+                                        const val = context.parsed.y;
+                                        if (val === null || val === undefined) return `${context.dataset.label}: Sin registros`;
+                                        const unit = lineMeta ? lineMeta.unit : '';
+                                        return `${context.dataset.label}: ${val}${unit}`;
+                                    }
                                     const val = context.parsed.y;
                                     if (val === null || val === undefined) return '';
                                     const sign = val >= 0 ? '+' : '';
                                     const isFat = context.datasetIndex === 0;
-                                    const idx = context.dataIndex;
-                                    const wk = activeWeeks[idx];
+                                    if (idx === 0) {
+                                        const avgVal = isFat ? wk.avgFat : wk.avgMuscle;
+                                        return `${context.dataset.label}: Semana Base (Media: ${avgVal !== null ? avgVal.toFixed(2) + ' kg' : '--'})`;
+                                    }
                                     const avgStr = isFat && wk.avgFat !== null 
                                         ? ` (Media: ${wk.avgFat.toFixed(2)} kg)` 
                                         : (!isFat && wk.avgMuscle !== null ? ` (Media: ${wk.avgMuscle.toFixed(2)} kg)` : '');
